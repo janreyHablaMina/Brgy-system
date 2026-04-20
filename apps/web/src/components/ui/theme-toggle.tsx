@@ -41,18 +41,20 @@ export function ThemeToggle() {
         className={cn(
           "absolute left-1/2 top-1/2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4",
           theme === "light" 
-            ? "-translate-x-1/2 -translate-y-1/2 opacity-100 text-[#3C50E0]" 
+            ? "-translate-x-1/2 -translate-y-1/2 opacity-100" 
             : "translate-x-4 -translate-y-1/2 opacity-0"
         )} 
+        style={{ color: 'var(--primary)' }}
         strokeWidth={2.5} 
       />
       <MoonStar 
         className={cn(
           "absolute left-1/2 top-1/2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4",
           theme === "dark" 
-            ? "-translate-x-1/2 -translate-y-1/2 opacity-100 text-[#3C50E0]" 
+            ? "-translate-x-1/2 -translate-y-1/2 opacity-100" 
             : "-translate-x-8 -translate-y-1/2 opacity-0"
         )} 
+        style={{ color: 'var(--primary)' }}
         strokeWidth={2.5} 
       />
     </button>

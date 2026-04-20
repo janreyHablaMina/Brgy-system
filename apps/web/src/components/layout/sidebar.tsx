@@ -186,21 +186,28 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
 
           <div className="relative group">
             {/* Ambient Seal Glow */}
-            <div className="absolute -inset-4 rounded-full bg-[#3C50E0]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="absolute -inset-4 rounded-full bg-[var(--primary)]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <img 
               src="/brgy-seal.png" 
               alt="Barangay Seal" 
               className={cn(
                 "relative z-10 transition-all duration-500",
-                collapsed ? "h-12 w-12" : "h-20 w-20 drop-shadow-[0_0_15px_rgba(60,80,224,0.15)]"
+                collapsed ? "h-12 w-12" : "h-20 w-20"
               )}
+              style={!collapsed ? { filter: `drop-shadow(0 0 15px rgba(var(--primary-rgb), 0.15))` } : {}}
             />
           </div>
           
           {!collapsed && (
             <div className="mt-4 text-center animate-in fade-in slide-in-from-top-2 duration-700">
               <h1 className="text-[17px] font-bold text-white tracking-wide uppercase">Brgy. Salaza</h1>
-              <div className="h-0.5 w-12 bg-[#3C50E0] mx-auto mt-2 rounded-full shadow-[0_0_8px_#3C50E0]" />
+              <div 
+                className="h-0.5 w-12 mx-auto mt-2 rounded-full" 
+                style={{ 
+                  backgroundColor: 'var(--primary)',
+                  boxShadow: '0 0 8px var(--primary)'
+                }} 
+              />
             </div>
           )}
         </div>
@@ -253,10 +260,10 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
                             {!collapsed && <span>{item.label}</span>}
                           </div>
                           {!collapsed && item.badge && (
-                            <span className={cn(
-                              "flex h-5 items-center justify-center rounded-full px-2 text-[10px] font-bold text-white",
-                              item.badgeColor === "blue" ? "bg-[#3C50E0]" : "bg-[#10B981]"
-                            )}>
+                            <span 
+                              className="flex h-5 items-center justify-center rounded-full px-2 text-[10px] font-bold text-white"
+                              style={item.badgeColor === "blue" ? { backgroundColor: 'var(--primary)' } : { backgroundColor: '#10B981' }}
+                            >
                               {item.badge}
                             </span>
                           )}

@@ -8,8 +8,8 @@
   --card-soft: #f8fafc;
   --text: #0f172a;
   --muted: #64748b;
-  --primary: #2563eb;
-  --primary-rgb: 37 99 235;
+  --primary: #3C50E0;
+  --primary-rgb: 60 80 224;
   --accent: #10b981;
   --accent-rgb: 16 185 129;
   --border: #e5e7eb;
@@ -20,8 +20,8 @@
   --card: #111827;
   --text: #e5e7eb;
   --muted: #9ca3af;
-  --primary: #3b82f6;
-  --primary-rgb: 59 130 246;
+  --primary: #3C50E0;
+  --primary-rgb: 60 80 224;
   --accent: #10b981;
   --accent-rgb: 16 185 129;
   --border: #253041;
@@ -30,6 +30,7 @@
 @theme inline {
   --font-sans: var(--font-plus-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-serif);
 }
 
 * {

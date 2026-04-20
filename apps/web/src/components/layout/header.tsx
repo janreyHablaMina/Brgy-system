@@ -39,16 +39,22 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            className="group flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100/80 dark:bg-slate-800/50 text-slate-500 transition-all duration-300 hover:bg-[#3C50E0] hover:text-white md:hidden"
+            className="group flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100/80 dark:bg-slate-800/50 text-slate-500 transition-all duration-300 hover:bg-[var(--primary)] hover:text-white md:hidden"
             aria-label="Open sidebar"
             onClick={onOpenSidebar}
           >
             <Menu className="h-5 w-5" strokeWidth={1.5} />
           </button>
           <div className="hidden lg:block">
-            <p className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white transition-colors">
-              {greeting}, <span className="text-[#3C50E0]">Pauline Seitz</span> 👋
-            </p>
+            <h1 className="flex items-baseline gap-2.5 transition-colors">
+              <span className="font-medium text-[28px] text-slate-900 dark:text-white tracking-tight">
+                {greeting},
+              </span>
+              <span className="font-serif text-[22px] text-[var(--primary)] leading-none">
+                Pauline Seitz
+              </span>
+              <span className="text-xl ml-1">👋</span>
+            </h1>
           </div>
         </div>
 
@@ -56,12 +62,12 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         <div className="hidden max-w-2xl flex-1 lg:flex justify-center">
           <div className="group relative flex w-full max-w-md items-center">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-slate-400 transition-colors group-focus-within:text-[#3C50E0]" strokeWidth={2} />
+              <Search className="h-4 w-4 text-slate-400 transition-colors group-focus-within:text-[var(--primary)] dark:text-slate-500" strokeWidth={2} />
             </div>
             <input
               type="search"
               placeholder="Search..."
-              className="h-10 w-full rounded-full border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50 pl-11 pr-4 text-sm text-slate-700 dark:text-slate-300 outline-none transition-all duration-300 focus:border-[#3C50E0]/30 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-[#3C50E0]/5 placeholder:text-slate-400 dark:placeholder:text-slate-600"
+              className="h-10 w-full rounded-full border border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/50 pl-11 pr-4 text-sm text-slate-700 dark:text-slate-300 outline-none transition-all duration-300 focus:border-[var(--primary)]/30 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-[var(--primary)]/5 placeholder:text-slate-400 dark:placeholder:text-slate-600"
             />
           </div>
         </div>
@@ -69,14 +75,13 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         {/* Right Side: Unified Utility Command Bar & Profile */}
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="flex items-center h-10 px-1">
-            {/* Communication Tools */}
-            <button className="group relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#3C50E0] text-slate-400 dark:text-slate-500 mx-0.5">
+            <button className="group relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--primary)] text-slate-400 dark:text-slate-500 mx-0.5">
               <MessageSquare className="h-[18px] w-[18px] transition-transform group-hover:scale-110" strokeWidth={1.5} />
               <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#10B981] px-1 text-[9px] font-bold text-white ring-2 ring-white dark:ring-[#111827]">
                 3
               </span>
             </button>
-            <button className="group relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#3C50E0] text-slate-400 dark:text-slate-500 mx-0.5">
+            <button className="group relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--primary)] text-slate-400 dark:text-slate-500 mx-0.5">
               <Bell className="h-[18px] w-[18px] transition-transform group-hover:scale-110" strokeWidth={1.5} />
               <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#EA4335] px-1 text-[9px] font-bold text-white ring-2 ring-white dark:ring-[#111827]">
                 12
@@ -97,7 +102,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
               <div className="flex items-center gap-3 pl-1 pr-1 py-1 group cursor-pointer transition-all duration-300">
                 <div className="relative">
                   {/* Ambient Glow */}
-                  <div className="absolute -inset-2 rounded-full bg-[#3C50E0]/0 blur-md transition-all duration-500 group-hover:bg-[#3C50E0]/5" />
+                  <div className="absolute -inset-2 rounded-full bg-[var(--primary)]/0 blur-md transition-all duration-500 group-hover:bg-[var(--primary)]/5" />
                   <Avatar 
                     src="/avatar.png" 
                     name="Pauline Seitz" 
@@ -107,7 +112,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                   <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#111827] bg-emerald-500 z-20 shadow-sm" />
                 </div>
                 <div className="text-left hidden xl:block z-10">
-                  <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-none mb-1 tracking-tight group-hover:text-[#3C50E0] transition-colors">Pauline Seitz</p>
+                  <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-none mb-1 tracking-tight group-hover:text-[var(--primary)] transition-colors">Pauline Seitz</p>
                   <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Administrator</p>
                 </div>
                 <ChevronDown className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600 transition-all duration-300 group-hover:text-slate-500 z-10 ml-0.5" strokeWidth={2.5} />
