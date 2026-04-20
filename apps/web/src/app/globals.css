@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f1f5f9;
+  --card: #ffffff;
+  --card-soft: #f8fafc;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary-rgb: 37 99 235;
+  --accent: #10b981;
+  --accent-rgb: 16 185 129;
+  --border: #e5e7eb;
+}
+
+.dark {
+  --background: #0b1220;
+  --card: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --primary: #3b82f6;
+  --primary-rgb: 59 130 246;
+  --accent: #10b981;
+  --accent-rgb: 16 185 129;
+  --border: #253041;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  @apply border-[var(--border)];
+}
+
+html,
+body {
+  @apply min-h-full;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-[var(--background)] text-[var(--text)] font-sans leading-relaxed;
+  background-image:
+    radial-gradient(circle at 14% -8%, rgba(37, 99, 235, 0.1), transparent 34%),
+    radial-gradient(circle at 82% -12%, rgba(16, 185, 129, 0.08), transparent 28%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 26%, transparent);
+}
+
+.surface-card {
+  @apply rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm;
 }

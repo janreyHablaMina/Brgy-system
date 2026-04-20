@@ -1,0 +1,330 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BarChart3,
+  Calendar,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Grid,
+  LayoutDashboard,
+  LayoutTemplate,
+  MessageSquare,
+  PieChart,
+  Settings,
+  Table,
+  User,
+  Users,
+  X,
+  Inbox,
+  FileSpreadsheet,
+  Box,
+} from "lucide-react";
+import { APP_NAME } from "@/lib/config";
+import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+
+type NavSubItem = {
+  label: string;
+  href: string;
+};
+
+type NavItem = {
+  label: string;
+  href?: string;
+  icon: any;
+  children?: NavSubItem[];
+  badge?: string | number;
+  badgeColor?: string;
+};
+
+type NavGroup = {
+  title: string;
+  items: NavItem[];
+};
+
+const navigation: NavGroup[] = [
+  {
+    title: "MENU",
+    items: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        href: "/dashboard",
+        children: [
+          { label: "eCommerce", href: "/dashboard" },
+          { label: "Analytics", href: "/dashboard/analytics" },
+        ],
+      },
+      { label: "Calendar", icon: Calendar, href: "/calendar" },
+      { label: "Profile", icon: User, href: "/profile" },
+      {
+        label: "Task",
+        icon: Grid,
+        href: "/tasks",
+        children: [
+          { label: "List", href: "/tasks/list" },
+          { label: "Kanban", href: "/tasks/kanban" },
+        ],
+      },
+      {
+        label: "Forms",
+        icon: LayoutTemplate,
+        href: "/forms",
+        children: [
+          { label: "Elements", href: "/forms/elements" },
+          { label: "Layout", href: "/forms/layout" },
+        ],
+      },
+      {
+        label: "Tables",
+        icon: Table,
+        href: "/tables",
+        children: [
+          { label: "Basic", href: "/tables/basic" },
+          { label: "Data", href: "/tables/data" },
+        ],
+      },
+      {
+        label: "Pages",
+        icon: FileText,
+        href: "/pages",
+        children: [
+          { label: "Settings", href: "/pages/settings" },
+          { label: "Authentication", href: "/pages/auth" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "SUPPORT",
+    items: [
+      { label: "Messages", icon: MessageSquare, href: "/messages", badge: "5", badgeColor: "blue" },
+      { label: "Inbox", icon: Inbox, href: "/inbox", badge: "Pro", badgeColor: "blue" },
+      { label: "Invoice", icon: FileSpreadsheet, href: "/invoice", badge: "Pro", badgeColor: "blue" },
+    ],
+  },
+  {
+    title: "OTHERS",
+    items: [
+      {
+        label: "Charts",
+        icon: PieChart,
+        href: "/charts",
+        children: [
+          { label: "Line", href: "/charts/line" },
+          { label: "Bar", href: "/charts/bar" },
+        ],
+      },
+      {
+        label: "UI Elements",
+        icon: Box,
+        href: "/ui",
+        children: [
+          { label: "Buttons", href: "/ui/buttons" },
+          { label: "Cards", href: "/ui/cards" },
+        ],
+      },
+    ],
+  },
+];
+
+type SidebarProps = {
+  collapsed: boolean;
+  mobileOpen: boolean;
+  onToggleCollapse: () => void;
+  onCloseMobile: () => void;
+};
+
+export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile }: SidebarProps) {
+  const pathname = usePathname();
+  const [openMenus, setOpenMenus] = useState<string[]>([]);
+
+  const toggleMenu = (label: string) => {
+    setOpenMenus((prev) =>
+      prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]
+    );
+  };
+
+  useEffect(() => {
+    // Keep menus open if they contain the active route
+    const activeMenus = navigation
+      .flatMap((group) => group.items)
+      .filter((item) => item.children?.some((child) => child.href === pathname))
+      .map((item) => item.label);
+    
+    setOpenMenus((prev) => Array.from(new Set([...prev, ...activeMenus])));
+  }, [pathname]);
+
+  return (
+    <>
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#1C2434] text-[#8A99AF] shadow-2xl transition-all duration-300",
+          collapsed ? "w-24" : "w-72",
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          "md:translate-x-0",
+        )}
+      >
+        {/* Brand Area: Barangay Identity */}
+        <div className={cn(
+          "relative flex flex-col items-center justify-center pt-10 pb-6 transition-all duration-300",
+          collapsed ? "px-2" : "px-6"
+        )}>
+          {/* Mobile Close Button */}
+          <button
+            onClick={onCloseMobile}
+            className="absolute top-4 right-4 md:hidden text-white"
+            aria-label="Close mobile sidebar"
+          >
+            <X className="h-6 w-6" />
+          </button>
+
+          <div className="relative group">
+            {/* Ambient Seal Glow */}
+            <div className="absolute -inset-4 rounded-full bg-[#3C50E0]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <img 
+              src="/brgy-seal.png" 
+              alt="Barangay Seal" 
+              className={cn(
+                "relative z-10 transition-all duration-500",
+                collapsed ? "h-12 w-12" : "h-20 w-20 drop-shadow-[0_0_15px_rgba(60,80,224,0.15)]"
+              )}
+            />
+          </div>
+          
+          {!collapsed && (
+            <div className="mt-4 text-center animate-in fade-in slide-in-from-top-2 duration-700">
+              <h1 className="text-[17px] font-bold text-white tracking-wide uppercase">Brgy. Salaza</h1>
+              <div className="h-0.5 w-12 bg-[#3C50E0] mx-auto mt-2 rounded-full shadow-[0_0_8px_#3C50E0]" />
+            </div>
+          )}
+        </div>
+
+        <div className="h-px bg-white/5 mx-6 mb-6" />
+
+        {/* Navigation */}
+        <div className="flex flex-col flex-1 overflow-y-auto px-6 py-4 custom-scrollbar">
+          {navigation.map((group) => (
+            <div key={group.title} className="mb-6">
+              {!collapsed && (
+                <p className="mb-4 text-sm font-semibold text-[#5A6F8A]">{group.title}</p>
+              )}
+              <nav className="space-y-1.5">
+                {group.items.map((item) => {
+                  const hasChildren = item.children && item.children.length > 0;
+                  const isOpen = openMenus.includes(item.label);
+                  const isActive = pathname === item.href || item.children?.some(c => c.href === pathname);
+                  const Icon = item.icon;
+
+                  return (
+                    <div key={item.label}>
+                      {hasChildren ? (
+                        <button
+                          onClick={() => toggleMenu(item.label)}
+                          className={cn(
+                            "group flex w-full items-center justify-between rounded-md px-4 py-3 text-sm font-medium transition-colors",
+                            isActive ? "bg-[#333A48] text-white" : "hover:bg-[#333A48] hover:text-white"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className="h-5 w-5" />
+                            {!collapsed && <span>{item.label}</span>}
+                          </div>
+                          {!collapsed && (
+                            isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+                          )}
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href || "#"}
+                          onClick={onCloseMobile}
+                          className={cn(
+                            "group flex items-center justify-between rounded-md px-4 py-3 text-sm font-medium transition-colors",
+                            isActive ? "bg-[#333A48] text-white" : "hover:bg-[#333A48] hover:text-white"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className="h-5 w-5" />
+                            {!collapsed && <span>{item.label}</span>}
+                          </div>
+                          {!collapsed && item.badge && (
+                            <span className={cn(
+                              "flex h-5 items-center justify-center rounded-full px-2 text-[10px] font-bold text-white",
+                              item.badgeColor === "blue" ? "bg-[#3C50E0]" : "bg-[#10B981]"
+                            )}>
+                              {item.badge}
+                            </span>
+                          )}
+                        </Link>
+                      )}
+
+                      {!collapsed && hasChildren && isOpen && (
+                        <div className="mt-1 ml-9 space-y-1 border-l border-[#333A48]">
+                          {item.children?.map((child) => (
+                            <Link
+                              key={child.label}
+                              href={child.href}
+                              onClick={onCloseMobile}
+                              className={cn(
+                                "block px-4 py-2 text-sm font-medium transition-colors",
+                                pathname === child.href ? "text-white" : "text-[#8A99AF] hover:text-white"
+                              )}
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
+        </div>
+
+        {/* Sidebar Footer: Collapse Toggle */}
+        <div className="mt-auto p-6 border-t border-white/5">
+          <button
+            onClick={onToggleCollapse}
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#24303F] px-4 py-3 text-sm font-medium text-[#8A99AF] transition-all hover:bg-[#333A48] hover:text-white group"
+            aria-label="Toggle sidebar"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-5 w-5 transition-transform group-hover:scale-110" />
+            ) : (
+              <>
+                <ChevronLeft className="h-5 w-5 transition-transform group-hover:scale-110" />
+                <span>Collapse Sidebar</span>
+              </>
+            )}
+          </button>
+        </div>
+      </aside>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 0px;
+        }
+        .custom-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+      `}</style>
+
+      {mobileOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-30 bg-black/30 backdrop-blur-[1px] md:hidden"
+          onClick={onCloseMobile}
+          aria-label="Close sidebar overlay"
+        />
+      ) : null}
+    </>
+  );
+}
