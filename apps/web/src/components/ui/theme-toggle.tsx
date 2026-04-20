@@ -30,34 +30,31 @@ export function ThemeToggle() {
   }
 
   return (
-    <div 
-      className="relative flex h-8 w-[64px] items-center rounded-full bg-slate-100/80 p-0.5 cursor-pointer group hover:bg-slate-200/50 transition-colors duration-300"
+    <button
+      type="button"
       onClick={handleToggle}
+      className="group relative flex h-8 w-8 items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#3C50E0] transition-all duration-300 overflow-hidden"
+      aria-label="Toggle theme"
     >
-      {/* Sliding Indicator */}
-      <div 
+      {/* Solar Eclipse Icons */}
+      <Sun 
         className={cn(
-          "absolute h-7 w-7 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
-          theme === "dark" ? "translate-x-8" : "translate-x-0"
-        )}
+          "absolute left-1/2 top-1/2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4",
+          theme === "light" 
+            ? "-translate-x-1/2 -translate-y-1/2 opacity-100 text-[#3C50E0]" 
+            : "translate-x-4 -translate-y-1/2 opacity-0"
+        )} 
+        strokeWidth={2.5} 
       />
-      
-      <div className="relative z-10 flex w-full items-center justify-around">
-        <Sun 
-          className={cn(
-            "h-3.5 w-3.5 transition-all duration-300",
-            theme === "light" ? "text-[#3C50E0]" : "text-slate-400 group-hover:text-slate-500"
-          )} 
-          strokeWidth={2.5} 
-        />
-        <MoonStar 
-          className={cn(
-            "h-3.5 w-3.5 transition-all duration-300",
-            theme === "dark" ? "text-[#3C50E0]" : "text-slate-400 group-hover:text-slate-500"
-          )} 
-          strokeWidth={2.5} 
-        />
-      </div>
-    </div>
+      <MoonStar 
+        className={cn(
+          "absolute left-1/2 top-1/2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4",
+          theme === "dark" 
+            ? "-translate-x-1/2 -translate-y-1/2 opacity-100 text-[#3C50E0]" 
+            : "-translate-x-8 -translate-y-1/2 opacity-0"
+        )} 
+        strokeWidth={2.5} 
+      />
+    </button>
   );
 }
