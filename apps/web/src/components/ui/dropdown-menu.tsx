@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, type LucideIcon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type DropdownMenuItem = {

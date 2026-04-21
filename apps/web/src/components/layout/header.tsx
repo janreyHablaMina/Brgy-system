@@ -11,6 +11,7 @@ import {
   Settings,
   UserCircle2,
 } from "lucide-react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Avatar } from "@/components/ui/avatar";
 import { ColorPicker } from "@/components/ui/color-picker";
@@ -47,15 +48,20 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           </button>
           <div className="hidden lg:block">
             <div className="flex items-center gap-2.5 transition-all hover:opacity-80">
-              <img 
-                src="/brgyAssist.png" 
-                alt="BrgyAssist Logo" 
+              <Image
+                src="/brgyAssist.png"
+                alt="BrgyAssist Logo"
+                width={44}
+                height={44}
                 className="h-11 w-auto object-contain"
               />
               <span className="font-display text-xl font-semibold tracking-tight text-slate-800 dark:text-white">
                 BrgyAssist
               </span>
             </div>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              {greeting}, {title}
+            </p>
           </div>
         </div>
 

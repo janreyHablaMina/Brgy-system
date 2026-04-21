@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,33 +11,22 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
-  Grid,
   LayoutDashboard,
-  LayoutTemplate,
-  MessageSquare,
-  PieChart,
   Settings,
-  Table,
-  User,
   Users,
   X,
-  Inbox,
-  FileSpreadsheet,
-  Box,
   Gavel,
   Award,
-  FileUp,
   UserCog,
   ShieldCheck,
   History,
   Headphones,
   ShoppingBag,
-  AppWindow,
   ClipboardList,
+  type LucideIcon,
 } from "lucide-react";
-import { APP_NAME } from "@/lib/config";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 
 type NavSubItem = {
   label: string;
@@ -46,7 +36,7 @@ type NavSubItem = {
 type NavItem = {
   label: string;
   href?: string;
-  icon: any;
+  icon: LucideIcon;
   children?: NavSubItem[];
   badge?: string | number;
   badgeColor?: string;
@@ -107,22 +97,20 @@ type SidebarProps = {
 export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const activeMenus = useMemo(
+    () =>
+      navigation
+        .flatMap((group) => group.items)
+        .filter((item) => item.children?.some((child) => child.href === pathname))
+        .map((item) => item.label),
+    [pathname]
+  );
 
   const toggleMenu = (label: string) => {
     setOpenMenus((prev) =>
       prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]
     );
   };
-
-  useEffect(() => {
-    // Keep menus open if they contain the active route
-    const activeMenus = navigation
-      .flatMap((group) => group.items)
-      .filter((item) => item.children?.some((child) => child.href === pathname))
-      .map((item) => item.label);
-    
-    setOpenMenus((prev) => Array.from(new Set([...prev, ...activeMenus])));
-  }, [pathname]);
 
   return (
     <>
@@ -151,9 +139,11 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
           <div className="relative group">
             {/* Ambient Seal Glow */}
             <div className="absolute -inset-4 rounded-full bg-[var(--primary)]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-            <img 
-              src="/brgy-seal.png" 
-              alt="Barangay Seal" 
+            <Image
+              src="/brgy-seal.png"
+              alt="Barangay Seal"
+              width={80}
+              height={80}
               className={cn(
                 "relative z-10 transition-all duration-500",
                 collapsed ? "h-12 w-12" : "h-20 w-20"
@@ -188,7 +178,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
               <nav className="space-y-1.5">
                 {group.items.map((item) => {
                   const hasChildren = item.children && item.children.length > 0;
-                  const isOpen = openMenus.includes(item.label);
+                  const isOpen = openMenus.includes(item.label) || activeMenus.includes(item.label);
                   const isActive = pathname === item.href || item.children?.some(c => c.href === pathname);
                   const Icon = item.icon;
 

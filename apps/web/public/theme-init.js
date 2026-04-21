@@ -13,4 +13,4 @@ try {
   const g = parseInt(color.slice(3, 5), 16);
   const b = parseInt(color.slice(5, 7), 16);
   document.documentElement.style.setProperty("--accent-rgb", r + " " + g + " " + b);
-} catch (_) {}
+} catch {}

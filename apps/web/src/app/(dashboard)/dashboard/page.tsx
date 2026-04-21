@@ -1,23 +1,25 @@
-import { SummaryCards } from "@/components/dashboard/summary-cards";
-import { NeedsAttention } from "@/components/dashboard/needs-attention";
-import { RecentRequests } from "@/components/dashboard/recent-requests";
-import { StaffActivity } from "@/components/dashboard/staff-activity";
-import { ActivityFeed } from "@/components/dashboard/activity-feed";
-import { Announcements } from "@/components/dashboard/announcements";
-import { TodaySnapshot } from "@/components/dashboard/today-snapshot";
-import { UpcomingSchedule } from "@/components/dashboard/upcoming-schedule";
+import {
+  ActivityFeed,
+  Announcements,
+  NeedsAttention,
+  RecentRequests,
+  StaffActivity,
+  SummaryCards,
+  TodaySnapshot,
+  UpcomingSchedule,
+} from "@/features/dashboard/components";
 
 export default function DashboardPage() {
   return (
     <div className="w-full space-y-4">
-      {/* ── Hero / Greeting ─────────────────────────────────────── */}
+      {/* Hero / Greeting */}
       <section className="px-1">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-base font-normal text-slate-600">
               Good morning,{" "}
               <span className="font-medium text-[var(--primary)]">Pauline Seitz!</span>{" "}
-              👋
+              {"\u{1F44B}"}
             </p>
             <h1 className="mt-0.5 text-2xl font-semibold tracking-tight text-slate-900">
               Barangay Operations
@@ -45,12 +47,11 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* ── Summary Stat Cards ──────────────────────────────────── */}
+      {/* Summary Stat Cards */}
       <SummaryCards />
 
-      {/* ── Main Content Grid ───────────────────────────────────── */}
+      {/* Main Content Grid */}
       <section className="grid gap-4 xl:grid-cols-[2fr_1fr]">
-        {/* Left column */}
         <div className="space-y-4">
           <NeedsAttention />
 
@@ -62,7 +63,6 @@ export default function DashboardPage() {
           <ActivityFeed />
         </div>
 
-        {/* Right rail */}
         <aside className="space-y-4">
           <Announcements />
           <TodaySnapshot />

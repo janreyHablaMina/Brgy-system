@@ -21,9 +21,11 @@ export function Avatar({ src, name, role, hideText, className }: AvatarProps) {
       <div className="relative group">
         <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-slate-200/60 bg-white shadow-sm ring-4 ring-slate-50/30">
           {src ? (
-            <img
+            <Image
               src={src}
               alt={name}
+              fill
+              sizes="36px"
               className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
           ) : (
