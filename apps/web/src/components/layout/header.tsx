@@ -34,7 +34,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
     hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <header className="sticky top-0 z-20 bg-white dark:bg-[#111827] px-4 py-2.5 transition-all duration-300 md:px-10 border-b border-slate-200/50 dark:border-slate-800/40">
+    <header className="sticky top-0 z-50 bg-white dark:bg-[#111827] px-4 py-2.5 transition-all duration-300 md:px-10 border-b border-slate-200/50 dark:border-slate-800/40">
       <div className="mx-auto flex h-14 items-center justify-between gap-6">
         {/* Left Side: Mobile Menu & Dynamic Greeting */}
         <div className="flex items-center gap-4">

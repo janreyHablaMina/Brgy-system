@@ -704,7 +704,7 @@ export function ResidentsManagementPage() {
                         type="checkbox"
                         checked={filters.seniorOnly}
                         onChange={(e) => setFilters(p => ({ ...p, seniorOnly: e.target.checked }))}
-                        className="h-4 w-4 rounded-md border-[var(--border)] text-[var(--primary)] transition focus:ring-0 focus:ring-offset-0"
+                        className="h-4 w-4 rounded-md border-[var(--border)] accent-[var(--accent)] transition focus:ring-0 focus:ring-offset-0"
                       />
                       <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">Senior</span>
                     </label>
@@ -713,7 +713,7 @@ export function ResidentsManagementPage() {
                         type="checkbox"
                         checked={filters.pwdOnly}
                         onChange={(e) => setFilters(p => ({ ...p, pwdOnly: e.target.checked }))}
-                        className="h-4 w-4 rounded-md border-[var(--border)] text-[var(--primary)] transition focus:ring-0 focus:ring-offset-0"
+                        className="h-4 w-4 rounded-md border-[var(--border)] accent-[var(--accent)] transition focus:ring-0 focus:ring-offset-0"
                       />
                       <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">PWD</span>
                     </label>
@@ -722,7 +722,7 @@ export function ResidentsManagementPage() {
                         type="checkbox"
                         checked={filters.voterOnly}
                         onChange={(e) => setFilters(p => ({ ...p, voterOnly: e.target.checked }))}
-                        className="h-4 w-4 rounded-md border-[var(--border)] text-[var(--primary)] transition focus:ring-0 focus:ring-offset-0"
+                        className="h-4 w-4 rounded-md border-[var(--border)] accent-[var(--accent)] transition focus:ring-0 focus:ring-offset-0"
                       />
                       <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">Voter</span>
                     </label>
@@ -804,7 +804,7 @@ export function ResidentsManagementPage() {
         </section>
   
         <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4 backdrop-blur-sm">
+          <div className="relative z-20 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4 backdrop-blur-sm">
           <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
             <Users className="h-3.5 w-3.5 text-[var(--primary)]" />
             <span>Total Records</span>
@@ -815,15 +815,13 @@ export function ResidentsManagementPage() {
           <div className="flex flex-wrap items-center gap-3">
             {/* Premium Export Command */}
             <DropdownMenu
+              className="flex h-9 items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/30 hover:bg-[var(--card-soft)]"
               trigger={
-                <button
-                  type="button"
-                  className="flex h-9 items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/30 hover:bg-[var(--card-soft)]"
-                >
+                <>
                   <Download className="h-4 w-4 text-[var(--primary)]" />
                   Export Registry
                   <ChevronDown className="h-3.5 w-3.5 opacity-40 ml-1" />
-                </button>
+                </>
               }
               items={[
                 { 
@@ -853,7 +851,7 @@ export function ResidentsManagementPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="min-w-full text-sm border-separate border-spacing-0">
+              <table className="min-w-full border-collapse text-sm">
                 <thead>
                   <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
                     <th className="px-4 py-3 text-left">
@@ -861,7 +859,7 @@ export function ResidentsManagementPage() {
                         type="checkbox"
                         checked={allVisibleSelected}
                         onChange={toggleSelectVisibleRows}
-                        className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]/20"
+                        className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
                         aria-label="Select all visible residents"
                       />
                     </th>
@@ -878,16 +876,17 @@ export function ResidentsManagementPage() {
                   {paginatedResidents.map((resident) => {
                     const age = computeAge(resident.birthdate);
                     return (
-                      <tr
-                        key={resident.id}
-                        className="group text-[var(--text)] transition-all border-l-4 border-transparent hover:bg-[var(--primary)]/[0.02] hover:border-[var(--primary)]"
-                      >
-                        <td className="px-4 py-3.5">
+                      <tr key={resident.id} className="group text-[var(--text)]">
+                        <td className="relative px-4 py-3.5">
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute left-0 top-0 h-full w-0.5 bg-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
+                          />
                           <input
                             type="checkbox"
                             checked={selectedIds.has(resident.id)}
                             onChange={() => toggleSelectRow(resident.id)}
-                            className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]/20"
+                            className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
                             aria-label={`Select ${getFullName(resident)}`}
                           />
                         </td>
@@ -897,12 +896,13 @@ export function ResidentsManagementPage() {
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-3">
                             <Avatar
+                              src="/avatar.png"
                               name={getFullName(resident)}
                               className="h-9 w-9"
                               hideText
                             />
                             <div className="flex flex-col">
-                              <span className="font-bold tracking-tight text-[var(--text)] group-hover:text-[var(--primary)] transition-colors">
+                              <span className="tracking-tight text-[var(--text)]">
                                 {getFullName(resident)}
                               </span>
                               <span className="text-[10px] font-medium text-[var(--muted)]">
@@ -914,19 +914,16 @@ export function ResidentsManagementPage() {
                         <td className="px-4 py-3.5 max-w-[240px] truncate font-medium text-[var(--text)]/80" title={resident.address}>
                           {resident.address}
                         </td>
-                        <td className="px-4 py-3.5 font-semibold text-[var(--text)]">{age}</td>
+                        <td className="px-4 py-3.5 text-[var(--text)]">{age}</td>
                         <td className="px-4 py-3.5 text-[var(--muted)] font-medium">{resident.gender}</td>
                         <td className="px-4 py-3.5 text-[var(--muted)] font-medium">{resident.civilStatus}</td>
                         <td className="px-4 py-3.5">
                           <DropdownMenu
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
                             trigger={
-                              <button
-                                type="button"
-                                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
-                                aria-label="More actions"
-                              >
+                              <>
                                 <MoreHorizontal className="h-4 w-4" />
-                              </button>
+                              </>
                             }
                             items={[
                               { label: "View Profile", onClick: () => setViewResident(resident), icon: Eye },

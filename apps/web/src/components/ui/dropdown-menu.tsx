@@ -11,6 +11,8 @@ export type DropdownMenuItem = {
   href?: string;
   onClick?: () => void;
   danger?: boolean;
+  disabled?: boolean;
+  className?: string;
   component?: ReactNode;
 };
 
@@ -49,16 +51,22 @@ export function DropdownMenu({ trigger, items, align = "right", className }: Dro
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
+        aria-haspopup="menu"
+        aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
-        className={cn(
-          "flex items-center transition-all duration-300 focus:outline-none",
-          className
-        )}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setOpen((value) => !value);
+          }
+        }}
+        className={cn("inline-flex items-center transition-all duration-300 focus:outline-none", className)}
       >
         {trigger}
-      </button>
+      </div>
 
       {open ? (
         <div
@@ -86,6 +94,8 @@ export function DropdownMenu({ trigger, items, align = "right", className }: Dro
               item.danger
                 ? "text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--primary)]",
+              item.disabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "",
+              item.className,
             );
 
             if (item.href) {
@@ -101,6 +111,7 @@ export function DropdownMenu({ trigger, items, align = "right", className }: Dro
               <button
                 key={index}
                 type="button"
+                disabled={item.disabled}
                 className={classes}
                 onClick={() => {
                   item.onClick?.();

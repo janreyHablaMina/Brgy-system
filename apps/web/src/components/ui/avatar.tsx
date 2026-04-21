@@ -19,7 +19,7 @@ export function Avatar({ src, name, role, hideText, className }: AvatarProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <div className="relative group">
-        <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-slate-200/60 bg-white shadow-sm ring-4 ring-slate-50/30">
+        <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-slate-200/40 bg-white shadow-sm ring-1 ring-slate-200/20">
           {src ? (
             <Image
               src={src}
