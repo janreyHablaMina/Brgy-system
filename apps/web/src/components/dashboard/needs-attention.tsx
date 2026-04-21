@@ -1,43 +1,7 @@
 "use client";
 
-import {
-  AlertCircle,
-  ChevronRight,
-  FileWarning,
-  Gavel,
-  IdCard,
-} from "lucide-react";
-
-const items = [
-  {
-    label: "Pending Clearance",
-    detail: "Requests awaiting captain signature",
-    count: 14,
-    icon: FileWarning,
-    iconClass: "bg-rose-100 text-rose-500",
-  },
-  {
-    label: "Unapproved Documents",
-    detail: "New application record verifications",
-    count: 8,
-    icon: AlertCircle,
-    iconClass: "bg-amber-100 text-amber-500",
-  },
-  {
-    label: "Blotter Cases",
-    detail: "Mediation headers scheduled for today",
-    count: 3,
-    icon: Gavel,
-    iconClass: "bg-violet-100 text-violet-600",
-  },
-  {
-    label: "Expiring IDs",
-    detail: "Resident IDs reaching end of validity",
-    count: 24,
-    icon: IdCard,
-    iconClass: "bg-blue-100 text-blue-600",
-  },
-];
+import { AlertCircle, ChevronRight } from "lucide-react";
+import { ATTENTION_ITEMS } from "@/lib/mock-data";
 
 export function NeedsAttention() {
   return (
@@ -52,7 +16,7 @@ export function NeedsAttention() {
         </button>
       </header>
 
-      {items.map((item) => {
+      {ATTENTION_ITEMS.map((item) => {
         const Icon = item.icon;
         return (
           <button
