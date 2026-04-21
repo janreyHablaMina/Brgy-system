@@ -423,6 +423,10 @@ export function ResidentsManagementPage() {
       .filter((resident) => matchesResidentFilters(resident, filters));
 
     const sorted = [...filtered].sort((a, b) => {
+      if (sortBy === "id") {
+        return sortDirection === "asc" ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
+      }
+
       if (sortBy === "name") {
         const first = getFullName(a).toLowerCase();
         const second = getFullName(b).toLowerCase();
@@ -1096,10 +1100,46 @@ export function ResidentsManagementPage() {
                         aria-label="Select all visible residents"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Barangay ID</th>
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Full Name</th>
+                    <SortableHeader
+                      label="Barangay ID"
+                      active={sortBy === "id"}
+                      direction={sortDirection}
+                      onClick={() => {
+                        if (sortBy === "id") {
+                          setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+                          return;
+                        }
+                        setSortBy("id");
+                        setSortDirection("asc");
+                      }}
+                    />
+                    <SortableHeader
+                      label="Full Name"
+                      active={sortBy === "name"}
+                      direction={sortDirection}
+                      onClick={() => {
+                        if (sortBy === "name") {
+                          setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+                          return;
+                        }
+                        setSortBy("name");
+                        setSortDirection("asc");
+                      }}
+                    />
                     <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Address</th>
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Age</th>
+                    <SortableHeader
+                      label="Age"
+                      active={sortBy === "age"}
+                      direction={sortDirection}
+                      onClick={() => {
+                        if (sortBy === "age") {
+                          setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+                          return;
+                        }
+                        setSortBy("age");
+                        setSortDirection("asc");
+                      }}
+                    />
                     <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Gender</th>
                     <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Civil Status</th>
                     <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
@@ -1124,7 +1164,7 @@ export function ResidentsManagementPage() {
                           />
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className="font-mono text-[11px] text-[var(--muted)] uppercase">{resident.id}</span>
+                          <span className="text-[11px] font-medium text-[var(--muted)] uppercase">{resident.id}</span>
                         </td>
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-3">
@@ -1653,6 +1693,34 @@ function TagBadge({ label }: { label: string }) {
     <span className="rounded-lg bg-[var(--card-soft)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--muted)] border border-[var(--border)] shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
       {label}
     </span>
+  );
+}
+
+function SortableHeader({
+  label,
+  active,
+  direction,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  direction: SortDirection;
+  onClick: () => void;
+}) {
+  return (
+    <th className="px-4 py-3 text-left">
+      <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+          "inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors",
+          active ? "text-[var(--primary)]" : "text-[var(--muted)] hover:text-[var(--text)]"
+        )}
+      >
+        {label}
+        <ArrowUpDown className={cn("h-3 w-3 transition-transform", active && direction === "desc" ? "rotate-180" : "")} />
+      </button>
+    </th>
   );
 }
 

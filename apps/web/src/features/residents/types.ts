@@ -116,5 +116,5 @@ export type ResidentFilters = {
   registeredTo: string;
 };
 
-export type SortBy = "name" | "age" | "dateRegistered";
+export type SortBy = "id" | "name" | "age" | "dateRegistered";
 export type SortDirection = "asc" | "desc";

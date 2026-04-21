@@ -22,6 +22,7 @@ import {
   History,
   Headphones,
   ShoppingBag,
+  Store,
   ClipboardList,
   type LucideIcon,
 } from "lucide-react";
@@ -69,6 +70,7 @@ const navigation: NavGroup[] = [
     title: "MANAGEMENT",
     items: [
       { label: "Residents", icon: Users, href: "/residents" },
+      { label: "Establishments", icon: Store, href: "/establishments" },
       { label: "Documents", icon: FileText, href: "/documents" },
       { label: "Requests", icon: ClipboardList, href: "/requests", badge: "14", badgeColor: "blue" },
       { label: "Blotter / Cases", icon: Gavel, href: "/blotter", badge: "3", badgeColor: "blue" },
