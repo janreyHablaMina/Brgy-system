@@ -4,10 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Accessibility,
   Archive,
+  ArrowUpDown,
+  Calendar,
+  ChevronDown,
   Download,
   Eye,
+  FileSpreadsheet,
+  FileText,
+  Filter,
+  MoreHorizontal,
   Pencil,
   Plus,
+  RotateCcw,
   Search,
   SlidersHorizontal,
   Trash2,
@@ -17,6 +25,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { Avatar } from "@/components/ui/avatar";
 import type {
   CivilStatus,
   Resident,
@@ -302,19 +312,26 @@ export function ResidentsManagementPage() {
   }, [activeResidents]);
 
   const selectedCount = selectedIds.size;
-  const activeFilterLabels = useMemo(() => {
-    const labels: string[] = [];
-    if (filters.status !== "All") labels.push(filters.status);
-    if (filters.gender !== "All") labels.push(filters.gender);
-    if (filters.civilStatus !== "All") labels.push(filters.civilStatus);
-    if (filters.ageGroup !== "All") labels.push(filters.ageGroup);
-    if (filters.seniorOnly) labels.push("Senior");
-    if (filters.pwdOnly) labels.push("PWD");
-    if (filters.voterOnly) labels.push("Voter");
-    if (filters.registeredFrom) labels.push(`From ${formatDate(filters.registeredFrom)}`);
-    if (filters.registeredTo) labels.push(`To ${formatDate(filters.registeredTo)}`);
-    return labels;
+  const activeFilterItems = useMemo(() => {
+    const items: { id: keyof ResidentFilters; label: string }[] = [];
+    if (filters.status !== "All") items.push({ id: "status", label: `Status: ${filters.status}` });
+    if (filters.gender !== "All") items.push({ id: "gender", label: `Gender: ${filters.gender}` });
+    if (filters.civilStatus !== "All") items.push({ id: "civilStatus", label: `Status: ${filters.civilStatus}` });
+    if (filters.ageGroup !== "All") items.push({ id: "ageGroup", label: `Age: ${filters.ageGroup}` });
+    if (filters.seniorOnly) items.push({ id: "seniorOnly", label: "Senior" });
+    if (filters.pwdOnly) items.push({ id: "pwdOnly", label: "PWD" });
+    if (filters.voterOnly) items.push({ id: "voterOnly", label: "Voter" });
+    if (filters.registeredFrom) items.push({ id: "registeredFrom", label: `From ${formatDate(filters.registeredFrom)}` });
+    if (filters.registeredTo) items.push({ id: "registeredTo", label: `To ${formatDate(filters.registeredTo)}` });
+    return items;
   }, [filters]);
+
+  function removeFilter(id: keyof ResidentFilters) {
+    setFilters((prev) => ({
+      ...prev,
+      [id]: EMPTY_FILTERS[id],
+    }));
+  }
 
   const allVisibleSelected =
     paginatedResidents.length > 0 && paginatedResidents.every((resident) => selectedIds.has(resident.id));
@@ -551,18 +568,10 @@ export function ResidentsManagementPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <select
-              value={role}
-              onChange={(event) => setRole(event.target.value as UserRole)}
-              className="h-10 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 text-sm font-semibold text-[var(--text)] outline-none transition focus:border-[var(--primary)]/40 focus:ring-2 focus:ring-[var(--primary)]/10"
-            >
-              <option value="Admin">Admin</option>
-              <option value="Staff">Staff</option>
-            </select>
             <button
               type="button"
               onClick={openCreateModal}
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white transition hover:brightness-110"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white transition hover:brightness-110 shadow-sm"
             >
               <Plus className="h-4 w-4" />
               Add Resident
@@ -602,195 +611,235 @@ export function ResidentsManagementPage() {
         </div>
       </header>
 
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-        <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
-          <SlidersHorizontal className="h-4 w-4 text-[var(--primary)]" />
-          Search and Filters
-        </div>
-        <div className="grid gap-3 lg:grid-cols-12">
-          <div className="relative lg:col-span-3">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-            <input
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Search residents, ID, address..."
-              className="h-11 w-full rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] pl-10 pr-3 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 lg:col-span-9">
-            {STATUS_OPTIONS.map((status) => (
-              <button
-                key={status}
-                type="button"
-                onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    status: status as ResidentFilters["status"],
-                  }))
-                }
-                className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                  filters.status === status
-                    ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-                    : "border-[var(--border)] bg-[var(--card-soft)] text-[var(--text)] hover:bg-[var(--card)]"
-                }`}
-              >
-                {status}
-              </button>
-            ))}
-
-            <TagToggle
-              label="Senior"
-              checked={filters.seniorOnly}
-              onChange={(checked) => setFilters((prev) => ({ ...prev, seniorOnly: checked }))}
-            />
-            <TagToggle
-              label="PWD"
-              checked={filters.pwdOnly}
-              onChange={(checked) => setFilters((prev) => ({ ...prev, pwdOnly: checked }))}
-            />
-            <TagToggle
-              label="Voter"
-              checked={filters.voterOnly}
-              onChange={(checked) => setFilters((prev) => ({ ...prev, voterOnly: checked }))}
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowAdvancedFilters((value) => !value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card)]"
-            >
-              Filters {showAdvancedFilters ? "▲" : "▼"}
-            </button>
-          </div>
-        </div>
-
-        {showAdvancedFilters ? (
-          <div className="mt-3 grid gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] p-3 lg:grid-cols-4">
-            <SelectFilter
-              label="Gender"
-              value={filters.gender}
-              onChange={(value) => setFilters((prev) => ({ ...prev, gender: value as ResidentFilters["gender"] }))}
-              options={GENDER_OPTIONS}
-            />
-            <SelectFilter
-              label="Civil Status"
-              value={filters.civilStatus}
-              onChange={(value) =>
-                setFilters((prev) => ({ ...prev, civilStatus: value as ResidentFilters["civilStatus"] }))
-              }
-              options={CIVIL_STATUS_OPTIONS}
-            />
-            <SelectFilter
-              label="Age Group"
-              value={filters.ageGroup}
-              onChange={(value) => setFilters((prev) => ({ ...prev, ageGroup: value as ResidentFilters["ageGroup"] }))}
-              options={[...AGE_GROUP_OPTIONS]}
-            />
-            <div className="grid gap-2">
-              <label className="text-xs font-medium text-[var(--muted)]">
-                Registered From
-                <input
-                  type="date"
-                  value={filters.registeredFrom}
-                  onChange={(event) => setFilters((prev) => ({ ...prev, registeredFrom: event.target.value }))}
-                  className="mt-1 h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 text-[var(--text)]"
+      <section className={cn(
+        "rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 transition-all",
+        !showAdvancedFilters && "pb-4"
+      )}>
+        {/* Row 1: Search & Primary Selects */}
+            <div className="lg:col-span-12 grid gap-5 lg:grid-cols-12 items-start">
+              {/* Search Segment */}
+              <div className="lg:col-span-5 flex flex-col gap-2 group">
+                <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Search Registry</span>
+                <div className="relative">
+                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)] transition-colors group-focus-within:text-[var(--primary)]" />
+                  <input
+                    value={searchInput}
+                    onChange={(event) => setSearchInput(event.target.value)}
+                    placeholder="Search name, address, or resident ID..."
+                    className="h-10 w-full rounded-xl border border-[var(--border)] bg-transparent pl-10 pr-4 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] placeholder:text-[var(--muted)]/30"
+                  />
+                </div>
+              </div>
+              
+              {/* Primary Filters Segment */}
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <SelectFilter
+                  label="Status"
+                  value={filters.status || "All"}
+                  onChange={(value) => setFilters((prev) => ({ ...prev, status: value as ResidentFilters["status"] }))}
+                  options={STATUS_OPTIONS}
                 />
-              </label>
-              <label className="text-xs font-medium text-[var(--muted)]">
-                Registered To
-                <input
-                  type="date"
-                  value={filters.registeredTo}
-                  onChange={(event) => setFilters((prev) => ({ ...prev, registeredTo: event.target.value }))}
-                  className="mt-1 h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 text-[var(--text)]"
+                <SelectFilter
+                  label="Gender"
+                  value={filters.gender || "All"}
+                  onChange={(value) => setFilters((prev) => ({ ...prev, gender: value as ResidentFilters["gender"] }))}
+                  options={GENDER_OPTIONS}
                 />
-              </label>
+                <SelectFilter
+                  label="Civil Status"
+                  value={filters.civilStatus || "All"}
+                  onChange={(value) => setFilters((prev) => ({ ...prev, civilStatus: value as ResidentFilters["civilStatus"] }))}
+                  options={CIVIL_STATUS_OPTIONS}
+                />
+              </div>
             </div>
-          </div>
-        ) : null}
+  
+          {/* Detailed Filters & Actions */}
+          {showAdvancedFilters && (
+            <div className="mt-8 space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
+              {/* Row 2: Secondary Configuration */}
+              <div className="grid gap-6 lg:grid-cols-12 pt-6 border-t border-[var(--border)]/40 items-start">
+                <div className="lg:col-span-2">
+                  <SelectFilter
+                    label="Age Group"
+                    value={filters.ageGroup || "All"}
+                    onChange={(value) => setFilters((prev) => ({ ...prev, ageGroup: value as ResidentFilters["ageGroup"] }))}
+                    options={AGE_GROUP_OPTIONS}
+                  />
+                </div>
+  
+                <div className="lg:col-span-4 grid grid-cols-2 gap-5">
+                  <div className="flex flex-col gap-2">
+                    <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Date From</span>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={filters.registeredFrom}
+                        onChange={(e) => setFilters(p => ({ ...p, registeredFrom: e.target.value }))}
+                        className="h-10 w-full rounded-xl border border-[var(--border)] bg-transparent px-3 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)] pr-10 [color-scheme:light] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                      />
+                      <Calendar className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Date To</span>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={filters.registeredTo}
+                        onChange={(e) => setFilters(p => ({ ...p, registeredTo: e.target.value }))}
+                        className="h-10 w-full rounded-xl border border-[var(--border)] bg-transparent px-3 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)] pr-10 [color-scheme:light] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                      />
+                      <Calendar className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+  
+                {/* Demographic Segment */}
+                <div className="lg:col-span-3 flex flex-col gap-2.5">
+                  <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Demographics</span>
+                  <div className="flex items-center h-10 gap-5 px-3 bg-[var(--card-soft)]/30 rounded-xl border border-[var(--border)]/40 transition-colors hover:border-[var(--border)]">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={filters.seniorOnly}
+                        onChange={(e) => setFilters(p => ({ ...p, seniorOnly: e.target.checked }))}
+                        className="h-4 w-4 rounded-md border-[var(--border)] text-[var(--primary)] transition focus:ring-0 focus:ring-offset-0"
+                      />
+                      <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">Senior</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={filters.pwdOnly}
+                        onChange={(e) => setFilters(p => ({ ...p, pwdOnly: e.target.checked }))}
+                        className="h-4 w-4 rounded-md border-[var(--border)] text-[var(--primary)] transition focus:ring-0 focus:ring-offset-0"
+                      />
+                      <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">PWD</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={filters.voterOnly}
+                        onChange={(e) => setFilters(p => ({ ...p, voterOnly: e.target.checked }))}
+                        className="h-4 w-4 rounded-md border-[var(--border)] text-[var(--primary)] transition focus:ring-0 focus:ring-offset-0"
+                      />
+                      <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">Voter</span>
+                    </label>
+                  </div>
+                </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)]"
-          >
-            Reset Filters
-          </button>
-          {activeFilterLabels.map((label) => (
-            <span
-              key={label}
-              className="rounded-full border border-[var(--border)] bg-[var(--card-soft)] px-2.5 py-1 text-[10px] font-semibold text-[var(--text)]"
-            >
-              {label}
+                <div className="lg:col-span-3 flex flex-col gap-2.5">
+                  <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Bulk Status Change</span>
+                  <div className="flex items-center h-10 bg-[var(--card-soft)]/30 rounded-xl border border-[var(--border)]/40 px-1 hover:border-[var(--border)] transition-colors">
+                    <div className="relative flex-1 group/bulk">
+                      <select
+                        value={bulkStatus}
+                        disabled={selectedCount === 0}
+                        onChange={(event) => {
+                          const newStatus = event.target.value as ResidentStatus;
+                          setBulkStatus(newStatus);
+                          // Trigger update logic
+                          softDeleteByIds(Array.from(selectedIds), newStatus);
+                        }}
+                        className="h-8 w-full bg-transparent px-3 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] outline-none appearance-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed group-hover/bulk:text-[var(--primary)] transition-colors"
+                      >
+                        <option value="" disabled>Select Status...</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Deceased">Deceased</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none group-hover/bulk:text-[var(--primary)] transition-colors" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]/10 mt-4">
+                <span className="text-[10px] text-[var(--muted)]/50 italic px-1">Configure your view using the parameters above.</span>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedFilters(false)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition-all hover:bg-[var(--card-soft)]"
+                >
+                  Hide Parameters
+                  <ChevronDown className="h-3 w-3 rotate-180 opacity-60" />
+                </button>
+              </div>
+            </div>
+          )}
+  
+          {!showAdvancedFilters && (
+            <div className="flex items-center justify-between mt-6 pt-6 border-t border-[var(--border)]/40">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--card-soft)]/50 border border-[var(--border)]/40">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Active Configuration:</span>
+                  {activeFilterItems.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {activeFilterItems.map(item => (
+                        <FilterChip key={item.id} label={item.label} onRemove={() => removeFilter(item.id)} />
+                      ))}
+                      <button 
+                        onClick={resetFilters}
+                        className="ml-2 text-[10px] font-bold uppercase tracking-widest text-rose-500 hover:text-rose-600 transition-colors"
+                      >
+                        Reset All
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-[10px] font-semibold text-[var(--muted)]/40">Default View</span>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAdvancedFilters(true)}
+                className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-[var(--primary)]/10 text-[11px] font-bold uppercase tracking-widest text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all"
+              >
+                Advanced Configuration
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </section>
+  
+        <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4 backdrop-blur-sm">
+          <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
+            <Users className="h-3.5 w-3.5 text-[var(--primary)]" />
+            <span>Total Records</span>
+            <span className="text-[var(--primary)] ml-1 font-extrabold">
+              {processedResidents.length}
             </span>
-          ))}
-
-          <SortControl
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            setSortBy={setSortBy}
-            setSortDirection={setSortDirection}
-          />
-
-          <button
-            type="button"
-            onClick={() => exportResidents("all", "csv")}
-            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)]"
-          >
-            <Download className="h-3.5 w-3.5" /> Export All CSV
-          </button>
-          <button
-            type="button"
-            onClick={() => exportResidents("filtered", "excel")}
-            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)]"
-          >
-            <Download className="h-3.5 w-3.5" /> Export Filtered Excel
-          </button>
-        </div>
-      </section>
-
-      <section className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--card-soft)]/70 px-5 py-4">
-          <div className="text-sm text-[var(--muted)]">
-            Total Records: <span className="font-semibold text-[var(--text)]">{processedResidents.length}</span>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-[var(--muted)]">Selected: {selectedCount}</span>
-            <button
-              type="button"
-              onClick={handleBulkDelete}
-              disabled={selectedCount === 0 || role !== "Admin"}
-              className="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50/80 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Delete Selected
-            </button>
-            <button
-              type="button"
-              onClick={() => exportResidents("selected", "csv")}
-              disabled={selectedCount === 0}
-              className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Export Selected
-            </button>
-            <select
-              value={bulkStatus}
-              onChange={(event) => setBulkStatus(event.target.value as ResidentStatus)}
-              className="h-8 rounded-xl border border-[var(--border)] bg-[var(--card)] px-2 text-xs text-[var(--text)]"
-            >
-              <option>Active</option>
-              <option>Inactive</option>
-              <option>Deceased</option>
-            </select>
-            <button
-              type="button"
-              onClick={handleBulkStatusUpdate}
-              disabled={selectedCount === 0}
-              className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Apply Status
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Premium Export Command */}
+            <DropdownMenu
+              trigger={
+                <button
+                  type="button"
+                  className="flex h-9 items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/30 hover:bg-[var(--card-soft)]"
+                >
+                  <Download className="h-4 w-4 text-[var(--primary)]" />
+                  Export Registry
+                  <ChevronDown className="h-3.5 w-3.5 opacity-40 ml-1" />
+                </button>
+              }
+              items={[
+                { 
+                  label: "Download as CSV", 
+                  onClick: () => exportResidents("all", "csv"), 
+                  icon: FileText,
+                  className: "text-blue-600" 
+                },
+                { 
+                  label: "Download as Excel", 
+                  onClick: () => exportResidents("filtered", "excel"), 
+                  icon: FileSpreadsheet,
+                  className: "text-emerald-600"
+                },
+              ]}
+            />
           </div>
         </div>
 
@@ -804,95 +853,93 @@ export function ResidentsManagementPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
+              <table className="min-w-full text-sm border-separate border-spacing-0">
                 <thead>
-                  <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)] text-left text-[11px] uppercase tracking-[0.14em] text-[var(--muted)] backdrop-blur">
-                    <th className="px-3 py-2">
+                  <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
+                    <th className="px-4 py-3 text-left">
                       <input
                         type="checkbox"
                         checked={allVisibleSelected}
                         onChange={toggleSelectVisibleRows}
+                        className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]/20"
                         aria-label="Select all visible residents"
                       />
                     </th>
-                    <th className="px-3 py-2">ID</th>
-                    <th className="px-3 py-2">Full Name</th>
-                    <th className="px-3 py-2">Age</th>
-                    <th className="px-3 py-2">Gender</th>
-                    <th className="px-3 py-2">Civil Status</th>
-                    <th className="px-3 py-2">Address</th>
-                    <th className="px-3 py-2">Status</th>
-                    <th className="px-3 py-2">Tags</th>
-                    <th className="px-3 py-2">Date Registered</th>
-                    <th className="px-3 py-2">Actions</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Barangay ID</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Full Name</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Address</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Age</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Gender</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Civil Status</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-[var(--border)]/40">
                   {paginatedResidents.map((resident) => {
                     const age = computeAge(resident.birthdate);
                     return (
-                      <tr key={resident.id} className="border-b border-[var(--border)] text-[var(--text)] transition hover:bg-[var(--card-soft)]/70">
-                        <td className="px-3 py-2 align-top">
+                      <tr
+                        key={resident.id}
+                        className="group text-[var(--text)] transition-all border-l-4 border-transparent hover:bg-[var(--primary)]/[0.02] hover:border-[var(--primary)]"
+                      >
+                        <td className="px-4 py-3.5">
                           <input
                             type="checkbox"
                             checked={selectedIds.has(resident.id)}
                             onChange={() => toggleSelectRow(resident.id)}
+                            className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]/20"
                             aria-label={`Select ${getFullName(resident)}`}
                           />
                         </td>
-                        <td className="px-3 py-2">{resident.id}</td>
-                        <td className="px-3 py-2 font-medium">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--card-soft)] text-[10px] font-bold text-[var(--text)]">
-                              {resident.firstName.charAt(0)}
-                              {resident.lastName.charAt(0)}
-                            </span>
-                            <span>{getFullName(resident)}</span>
+                        <td className="px-4 py-3.5">
+                          <span className="font-mono text-[11px] text-[var(--muted)] uppercase">{resident.id}</span>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <div className="flex items-center gap-3">
+                            <Avatar
+                              name={getFullName(resident)}
+                              className="h-9 w-9"
+                              hideText
+                            />
+                            <div className="flex flex-col">
+                              <span className="font-bold tracking-tight text-[var(--text)] group-hover:text-[var(--primary)] transition-colors">
+                                {getFullName(resident)}
+                              </span>
+                              <span className="text-[10px] font-medium text-[var(--muted)]">
+                                resident-profile.v1
+                              </span>
+                            </div>
                           </div>
                         </td>
-                        <td className="px-3 py-2">{age}</td>
-                        <td className="px-3 py-2">{resident.gender}</td>
-                        <td className="px-3 py-2">{resident.civilStatus}</td>
-                        <td className="px-3 py-2">{resident.address}</td>
-                        <td className="px-3 py-2">
-                          <StatusBadge status={resident.status} />
+                        <td className="px-4 py-3.5 max-w-[240px] truncate font-medium text-[var(--text)]/80" title={resident.address}>
+                          {resident.address}
                         </td>
-                        <td className="px-3 py-2">
-                          <div className="flex flex-wrap gap-1">
-                            {resident.tags.senior ? <TagBadge label="Senior" /> : null}
-                            {resident.tags.pwd ? <TagBadge label="PWD" /> : null}
-                            {resident.tags.voter ? <TagBadge label="Voter" /> : null}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2">{formatDate(resident.dateRegistered)}</td>
-                        <td className="px-3 py-2">
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => setViewResident(resident)}
-                              className="rounded-lg border border-transparent p-1.5 text-[var(--muted)] transition hover:border-[var(--border)] hover:bg-[var(--card-soft)] hover:text-[var(--primary)]"
-                              aria-label="View details"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => openEditModal(resident)}
-                              className="rounded-lg border border-transparent p-1.5 text-[var(--muted)] transition hover:border-[var(--border)] hover:bg-[var(--card-soft)] hover:text-[var(--primary)]"
-                              aria-label="Edit resident"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => softDeleteByIds([resident.id])}
-                              disabled={role !== "Admin"}
-                              className="rounded-lg border border-transparent p-1.5 text-rose-500 transition hover:border-rose-200 hover:bg-rose-50/70 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-40"
-                              aria-label="Delete resident"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
+                        <td className="px-4 py-3.5 font-semibold text-[var(--text)]">{age}</td>
+                        <td className="px-4 py-3.5 text-[var(--muted)] font-medium">{resident.gender}</td>
+                        <td className="px-4 py-3.5 text-[var(--muted)] font-medium">{resident.civilStatus}</td>
+                        <td className="px-4 py-3.5">
+                          <DropdownMenu
+                            trigger={
+                              <button
+                                type="button"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
+                                aria-label="More actions"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </button>
+                            }
+                            items={[
+                              { label: "View Profile", onClick: () => setViewResident(resident), icon: Eye },
+                              { label: "Edit Record", onClick: () => openEditModal(resident), icon: Pencil },
+                              { label: "Divider", component: <div className="my-1 h-px bg-[var(--border)]/50" /> },
+                              { 
+                                label: "Delete Resident", 
+                                onClick: () => softDeleteByIds([resident.id]), 
+                                icon: Trash2,
+                                disabled: role !== "Admin"
+                              },
+                            ]}
+                          />
                         </td>
                       </tr>
                     );
@@ -901,12 +948,13 @@ export function ResidentsManagementPage() {
               </table>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-              <div className="text-xs text-[var(--muted)]">
-                Page {safeCurrentPage} of {totalPages}
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-xs text-[var(--muted)]">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
+              <div className="flex items-center gap-4">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+                  Page <span className="text-[var(--text)]">{safeCurrentPage}</span> of {totalPages}
+                </span>
+                <div className="h-3 w-px bg-[var(--border)]" />
+                <label className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
                   Rows
                   <select
                     value={rowsPerPage}
@@ -914,26 +962,49 @@ export function ResidentsManagementPage() {
                       setRowsPerPage(Number(event.target.value));
                       setCurrentPage(1);
                     }}
-                    className="ml-1 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2 py-1 text-[var(--text)]"
+                    className="h-7 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2 text-[var(--text)] outline-none focus:border-[var(--primary)]/40"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>
                   </select>
                 </label>
+              </div>
+
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setCurrentPage((value) => Math.max(1, value - 1))}
                   disabled={safeCurrentPage === 1}
-                  className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] disabled:opacity-40"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/40 hover:text-[var(--primary)] disabled:opacity-30"
                 >
                   Previous
                 </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageNum = i + 1;
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={cn(
+                          "flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold transition-all",
+                          safeCurrentPage === pageNum
+                            ? "bg-[var(--primary)] text-white"
+                            : "text-[var(--muted)] hover:bg-[var(--card)] hover:text-[var(--text)]"
+                        )}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  {totalPages > 5 && <span className="text-[var(--muted)]">...</span>}
+                </div>
                 <button
                   type="button"
                   onClick={() => setCurrentPage((value) => Math.min(totalPages, Math.min(value, totalPages) + 1))}
                   disabled={safeCurrentPage === totalPages}
-                  className="rounded-xl border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] disabled:opacity-40"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/40 hover:text-[var(--primary)] disabled:opacity-30"
                 >
                   Next
                 </button>
@@ -1010,7 +1081,7 @@ export function ResidentsManagementPage() {
             />
           </div>
 
-          <div className="mt-3 rounded-lg border border-[var(--border)] bg-[var(--card-soft)] p-3">
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Tags</p>
             <div className="mt-2 flex flex-wrap gap-2">
               <TagToggle
@@ -1110,10 +1181,10 @@ function MetricCard({
   const style = colorStyles[color];
 
   return (
-    <article className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition-all hover:border-[var(--primary)]/40 hover:shadow-lg">
+    <article className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition-all hover:border-[var(--primary)]/40">
       <div
         className={cn(
-          "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border transition-transform group-hover:scale-105",
+          "flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border transition-transform group-hover:scale-105",
           style
         )}
       >
@@ -1155,14 +1226,21 @@ function MetricCard({
 }
 
 function StatusBadge({ status }: { status: ResidentStatus }) {
-  const className =
+  const styles =
     status === "Active"
-      ? "bg-emerald-500/15 text-emerald-600"
+      ? "bg-emerald-500/10 text-emerald-600 shadow-[0_2px_12px_rgba(16,185,129,0.12)] border-emerald-500/20"
       : status === "Inactive"
-        ? "bg-amber-500/15 text-amber-600"
-        : "bg-rose-500/15 text-rose-600";
+        ? "bg-amber-500/10 text-amber-600 shadow-[0_2px_12px_rgba(245,158,11,0.12)] border-amber-500/20"
+        : "bg-rose-500/10 text-rose-600 shadow-[0_2px_12px_rgba(239,68,68,0.12)] border-rose-500/20";
 
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${className}`}>{status}</span>;
+  return (
+    <span className={cn(
+      "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all",
+      styles
+    )}>
+      {status}
+    </span>
+  );
 }
 
 function SelectFilter({
@@ -1177,63 +1255,84 @@ function SelectFilter({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="text-xs font-medium text-[var(--muted)]">
-      {label}
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="mt-1 h-10 w-full rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-[var(--text)] shadow-sm"
-      >
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] px-1">
+        {label}
+      </span>
+      <div className="relative group/select">
+        <select
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card)] pl-3 pr-10 text-sm text-[var(--text)] outline-none appearance-none transition focus:border-[var(--primary)]/40"
+        >
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none transition-colors group-focus-within/select:text-[var(--primary)]" />
+      </div>
     </label>
   );
 }
 
-function SortControl({
-  sortBy,
-  sortDirection,
-  setSortBy,
-  setSortDirection,
+function TagToggle({
+  label,
+  checked,
+  onChange,
 }: {
-  sortBy: SortBy;
-  sortDirection: SortDirection;
-  setSortBy: (value: SortBy) => void;
-  setSortDirection: (value: SortDirection) => void;
+  label: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
 }) {
   return (
-    <div className="flex items-center gap-1 rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-2 py-1.5 text-xs shadow-sm">
-      <Users className="h-3.5 w-3.5 text-[var(--muted)]" />
-      <select value={sortBy} onChange={(event) => setSortBy(event.target.value as SortBy)} className="bg-transparent text-[var(--text)]">
-        <option value="name">Sort: Name</option>
-        <option value="age">Sort: Age</option>
-        <option value="dateRegistered">Sort: Date Registered</option>
-      </select>
-      <select value={sortDirection} onChange={(event) => setSortDirection(event.target.value as SortDirection)} className="bg-transparent text-[var(--text)]">
-        <option value="asc">Asc</option>
-        <option value="desc">Desc</option>
-      </select>
-    </div>
-  );
-}
-
-function TagToggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (value: boolean) => void }) {
-  return (
-    <label className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-xs font-medium text-[var(--text)] shadow-sm">
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all",
+        checked
+          ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-sm"
+          : "border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:border-[var(--primary)]/40 hover:text-[var(--text)]"
+      )}
+    >
+      <div
+        className={cn(
+          "h-1.5 w-1.5 rounded-full transition-colors",
+          checked ? "bg-white" : "bg-[var(--muted)]"
+        )}
+      />
       {label}
-    </label>
+    </button>
   );
 }
 
 function TagBadge({ label }: { label: string }) {
   return (
-    <span className="rounded-full bg-[var(--card-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--text)]">
+    <span className="rounded-lg bg-[var(--card-soft)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--muted)] border border-[var(--border)] shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
       {label}
+    </span>
+  );
+}
+
+function FilterChip({
+  label,
+  onRemove,
+}: {
+  label: string;
+  onRemove: () => void;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/[0.03] px-2.5 py-1 text-[11px] font-semibold text-[var(--primary)] transition-all hover:bg-[var(--primary)]/[0.07]">
+      {label}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="rounded-full p-0.5 transition-colors hover:bg-[var(--primary)]/10"
+      >
+        <X className="h-3 w-3" />
+      </button>
     </span>
   );
 }
@@ -1258,7 +1357,7 @@ function ModalLayout({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-2xl">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
         <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
           <h3 className="text-xl font-semibold tracking-tight text-[var(--text)]">{title}</h3>
           <button type="button" onClick={onClose} className="rounded-xl border border-[var(--border)] p-1.5 text-[var(--muted)] transition hover:bg-[var(--card-soft)] hover:text-[var(--text)]" aria-label="Close modal">
@@ -1293,7 +1392,7 @@ function InputField({
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 h-10 w-full rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-sm text-[var(--text)] shadow-sm outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
+        className="mt-1 h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
       />
       {error ? <p className="mt-1 text-xs text-rose-600">{error}</p> : null}
     </label>
@@ -1319,7 +1418,7 @@ function SelectField({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 h-10 w-full rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-sm text-[var(--text)] shadow-sm outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
+        className="mt-1 h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
       >
         {options.map((option) => (
           <option key={option} value={option}>
@@ -1334,7 +1433,7 @@ function SelectField({
 
 function DetailLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
       <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--muted)]">{label}</p>
       <p className="mt-1 text-sm text-[var(--text)]">{value}</p>
     </div>
@@ -1343,7 +1442,7 @@ function DetailLine({ label, value }: { label: string; value: string }) {
 
 function HistoryCard({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] p-4">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">{title}</p>
       <ul className="mt-2 space-y-1 text-sm text-[var(--text)]">
         {items.length === 0 ? <li className="text-[var(--muted)]">No records.</li> : null}
