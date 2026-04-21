@@ -2,9 +2,11 @@ import { DailyBriefing } from "@/components/dashboard/daily-briefing";
 import { DashboardMetrics } from "@/components/dashboard/metrics";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentRequests } from "@/components/dashboard/recent-requests";
+import { StaffActivity } from "@/components/dashboard/staff-activity";
 import { AttentionPanel } from "@/components/dashboard/attention-panel";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { SecondaryPanels } from "@/components/dashboard/secondary-panels";
+import { Announcements } from "@/components/dashboard/announcements";
 import { LiveClockBadge } from "@/components/dashboard/live-clock-badge";
 
 export default function DashboardPage() {
@@ -52,12 +54,18 @@ export default function DashboardPage() {
             {/* Pillar 8: Recent Service Requests */}
             <RecentRequests />
 
+            {/* Pillar 11: Staff Accountability */}
+            <StaffActivity />
+
             {/* Pillar 3: Activity Stream */}
             <ActivityFeed />
           </div>
 
-          {/* Sidebar Column (Pillars 5, 6, 7) */}
-          <SecondaryPanels />
+          {/* Sidebar Column (Pillars 5, 6, 7, 9, 10, 12) */}
+          <div className="space-y-8">
+            <Announcements />
+            <SecondaryPanels />
+          </div>
         </section>
       </div>
       

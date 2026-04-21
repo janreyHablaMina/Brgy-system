@@ -1,10 +1,14 @@
 "use client";
 
-import { Activity, ShieldCheck, Database, HardDrive, Info, Landmark, Users } from "lucide-react";
+import { Activity, ShieldCheck, Database, HardDrive, Info, Landmark, Users as UsersIcon } from "lucide-react";
+import { UpcomingSchedule } from "./upcoming-schedule";
 
 export function SecondaryPanels() {
   return (
     <div className="space-y-6">
+      {/* Pillar 9: Upcoming Events & Deadlines */}
+      <UpcomingSchedule />
+
       {/* Pillar 5: Insights / Trends (SVG-based) */}
       <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-6">
         <div className="mb-6 flex items-center justify-between">
@@ -65,36 +69,72 @@ export function SecondaryPanels() {
         </div>
       </article>
 
-      {/* Pillar 7: Barangay Info Card */}
-      <article className="group relative overflow-hidden rounded-2xl border-none bg-[var(--primary)] p-6 text-white">
-        <div className="absolute right-0 top-0 -translate-y-4 translate-x-4 opacity-10 transition-transform group-hover:scale-110">
-          <Landmark className="h-32 w-32" />
+      {/* Pillar 10: Document Performance */}
+      <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-6 transition-all hover:border-[var(--primary)]/30">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Performance</h2>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600">
+            <Activity className="h-4 w-4" />
+          </div>
         </div>
-        <div className="relative z-10 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur-md">
-              <Info className="h-5 w-5" />
+        <div className="space-y-5">
+          <div className="flex items-center justify-between group">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Avg Clearance Time</p>
+            <div className="text-right">
+              <span className="text-lg font-black text-slate-800 dark:text-white">5 mins</span>
+              <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-tighter">Highly Efficient</p>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest opacity-70 leading-none mb-1">Local Identity</p>
-              <h2 className="text-xl font-black leading-none">Brgy. Salaza</h2>
+          </div>
+          <div className="flex items-center justify-between group">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Top Request</p>
+            <div className="text-right">
+              <span className="text-sm font-black text-slate-800 dark:text-white">Residency Certificate</span>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">42% of volume</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      {/* Pillar 7: Barangay Info Card (Improved) */}
+      <article className="group relative overflow-hidden rounded-3xl border-none bg-[var(--primary)] p-7 text-white shadow-xl shadow-[var(--primary)]/20">
+        <div className="absolute right-0 top-0 -translate-y-4 translate-x-4 opacity-10 transition-transform duration-700 group-hover:scale-125 group-hover:rotate-12">
+          <Landmark className="h-40 w-40" />
+        </div>
+        
+        {/* Glow Effect */}
+        <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-white opacity-10 blur-3xl" />
+
+        <div className="relative z-10 space-y-8">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-4">
+              <div className="rounded-2xl bg-white/20 p-3 backdrop-blur-xl ring-1 ring-white/30">
+                <Info className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-60 leading-none mb-1.5">Official Summary</p>
+                <h2 className="text-2xl font-black tracking-tight leading-none">Brgy. Salaza</h2>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2 py-0.5 ring-1 ring-emerald-500/30 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-widest">3 Active Users</span>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 border-t border-white/20 pt-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 opacity-70">
+          <div className="grid grid-cols-2 gap-6 border-t border-white/20 pt-7">
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 opacity-60">
                 <Landmark className="h-3 w-3" />
-                <span className="text-[10px] font-bold uppercase">Captain</span>
+                <span className="text-[9px] font-black uppercase tracking-widest">Captain</span>
               </div>
-              <p className="text-sm font-black">Hon. P. Seitz</p>
+              <p className="text-base font-black tracking-tight">Hon. P. Seitz</p>
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 opacity-70">
-                <Users className="h-3 w-3" />
-                <span className="text-[10px] font-bold uppercase">Households</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 opacity-60">
+                <UsersIcon className="h-3 w-3" />
+                <span className="text-[9px] font-black uppercase tracking-widest">Households</span>
               </div>
-              <p className="text-sm font-black">2,420</p>
+              <p className="text-base font-black tracking-tight">2,420</p>
             </div>
           </div>
         </div>

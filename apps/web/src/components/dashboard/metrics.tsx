@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, FileText, Wallet, Heart, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Users, FileText, Wallet, Heart, Vote, Home, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const metrics = [
@@ -11,6 +11,22 @@ const metrics = [
     icon: Users,
     positive: true,
     color: "var(--primary)",
+  },
+  {
+    label: "Total Households",
+    value: "2,420",
+    delta: "+1.1%",
+    icon: Home,
+    positive: true,
+    color: "#6366F1",
+  },
+  {
+    label: "Registered Voters",
+    value: "8,420",
+    delta: "+3.5%",
+    icon: Vote,
+    positive: true,
+    color: "#3B82F6",
   },
   {
     label: "Pending Documents",
@@ -40,7 +56,7 @@ const metrics = [
 
 export function DashboardMetrics() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
       {metrics.map((metric) => {
         const Icon = metric.icon;
         const TrendIcon = metric.positive ? ArrowUpRight : ArrowDownRight;
