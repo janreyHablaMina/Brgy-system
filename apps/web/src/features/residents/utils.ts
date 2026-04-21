@@ -208,5 +208,9 @@ export function validateResidentInput(input: ResidentFormInput) {
     errors.contactNumber = "Contact number format is invalid.";
   }
 
+  if (input.emergencyContactNo && !/^[0-9+\-()\s]{7,20}$/.test(input.emergencyContactNo)) {
+    errors.emergencyContactNo = "Emergency contact number format is invalid.";
+  }
+
   return errors;
 }

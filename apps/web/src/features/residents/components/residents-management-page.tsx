@@ -24,6 +24,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Avatar } from "@/components/ui/avatar";
@@ -53,9 +54,31 @@ import {
 } from "../utils";
 
 const STATUS_OPTIONS: Array<"All" | ResidentStatus> = ["All", "Active", "Inactive", "Deceased"];
-const GENDER_OPTIONS: Array<"All" | ResidentGender> = ["All", "Male", "Female", "Other"];
+const GENDER_OPTIONS: Array<"All" | ResidentGender> = ["All", "Male", "Female", "LGBTQIA+", "Other"];
 const CIVIL_STATUS_OPTIONS: Array<"All" | CivilStatus> = ["All", "Single", "Married", "Widowed", "Separated"];
 const AGE_GROUP_OPTIONS = ["All", "Child", "Adult", "Senior"] as const;
+const PENDING_RESIDENTS_KEY = "brgy-pending-residents";
+const SECTOR_OPTIONS = [
+  "Senior Citizen",
+  "Persons with Disability",
+  "Solo Parent",
+  "Displaced Worker",
+  "Indigenous People",
+  "Indigent Person",
+  "Informal Settlers",
+  "4Ps Beneficiary",
+  "Farmer",
+  "Nano/Micro Entrepreneur",
+  "Student",
+  "OFW",
+  "TODA Driver",
+  "JODA Driver",
+  "Other Drivers",
+  "Vendor",
+  "With Comorbidities",
+  "Working Student",
+  "LGBTQIA+",
+] as const;
 
 const SEED_RESIDENTS: Resident[] = [
   {
@@ -210,12 +233,70 @@ const EMPTY_FORM: ResidentFormInput = {
   firstName: "",
   middleName: "",
   lastName: "",
+  profilePhotoName: "",
   birthdate: "",
+  placeOfBirth: "",
   gender: "Male",
+  headOfHousehold: "No",
+  residenceType: "Village",
   address: "",
+  province: "",
+  cityMunicipality: "",
+  barangay: "",
+  street: "",
+  blockLot: "",
+  houseNo: "",
+  typeOfResident: "",
   contactNumber: "",
   email: "",
   civilStatus: "Single",
+  employmentStatus: "",
+  citizenship: "",
+  religion: "",
+  precinctNo: "",
+  bloodType: "",
+  sectors: [],
+  organDonor: "No",
+  healthHistory: "",
+  educationalAttainments: [
+    {
+      level: "",
+      course: "",
+      school: "",
+      startYear: "",
+      endYear: "",
+      currentlyStudying: false,
+    },
+  ],
+  workExperiences: [
+    {
+      position: "",
+      companyName: "",
+      employmentType: "",
+      startYear: "",
+      endYear: "",
+      jobDescription: "",
+    },
+  ],
+  gsisSssNo: "",
+  gsisSssExpiration: "",
+  philHealthNo: "",
+  philHealthExpiration: "",
+  pagIbigNo: "",
+  pagIbigExpiration: "",
+  tinNo: "",
+  tinExpiration: "",
+  pwdId: "",
+  pwdIdExpiration: "",
+  seniorCitizenId: "",
+  votersNo: "",
+  barangayPosition: "",
+  barangayRoleStartDate: "",
+  barangayRoleEndDate: "",
+  emergencyFullName: "",
+  emergencyContactNo: "",
+  emergencyAddress: "",
+  thumbmarkFileName: "",
   tags: { senior: false, pwd: false, voter: false },
   householdInfo: "",
 };
@@ -251,7 +332,74 @@ export function ResidentsManagementPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setResidents(SEED_RESIDENTS);
+      let nextResidents = [...SEED_RESIDENTS];
+
+      if (typeof window !== "undefined") {
+        const raw = localStorage.getItem(PENDING_RESIDENTS_KEY);
+        if (raw) {
+          try {
+            const pending = JSON.parse(raw) as ResidentFormInput[];
+            pending.forEach((input) => {
+              const now = getTimestamp();
+              const age = computeAge(input.birthdate);
+              const seniorFromTags = age >= 60 || input.tags.senior || input.sectors.includes("Senior Citizen");
+              const pwdFromTags = input.tags.pwd || input.sectors.includes("Persons with Disability");
+              const voterFromTags = input.tags.voter || Boolean(input.precinctNo || input.votersNo);
+              const computedAddress =
+                input.address.trim() ||
+                [
+                  input.houseNo && `House ${input.houseNo.trim()}`,
+                  input.blockLot && `Block/Lot ${input.blockLot.trim()}`,
+                  input.street.trim(),
+                  input.barangay.trim(),
+                  input.cityMunicipality.trim(),
+                  input.province.trim(),
+                ]
+                  .filter(Boolean)
+                  .join(", ");
+              const computedHouseholdInfo =
+                input.householdInfo.trim() ||
+                [input.headOfHousehold === "Yes" ? "Head of Household" : "Household Member", input.residenceType]
+                  .filter(Boolean)
+                  .join(" | ");
+
+              nextResidents = [
+                {
+                  id: generateResidentId(nextResidents),
+                  firstName: input.firstName.trim(),
+                  middleName: input.middleName.trim() || undefined,
+                  lastName: input.lastName.trim(),
+                  birthdate: input.birthdate,
+                  gender: input.gender,
+                  civilStatus: input.civilStatus,
+                  address: computedAddress,
+                  contactNumber: input.contactNumber.trim() || undefined,
+                  email: input.email.trim() || undefined,
+                  status: "Active",
+                  tags: { senior: seniorFromTags, pwd: pwdFromTags, voter: voterFromTags },
+                  dateRegistered: now,
+                  lastUpdated: now,
+                  householdInfo: computedHouseholdInfo || undefined,
+                  profileData: {
+                    ...input,
+                    address: computedAddress,
+                    householdInfo: computedHouseholdInfo,
+                    tags: { senior: seniorFromTags, pwd: pwdFromTags, voter: voterFromTags },
+                  },
+                  documentHistory: ["Profile created via onboarding form"],
+                  requestHistory: [],
+                },
+                ...nextResidents,
+              ];
+            });
+            localStorage.removeItem(PENDING_RESIDENTS_KEY);
+          } catch {
+            localStorage.removeItem(PENDING_RESIDENTS_KEY);
+          }
+        }
+      }
+
+      setResidents(nextResidents);
       setLoading(false);
     }, 600);
 
@@ -424,19 +572,12 @@ export function ResidentsManagementPage() {
     downloadExcelCompatible(`residents-${scope}-${new Date().toISOString().slice(0, 10)}.xls`, rows);
   }
 
-  function openCreateModal() {
-    setFormMode("create");
-    setEditingResident(null);
-    setFormInput(EMPTY_FORM);
-    setFormErrors({});
-    setServerError(null);
-    setIsFormOpen(true);
-  }
-
   function openEditModal(resident: Resident) {
     setFormMode("edit");
     setEditingResident(resident);
     setFormInput({
+      ...EMPTY_FORM,
+      ...(resident.profileData ?? {}),
       firstName: resident.firstName,
       middleName: resident.middleName ?? "",
       lastName: resident.lastName,
@@ -464,6 +605,75 @@ export function ResidentsManagementPage() {
     setFormInput((previous) => ({ ...previous, [key]: value }));
   }
 
+  function toggleSector(sector: string) {
+    setFormInput((previous) => {
+      const sectors = previous.sectors.includes(sector)
+        ? previous.sectors.filter((item) => item !== sector)
+        : [...previous.sectors, sector];
+      return { ...previous, sectors };
+    });
+  }
+
+  function addEducationalAttainment() {
+    setFormInput((previous) => ({
+      ...previous,
+      educationalAttainments: [
+        ...previous.educationalAttainments,
+        {
+          level: "",
+          course: "",
+          school: "",
+          startYear: "",
+          endYear: "",
+          currentlyStudying: false,
+        },
+      ],
+    }));
+  }
+
+  function updateEducationalAttainment(
+    index: number,
+    key: keyof ResidentFormInput["educationalAttainments"][number],
+    value: string | boolean
+  ) {
+    setFormInput((previous) => ({
+      ...previous,
+      educationalAttainments: previous.educationalAttainments.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [key]: value } : item
+      ),
+    }));
+  }
+
+  function addWorkExperience() {
+    setFormInput((previous) => ({
+      ...previous,
+      workExperiences: [
+        ...previous.workExperiences,
+        {
+          position: "",
+          companyName: "",
+          employmentType: "",
+          startYear: "",
+          endYear: "",
+          jobDescription: "",
+        },
+      ],
+    }));
+  }
+
+  function updateWorkExperience(
+    index: number,
+    key: keyof ResidentFormInput["workExperiences"][number],
+    value: string
+  ) {
+    setFormInput((previous) => ({
+      ...previous,
+      workExperiences: previous.workExperiences.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [key]: value } : item
+      ),
+    }));
+  }
+
   function saveResident() {
     const errors = validateResidentInput(formInput);
     setFormErrors(errors);
@@ -480,6 +690,25 @@ export function ResidentsManagementPage() {
     const now = getTimestamp();
     const age = computeAge(formInput.birthdate);
     const computedSenior = age >= 60 || formInput.tags.senior;
+    const computedAddress =
+      formInput.address.trim() ||
+      [
+        formInput.houseNo && `House ${formInput.houseNo.trim()}`,
+        formInput.blockLot && `Block/Lot ${formInput.blockLot.trim()}`,
+        formInput.street.trim(),
+        formInput.barangay.trim(),
+        formInput.cityMunicipality.trim(),
+        formInput.province.trim(),
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+    const computedHouseholdInfo =
+      formInput.householdInfo.trim() ||
+      [formInput.headOfHousehold === "Yes" ? "Head of Household" : "Household Member", formInput.residenceType]
+        .filter(Boolean)
+        .join(" | ");
+
     const payloadBase = {
       firstName: formInput.firstName.trim(),
       middleName: formInput.middleName.trim() || undefined,
@@ -487,14 +716,19 @@ export function ResidentsManagementPage() {
       birthdate: formInput.birthdate,
       gender: formInput.gender,
       civilStatus: formInput.civilStatus,
-      address: formInput.address.trim(),
+      address: computedAddress,
       contactNumber: formInput.contactNumber.trim() || undefined,
       email: formInput.email.trim() || undefined,
       tags: {
         ...formInput.tags,
         senior: computedSenior,
       },
-      householdInfo: formInput.householdInfo.trim() || undefined,
+      householdInfo: computedHouseholdInfo || undefined,
+      profileData: {
+        ...formInput,
+        address: computedAddress,
+        householdInfo: computedHouseholdInfo,
+      },
       lastUpdated: now,
     };
 
@@ -568,14 +802,13 @@ export function ResidentsManagementPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={openCreateModal}
+            <Link
+              href="/residents/new"
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white transition hover:brightness-110 shadow-sm"
             >
               <Plus className="h-4 w-4" />
               Add Resident
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -1013,108 +1246,218 @@ export function ResidentsManagementPage() {
 
       {isFormOpen ? (
         <ModalLayout title={formMode === "create" ? "Add Resident" : "Edit Resident"} onClose={closeFormModal}>
-          <div className="grid gap-3 md:grid-cols-2">
-            <InputField
-              label="First Name *"
-              value={formInput.firstName}
-              onChange={(value) => setFormValue("firstName", value)}
-              error={formErrors.firstName}
-            />
-            <InputField
-              label="Last Name *"
-              value={formInput.lastName}
-              onChange={(value) => setFormValue("lastName", value)}
-              error={formErrors.lastName}
-            />
-            <InputField
-              label="Middle Name"
-              value={formInput.middleName}
-              onChange={(value) => setFormValue("middleName", value)}
-            />
-            <InputField
-              label="Birthdate *"
-              type="date"
-              value={formInput.birthdate}
-              onChange={(value) => setFormValue("birthdate", value)}
-              error={formErrors.birthdate}
-            />
-            <SelectField
-              label="Gender *"
-              value={formInput.gender}
-              onChange={(value) => setFormValue("gender", value as ResidentGender)}
-              options={["Male", "Female", "Other"]}
-              error={formErrors.gender}
-            />
-            <SelectField
-              label="Civil Status"
-              value={formInput.civilStatus}
-              onChange={(value) => setFormValue("civilStatus", value as CivilStatus)}
-              options={["Single", "Married", "Widowed", "Separated"]}
-            />
-            <InputField
-              label="Address *"
-              value={formInput.address}
-              onChange={(value) => setFormValue("address", value)}
-              error={formErrors.address}
-              className="md:col-span-2"
-            />
-            <InputField
-              label="Contact Number"
-              value={formInput.contactNumber}
-              onChange={(value) => setFormValue("contactNumber", value)}
-              error={formErrors.contactNumber}
-            />
-            <InputField
-              label="Email"
-              value={formInput.email}
-              onChange={(value) => setFormValue("email", value)}
-              error={formErrors.email}
-            />
-            <InputField
-              label="Household Info"
-              value={formInput.householdInfo}
-              onChange={(value) => setFormValue("householdInfo", value)}
-              className="md:col-span-2"
-            />
+          <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--card-soft)]/70 px-4 py-3">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Resident Profile Form</p>
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Fields marked with <span className="font-semibold text-rose-500">*</span> are required.
+            </p>
           </div>
 
-          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">Tags</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <TagToggle
-                label="Senior (auto if age 60+)"
-                checked={formInput.tags.senior || (formInput.birthdate ? computeAge(formInput.birthdate) >= 60 : false)}
-                onChange={(checked) => setFormValue("tags", { ...formInput.tags, senior: checked })}
-              />
-              <TagToggle
-                label="PWD"
-                checked={formInput.tags.pwd}
-                onChange={(checked) => setFormValue("tags", { ...formInput.tags, pwd: checked })}
-              />
-              <TagToggle
-                label="Voter"
-                checked={formInput.tags.voter}
-                onChange={(checked) => setFormValue("tags", { ...formInput.tags, voter: checked })}
-              />
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Profile</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <label className="md:col-span-2">
+                <span className="text-xs font-medium text-[var(--muted)]">Profile Photo</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  onChange={(event) => setFormValue("profilePhotoName", event.target.files?.[0]?.name ?? "")}
+                  className="mt-1 block w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-sm text-[var(--text)] file:mr-3 file:rounded-md file:border-0 file:bg-[var(--primary)]/10 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-[var(--primary)]"
+                />
+              </label>
+              <InputField label="First Name *" value={formInput.firstName} onChange={(value) => setFormValue("firstName", value)} error={formErrors.firstName} />
+              <InputField label="Middle Name" value={formInput.middleName} onChange={(value) => setFormValue("middleName", value)} />
+              <InputField label="Last Name *" value={formInput.lastName} onChange={(value) => setFormValue("lastName", value)} error={formErrors.lastName} />
+              <SelectField label="Gender *" value={formInput.gender} onChange={(value) => setFormValue("gender", value as ResidentGender)} options={["Male", "Female", "LGBTQIA+", "Other"]} error={formErrors.gender} />
+              <InputField label="Date of Birth *" type="date" value={formInput.birthdate} onChange={(value) => setFormValue("birthdate", value)} error={formErrors.birthdate} />
+              <InputField label="Place of Birth" value={formInput.placeOfBirth} onChange={(value) => setFormValue("placeOfBirth", value)} />
+              <InputField label="Contact No" value={formInput.contactNumber} onChange={(value) => setFormValue("contactNumber", value)} error={formErrors.contactNumber} />
+              <SelectField label="Civil Status" value={formInput.civilStatus} onChange={(value) => setFormValue("civilStatus", value as CivilStatus)} options={["Single", "Married", "Widowed", "Separated"]} />
+              <SelectField label="Head of Household" value={formInput.headOfHousehold} onChange={(value) => setFormValue("headOfHousehold", value as "Yes" | "No")} options={["No", "Yes"]} />
+              <SelectField label="Residence Type" value={formInput.residenceType} onChange={(value) => setFormValue("residenceType", value as "Village" | "Condominium" | "Other")} options={["Village", "Condominium", "Other"]} />
             </div>
           </div>
 
-          {serverError ? <p className="mt-3 text-xs font-medium text-rose-600">{serverError}</p> : null}
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Current Address</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <InputField label="Province" value={formInput.province} onChange={(value) => setFormValue("province", value)} />
+              <InputField label="City / Municipality" value={formInput.cityMunicipality} onChange={(value) => setFormValue("cityMunicipality", value)} />
+              <InputField label="Barangay" value={formInput.barangay} onChange={(value) => setFormValue("barangay", value)} />
+              <InputField label="Street" value={formInput.street} onChange={(value) => setFormValue("street", value)} />
+              <InputField label="Block / Lot" value={formInput.blockLot} onChange={(value) => setFormValue("blockLot", value)} />
+              <InputField label="House No" value={formInput.houseNo} onChange={(value) => setFormValue("houseNo", value)} />
+              <InputField label="Type of Resident" value={formInput.typeOfResident} onChange={(value) => setFormValue("typeOfResident", value)} />
+              <InputField label="Address (Full)" value={formInput.address} onChange={(value) => setFormValue("address", value)} error={formErrors.address} />
+            </div>
+          </div>
 
-          <div className="mt-4 flex justify-end gap-2">
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Other Information</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <InputField label="Email" value={formInput.email} onChange={(value) => setFormValue("email", value)} error={formErrors.email} />
+              <InputField label="Current Employment Status" value={formInput.employmentStatus} onChange={(value) => setFormValue("employmentStatus", value)} />
+              <InputField label="Citizenship" value={formInput.citizenship} onChange={(value) => setFormValue("citizenship", value)} />
+              <InputField label="Religion" value={formInput.religion} onChange={(value) => setFormValue("religion", value)} />
+              <InputField label="Precinct No" value={formInput.precinctNo} onChange={(value) => setFormValue("precinctNo", value)} />
+              <InputField label="Blood Type" value={formInput.bloodType} onChange={(value) => setFormValue("bloodType", value)} />
+              <SelectField label="Organ Donor" value={formInput.organDonor} onChange={(value) => setFormValue("organDonor", value as "Yes" | "No")} options={["No", "Yes"]} />
+              <InputField label="Household Info" value={formInput.householdInfo} onChange={(value) => setFormValue("householdInfo", value)} />
+              <label className="md:col-span-2">
+                <span className="text-xs font-medium text-[var(--muted)]">Health History</span>
+                <textarea
+                  value={formInput.healthHistory}
+                  onChange={(event) => setFormValue("healthHistory", event.target.value)}
+                  className="mt-1 min-h-20 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
+                />
+              </label>
+            </div>
+            <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Sector / Organization</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {SECTOR_OPTIONS.map((sector) => (
+                  <label key={sector} className="flex items-center gap-2 text-xs text-[var(--text)]">
+                    <input
+                      type="checkbox"
+                      checked={formInput.sectors.includes(sector)}
+                      onChange={() => toggleSector(sector)}
+                      className="rounded border-[var(--border)] accent-[var(--accent)]"
+                    />
+                    {sector}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Quick Tags</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <TagToggle
+                  label="Senior (auto if age 60+)"
+                  checked={formInput.tags.senior || (formInput.birthdate ? computeAge(formInput.birthdate) >= 60 : false)}
+                  onChange={(checked) => setFormValue("tags", { ...formInput.tags, senior: checked })}
+                />
+                <TagToggle label="PWD" checked={formInput.tags.pwd} onChange={(checked) => setFormValue("tags", { ...formInput.tags, pwd: checked })} />
+                <TagToggle label="Voter" checked={formInput.tags.voter} onChange={(checked) => setFormValue("tags", { ...formInput.tags, voter: checked })} />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Educational Attainment</p>
+            <div className="mt-3 space-y-3">
+              {formInput.educationalAttainments.map((education, index) => (
+                <div key={`education-${index}`} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Entry {index + 1}</p>
+                  <div className="mt-2 grid gap-3 md:grid-cols-2">
+                    <InputField label="Level" value={education.level} onChange={(value) => updateEducationalAttainment(index, "level", value)} />
+                    <InputField label="Course" value={education.course} onChange={(value) => updateEducationalAttainment(index, "course", value)} />
+                    <InputField label="School" value={education.school} onChange={(value) => updateEducationalAttainment(index, "school", value)} />
+                    <InputField label="Start Year" value={education.startYear} onChange={(value) => updateEducationalAttainment(index, "startYear", value)} />
+                    <InputField label="End Year" value={education.endYear} onChange={(value) => updateEducationalAttainment(index, "endYear", value)} />
+                    <label className="mt-6 flex items-center gap-2 text-xs font-medium text-[var(--text)]">
+                      <input type="checkbox" checked={education.currentlyStudying} onChange={(event) => updateEducationalAttainment(index, "currentlyStudying", event.target.checked)} className="rounded border-[var(--border)] accent-[var(--accent)]" />
+                      Currently studying
+                    </label>
+                  </div>
+                </div>
+              ))}
+              <button type="button" onClick={addEducationalAttainment} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text)] hover:bg-[var(--card-soft)]">
+                Add Another Educational Attainment
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Work Experience</p>
+            <div className="mt-3 space-y-3">
+              {formInput.workExperiences.map((work, index) => (
+                <div key={`work-${index}`} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Entry {index + 1}</p>
+                  <div className="mt-2 grid gap-3 md:grid-cols-2">
+                    <InputField label="Position" value={work.position} onChange={(value) => updateWorkExperience(index, "position", value)} />
+                    <InputField label="Company / Business Name" value={work.companyName} onChange={(value) => updateWorkExperience(index, "companyName", value)} />
+                    <InputField label="Type of Employment" value={work.employmentType} onChange={(value) => updateWorkExperience(index, "employmentType", value)} />
+                    <InputField label="Start Year" value={work.startYear} onChange={(value) => updateWorkExperience(index, "startYear", value)} />
+                    <InputField label="End Year" value={work.endYear} onChange={(value) => updateWorkExperience(index, "endYear", value)} />
+                    <label className="md:col-span-2">
+                      <span className="text-xs font-medium text-[var(--muted)]">Job Description</span>
+                      <textarea
+                        value={work.jobDescription}
+                        onChange={(event) => updateWorkExperience(index, "jobDescription", event.target.value)}
+                        className="mt-1 min-h-20 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+              <button type="button" onClick={addWorkExperience} className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text)] hover:bg-[var(--card-soft)]">
+                Add Another Work Experience
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Government Related Info</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <InputField label="GSIS / SSS No." value={formInput.gsisSssNo} onChange={(value) => setFormValue("gsisSssNo", value)} />
+              <InputField label="GSIS / SSS Expiration Date" type="date" value={formInput.gsisSssExpiration} onChange={(value) => setFormValue("gsisSssExpiration", value)} />
+              <InputField label="PhilHealth No." value={formInput.philHealthNo} onChange={(value) => setFormValue("philHealthNo", value)} />
+              <InputField label="PhilHealth Expiration Date" type="date" value={formInput.philHealthExpiration} onChange={(value) => setFormValue("philHealthExpiration", value)} />
+              <InputField label="Pag-IBIG No." value={formInput.pagIbigNo} onChange={(value) => setFormValue("pagIbigNo", value)} />
+              <InputField label="Pag-IBIG Expiration Date" type="date" value={formInput.pagIbigExpiration} onChange={(value) => setFormValue("pagIbigExpiration", value)} />
+              <InputField label="TIN No." value={formInput.tinNo} onChange={(value) => setFormValue("tinNo", value)} />
+              <InputField label="TIN Expiration Date" type="date" value={formInput.tinExpiration} onChange={(value) => setFormValue("tinExpiration", value)} />
+              <InputField label="PWD ID" value={formInput.pwdId} onChange={(value) => setFormValue("pwdId", value)} />
+              <InputField label="PWD ID Expiration Date" type="date" value={formInput.pwdIdExpiration} onChange={(value) => setFormValue("pwdIdExpiration", value)} />
+              <InputField label="Senior Citizen ID" value={formInput.seniorCitizenId} onChange={(value) => setFormValue("seniorCitizenId", value)} />
+              <InputField label="Voter's No." value={formInput.votersNo} onChange={(value) => setFormValue("votersNo", value)} />
+              <InputField label="Barangay Position" value={formInput.barangayPosition} onChange={(value) => setFormValue("barangayPosition", value)} />
+              <InputField label="Barangay Role Start Date" type="date" value={formInput.barangayRoleStartDate} onChange={(value) => setFormValue("barangayRoleStartDate", value)} />
+              <InputField label="Barangay Role End Date" type="date" value={formInput.barangayRoleEndDate} onChange={(value) => setFormValue("barangayRoleEndDate", value)} />
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">In Case of Emergency</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <InputField label="Full Name" value={formInput.emergencyFullName} onChange={(value) => setFormValue("emergencyFullName", value)} />
+              <InputField label="Contact No." value={formInput.emergencyContactNo} onChange={(value) => setFormValue("emergencyContactNo", value)} error={formErrors.emergencyContactNo} />
+              <InputField label="Address" value={formInput.emergencyAddress} onChange={(value) => setFormValue("emergencyAddress", value)} className="md:col-span-2" />
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Thumbmark Capture</p>
+            <div className="mt-3">
+              <label>
+                <span className="text-xs font-medium text-[var(--muted)]">Upload thumbmark image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => setFormValue("thumbmarkFileName", event.target.files?.[0]?.name ?? "")}
+                  className="mt-1 block w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-sm text-[var(--text)] file:mr-3 file:rounded-md file:border-0 file:bg-[var(--primary)]/10 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-[var(--primary)]"
+                />
+              </label>
+            </div>
+          </div>
+
+          {serverError ? <p className="mt-3 rounded-lg border border-rose-300/40 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-500">{serverError}</p> : null}
+
+          <div className="mt-4 flex justify-end gap-2 border-t border-[var(--border)] pt-4">
             <button
               type="button"
               onClick={closeFormModal}
-              className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-semibold text-[var(--text)]"
+              className="rounded-lg border border-[var(--border)] px-4 py-2 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)]"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={saveResident}
-              className="rounded-lg bg-[var(--primary)] px-3 py-2 text-xs font-semibold text-white"
+              className="rounded-lg bg-[var(--primary)] px-4 py-2 text-xs font-semibold text-white transition hover:brightness-110"
             >
-              Save
+              {formMode === "create" ? "Save Resident" : "Update Resident"}
             </button>
           </div>
         </ModalLayout>

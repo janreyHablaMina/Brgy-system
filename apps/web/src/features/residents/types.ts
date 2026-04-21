@@ -1,6 +1,6 @@
 ﻿export type ResidentStatus = "Active" | "Inactive" | "Deceased";
 
-export type ResidentGender = "Male" | "Female" | "Other";
+export type ResidentGender = "Male" | "Female" | "LGBTQIA+" | "Other";
 
 export type CivilStatus = "Single" | "Married" | "Widowed" | "Separated";
 
@@ -31,6 +31,7 @@ export type Resident = {
   lastUpdated: string;
   deletedAt?: string | null;
   householdInfo?: string;
+  profileData?: ResidentFormInput;
   documentHistory: string[];
   requestHistory: string[];
 };
@@ -39,12 +40,66 @@ export type ResidentFormInput = {
   firstName: string;
   middleName: string;
   lastName: string;
+  profilePhotoName: string;
   birthdate: string;
+  placeOfBirth: string;
   gender: ResidentGender;
+  headOfHousehold: "Yes" | "No";
+  residenceType: "Village" | "Condominium" | "Other";
   address: string;
+  province: string;
+  cityMunicipality: string;
+  barangay: string;
+  street: string;
+  blockLot: string;
+  houseNo: string;
+  typeOfResident: string;
   contactNumber: string;
   email: string;
   civilStatus: CivilStatus;
+  employmentStatus: string;
+  citizenship: string;
+  religion: string;
+  precinctNo: string;
+  bloodType: string;
+  sectors: string[];
+  organDonor: "Yes" | "No";
+  healthHistory: string;
+  educationalAttainments: Array<{
+    level: string;
+    course: string;
+    school: string;
+    startYear: string;
+    endYear: string;
+    currentlyStudying: boolean;
+  }>;
+  workExperiences: Array<{
+    position: string;
+    companyName: string;
+    employmentType: string;
+    startYear: string;
+    endYear: string;
+    jobDescription: string;
+  }>;
+  gsisSssNo: string;
+  gsisSssExpiration: string;
+  philHealthNo: string;
+  philHealthExpiration: string;
+  pagIbigNo: string;
+  pagIbigExpiration: string;
+  tinNo: string;
+  tinExpiration: string;
+  pwdId: string;
+  pwdIdExpiration: string;
+  seniorCitizenId: string;
+  votersNo: string;
+  barangayPosition: string;
+  barangayRoleStartDate: string;
+  barangayRoleEndDate: string;
+  emergencyFullName: string;
+  emergencyContactNo: string;
+  emergencyAddress: string;
+  thumbmarkFileName: string;
   tags: ResidentTags;
   householdInfo: string;
 };
