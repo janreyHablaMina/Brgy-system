@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { DailyBriefing } from "@/components/dashboard/daily-briefing";
 import { DashboardMetrics } from "@/components/dashboard/metrics";
 import { QuickActions } from "@/components/dashboard/quick-actions";
@@ -8,26 +5,9 @@ import { RecentRequests } from "@/components/dashboard/recent-requests";
 import { AttentionPanel } from "@/components/dashboard/attention-panel";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { SecondaryPanels } from "@/components/dashboard/secondary-panels";
+import { LiveClockBadge } from "@/components/dashboard/live-clock-badge";
 
 export default function DashboardPage() {
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const timeString = time.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  const dateString = time.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
   return (
     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Hero Welcome & Identity Section */}
@@ -50,15 +30,7 @@ export default function DashboardPage() {
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-2 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 px-4 py-2 border border-slate-200/50 dark:border-slate-800/50">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-          </span>
-          <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-            {timeString} • {dateString}
-          </p>
-        </div>
+        <LiveClockBadge />
       </section>
       <div className="space-y-10">
         {/* Daily Summary: Today's Briefing */}
