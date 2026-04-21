@@ -2,7 +2,7 @@ export type Theme = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "lingkod-theme";
 export const PRIMARY_COLOR_STORAGE_KEY = "lingkod-primary-color";
-export const DEFAULT_PRIMARY_COLOR = "#2563EB";
+export const DEFAULT_PRIMARY_COLOR = "#3C50E0";
 export const ACCENT_COLOR_STORAGE_KEY = "lingkod-accent-color";
 export const DEFAULT_ACCENT_COLOR = "#10B981";
 

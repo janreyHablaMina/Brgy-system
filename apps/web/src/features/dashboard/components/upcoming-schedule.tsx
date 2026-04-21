@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Bell, Calendar, Gavel, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,10 +17,10 @@ const statusClass: Record<string, string> = {
 
 export function UpcomingSchedule() {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-          <Calendar className="h-3.5 w-3.5 text-slate-400" />
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]">
+          <Calendar className="h-3.5 w-3.5 text-[var(--muted)]" />
           Upcoming Schedule
         </h3>
         <button className="text-xs font-medium text-[var(--primary)] hover:underline">
@@ -32,15 +32,15 @@ export function UpcomingSchedule() {
         {events.map((event) => {
           const Icon = event.icon;
           return (
-            <div key={event.title} className="flex items-center gap-2.5 rounded-lg bg-slate-50 px-3 py-2 transition-colors hover:bg-slate-100">
+            <div key={event.title} className="flex items-center gap-2.5 rounded-lg bg-[var(--card-soft)] px-3 py-2 transition-colors hover:brightness-110">
               <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${event.iconClass}`}>
                 <Icon className="h-3.5 w-3.5" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate leading-tight">{event.title}</p>
-                <p className="text-[11px] text-slate-400 truncate">{event.time} · {event.place}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium leading-tight text-[var(--text)]">{event.title}</p>
+                <p className="truncate text-[11px] text-[var(--muted)]">{event.time} · {event.place}</p>
               </div>
-              <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", statusClass[event.status] ?? "bg-slate-100 text-slate-600")}>
+              <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", statusClass[event.status] ?? "bg-[var(--card-soft)] text-[var(--muted)]")}>
                 {event.status}
               </span>
             </div>
@@ -50,3 +50,4 @@ export function UpcomingSchedule() {
     </article>
   );
 }
+

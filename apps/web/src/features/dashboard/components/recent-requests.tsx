@@ -27,10 +27,10 @@ function StatusBadge({ status }: { status: string }) {
 
 export function RecentRequests() {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-          <History className="h-3.5 w-3.5 text-slate-400" />
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]">
+          <History className="h-3.5 w-3.5 text-[var(--muted)]" />
           Recent Requests
         </h3>
         <button className="text-xs font-medium text-[var(--primary)] hover:underline">
@@ -38,22 +38,22 @@ export function RecentRequests() {
         </button>
       </header>
 
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-[var(--border)]">
         {requests.map((item) => (
           <div
             key={`${item.name}-${item.doc}`}
-            className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-slate-50"
+            className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--card-soft)]"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--card-soft)] text-xs font-semibold text-[var(--muted)]">
               {item.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-800 truncate">{item.name}</p>
-              <p className="text-xs text-slate-400 truncate">{item.doc}</p>
+              <p className="truncate text-sm font-medium text-[var(--text)]">{item.name}</p>
+              <p className="truncate text-xs text-[var(--muted)]">{item.doc}</p>
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
               <StatusBadge status={item.status} />
-              <div className="flex items-center gap-1 text-[10px] text-slate-400">
+              <div className="flex items-center gap-1 text-[10px] text-[var(--muted)]">
                 <Clock className="h-3 w-3" />
                 {item.time}
               </div>

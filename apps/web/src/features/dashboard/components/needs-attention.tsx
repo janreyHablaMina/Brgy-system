@@ -41,9 +41,9 @@ const items = [
 
 export function NeedsAttention() {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
-        <h2 className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2.5">
+        <h2 className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]">
           <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
           Needs Attention
         </h2>
@@ -57,7 +57,7 @@ export function NeedsAttention() {
         return (
           <button
             key={item.label}
-            className="group flex w-full items-center gap-3 border-b border-slate-100 px-4 py-2.5 text-left transition-colors last:border-b-0 hover:bg-slate-50"
+            className="group flex w-full items-center gap-3 border-b border-[var(--border)] px-4 py-2.5 text-left transition-colors last:border-b-0 hover:bg-[var(--card-soft)]"
           >
             <div
               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${item.iconClass}`}
@@ -65,11 +65,11 @@ export function NeedsAttention() {
               <Icon className="h-3.5 w-3.5" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-800">{item.label}</p>
-              <p className="text-xs text-slate-400">{item.detail}</p>
+              <p className="text-sm font-medium text-[var(--text)]">{item.label}</p>
+              <p className="text-xs text-[var(--muted)]">{item.detail}</p>
             </div>
             <p className="text-xl font-semibold text-rose-500">{item.count}</p>
-            <ChevronRight className="h-3.5 w-3.5 text-slate-300 transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight className="h-3.5 w-3.5 text-[var(--muted)] transition-transform group-hover:translate-x-0.5" />
           </button>
         );
       })}

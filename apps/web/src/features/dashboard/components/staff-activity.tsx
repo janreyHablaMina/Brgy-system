@@ -10,10 +10,10 @@ const staff = [
 
 export function StaffActivity() {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-          <UserCircle2 className="h-3.5 w-3.5 text-slate-400" />
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]">
+          <UserCircle2 className="h-3.5 w-3.5 text-[var(--muted)]" />
           Staff Accountability
         </h3>
         <button className="text-xs font-medium text-[var(--primary)] hover:underline">
@@ -26,21 +26,21 @@ export function StaffActivity() {
           <div key={member.name}>
             <div className="mb-2.5 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--card-soft)] text-xs font-semibold text-[var(--muted)]">
                   {member.initial}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate leading-tight">
+                  <p className="truncate text-sm font-medium leading-tight text-[var(--text)]">
                     {member.name}
                   </p>
-                  <p className="text-[11px] text-slate-400 truncate leading-tight">
+                  <p className="truncate text-[11px] leading-tight text-[var(--muted)]">
                     {member.output}
                   </p>
                 </div>
               </div>
-              <p className="text-lg font-semibold text-slate-800 shrink-0">{member.score}</p>
+              <p className="shrink-0 text-lg font-semibold text-[var(--text)]">{member.score}</p>
             </div>
-            <div className="h-1 w-full rounded-full bg-slate-100">
+            <div className="h-1 w-full rounded-full bg-[var(--card-soft)]">
               <div
                 className={`h-1 rounded-full transition-all ${member.bar}`}
                 style={{ width: `${Math.min((member.score / member.max) * 100, 100)}%` }}

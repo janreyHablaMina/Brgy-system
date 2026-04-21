@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { History } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,15 +44,15 @@ const activities = [
 
 export function ActivityFeed() {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
         <div className="flex items-center gap-2">
-          <History className="h-4 w-4 text-slate-400" />
-          <h3 className="text-sm font-bold tracking-tight text-slate-800">
+          <History className="h-4 w-4 text-[var(--muted)]" />
+          <h3 className="text-sm font-bold tracking-tight text-[var(--text)]">
             Operations Stream
           </h3>
         </div>
-        <button className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:underline">
+        <button className="text-[10px] font-black uppercase tracking-widest text-[var(--primary)] hover:underline">
           View History
         </button>
       </header>
@@ -61,9 +61,8 @@ export function ActivityFeed() {
         {activities.map((item) => (
           <div
             key={item.name}
-            className="group relative flex flex-col gap-3 rounded-xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
+            className="group relative flex flex-col gap-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-4 transition-all hover:border-[var(--primary)]/30"
           >
-            {/* Header: Avatar + Badge */}
             <div className="flex items-start justify-between">
               <div
                 className={cn(
@@ -83,17 +82,15 @@ export function ActivityFeed() {
               </span>
             </div>
 
-            {/* Body: Info */}
             <div className="flex flex-col gap-0.5">
-              <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+              <p className="text-sm font-bold text-[var(--text)] transition-colors group-hover:text-[var(--primary)]">
                 {item.name}
               </p>
-              <p className="text-xs text-slate-500 line-clamp-1">{item.action}</p>
+              <p className="line-clamp-1 text-xs text-[var(--muted)]">{item.action}</p>
             </div>
 
-            {/* Footer: Time */}
-            <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-slate-200" />
+            <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--muted)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--border)]" />
               {item.time}
             </div>
           </div>
@@ -102,3 +99,4 @@ export function ActivityFeed() {
     </article>
   );
 }
+

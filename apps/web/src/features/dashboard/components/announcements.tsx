@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Megaphone, Terminal } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,10 +10,10 @@ const bulletin = [
 
 export function Announcements() {
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
-        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-          <Megaphone className="h-3.5 w-3.5 text-slate-400" />
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
+      <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-2.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text)]">
+          <Megaphone className="h-3.5 w-3.5 text-[var(--muted)]" />
           Bulletin Board
         </h3>
         <button className="text-xs font-medium text-[var(--primary)] hover:underline">
@@ -23,19 +23,20 @@ export function Announcements() {
 
       <div className="space-y-2.5 p-3">
         {bulletin.map((item) => (
-          <div key={item.title} className="rounded-lg border border-slate-100 bg-slate-50 p-3 transition-colors hover:border-slate-200">
+          <div key={item.title} className="rounded-lg border border-[var(--border)] bg-[var(--card-soft)] p-3 transition-colors hover:border-[var(--primary)]/30">
             <div className="mb-1.5 flex items-center justify-between">
               <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", item.tone)}>
                 {item.type === "system" ? <Terminal className="h-2.5 w-2.5" /> : <Megaphone className="h-2.5 w-2.5" />}
                 {item.tag}
               </span>
-              <span className="text-[10px] text-slate-400">{item.age}</span>
+              <span className="text-[10px] text-[var(--muted)]">{item.age}</span>
             </div>
-            <p className="text-sm font-medium text-slate-800">{item.title}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{item.detail}</p>
+            <p className="text-sm font-medium text-[var(--text)]">{item.title}</p>
+            <p className="mt-0.5 text-xs text-[var(--muted)]">{item.detail}</p>
           </div>
         ))}
       </div>
     </article>
   );
 }
+

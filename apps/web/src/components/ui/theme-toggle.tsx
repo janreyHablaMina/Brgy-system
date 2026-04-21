@@ -33,7 +33,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={handleToggle}
-      className="group relative flex h-8 w-8 items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#3C50E0] transition-all duration-300 overflow-hidden"
+      className="group relative flex h-8 w-8 items-center justify-center rounded-full text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--primary)] transition-all duration-300 overflow-hidden"
       aria-label="Toggle theme"
     >
       {/* Solar Eclipse Icons */}

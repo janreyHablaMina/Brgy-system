@@ -72,7 +72,7 @@ export function SummaryCards() {
         return (
           <article
             key={card.label}
-            className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/50"
+            className="group relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 transition-all hover:border-[var(--primary)]/40 hover:shadow-lg"
           >
             {/* Header: Icon + Pulse/Trend */}
             <div className="flex items-start justify-between mb-3">
@@ -86,11 +86,11 @@ export function SummaryCards() {
               </div>
 
               {card.isLive ? (
-                <div className="flex items-center gap-1.5 rounded-full bg-slate-50 px-2 py-0.5 border border-slate-100">
+                <div className="flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--card-soft)] px-2 py-0.5">
                   <span className={cn("h-1.5 w-1.5 rounded-full animate-pulse", 
                     card.color === 'emerald' ? 'bg-emerald-500' : 'bg-indigo-500'
                   )} />
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Live</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">Live</span>
                 </div>
               ) : card.trend ? (
                 <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600 border border-emerald-100">
@@ -101,17 +101,17 @@ export function SummaryCards() {
             </div>
 
             {/* Label */}
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
               {card.label}
             </p>
 
             {/* Value (Outfit Font) */}
-            <p className="mt-1 font-display text-3xl font-bold tracking-tight text-slate-900 group-hover:text-[var(--primary)] transition-colors">
+            <p className="mt-1 font-display text-3xl font-bold tracking-tight text-[var(--text)] transition-colors group-hover:text-[var(--primary)]">
               {card.value}
             </p>
 
             {/* Note */}
-            <p className="mt-1.5 text-xs font-medium text-slate-400 leading-tight">
+            <p className="mt-1.5 text-xs font-medium leading-tight text-[var(--muted)]">
               {card.note}
             </p>
 

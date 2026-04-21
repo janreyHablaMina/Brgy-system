@@ -16,15 +16,15 @@ export default function DashboardPage() {
       <section className="px-1">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-base font-normal text-slate-600">
+            <p className="text-base font-normal text-[var(--muted)]">
               Good morning,{" "}
               <span className="font-medium text-[var(--primary)]">Pauline Seitz!</span>{" "}
               {"\u{1F44B}"}
             </p>
-            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight text-slate-900">
+            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight text-[var(--text)]">
               Barangay Operations
             </h1>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-[var(--muted)]">
               Real-time overview of residents, requests, and operations.
             </p>
           </div>
@@ -32,14 +32,14 @@ export default function DashboardPage() {
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]"></span>
                 </span>
-                <span className="font-display text-lg font-bold tracking-tight text-slate-900 leading-none">
+                <span className="font-display text-lg font-bold leading-none tracking-tight text-[var(--text)]">
                   10:16 AM
                 </span>
               </div>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">
                 Tuesday, April 21, 2026
               </p>
             </div>

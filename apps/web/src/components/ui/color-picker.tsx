@@ -3,6 +3,8 @@
 import { Palette } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import {
+  ACCENT_COLOR_STORAGE_KEY,
+  applyAccentColor,
   applyPrimaryColor,
   DEFAULT_PRIMARY_COLOR,
   PRIMARY_COLOR_STORAGE_KEY,
@@ -26,7 +28,9 @@ export function ColorPicker({ compact = false }: ColorPickerProps) {
 
   useEffect(() => {
     applyPrimaryColor(color);
+    applyAccentColor(color);
     localStorage.setItem(PRIMARY_COLOR_STORAGE_KEY, color);
+    localStorage.setItem(ACCENT_COLOR_STORAGE_KEY, color);
   }, [color]);
 
   function handleColorChange(value: string) {
@@ -61,7 +65,7 @@ export function ColorPicker({ compact = false }: ColorPickerProps) {
 
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-sm">
-      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Primary Branding</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Primary and Accent</p>
       <div className="mt-2 flex items-center gap-3">
         <label
           htmlFor={inputId}

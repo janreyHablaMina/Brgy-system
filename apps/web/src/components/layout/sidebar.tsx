@@ -216,7 +216,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
                           {!collapsed && item.badge && (
                             <span 
                               className="flex h-5 items-center justify-center rounded-full px-2 text-[10px] font-bold text-white"
-                              style={item.badgeColor === "blue" ? { backgroundColor: 'var(--primary)' } : { backgroundColor: '#10B981' }}
+                              style={item.badgeColor === "blue" ? { backgroundColor: "var(--primary)" } : { backgroundColor: "var(--accent)" }}
                             >
                               {item.badge}
                             </span>

@@ -84,7 +84,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           <div className="flex items-center h-10 px-1">
             <button className="group relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--primary)] text-slate-400 dark:text-slate-500 mx-0.5">
               <MessageSquare className="h-[18px] w-[18px] transition-transform group-hover:scale-110" strokeWidth={1.5} />
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#10B981] px-1 text-[9px] font-bold text-white ring-2 ring-white dark:ring-[#111827]">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--accent)] px-1 text-[9px] font-bold text-white ring-2 ring-white dark:ring-[#111827]">
                 3
               </span>
             </button>
@@ -116,7 +116,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                     hideText 
                     className="relative z-10"
                   />
-                  <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#111827] bg-emerald-500 z-20 shadow-sm" />
+                  <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#111827] bg-[var(--accent)] z-20 shadow-sm" />
                 </div>
                 <div className="text-left hidden xl:block z-10">
                   <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-none mb-1 tracking-tight group-hover:text-[var(--primary)] transition-colors">Pauline Seitz</p>
@@ -129,7 +129,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
               { label: "My Profile", icon: UserCircle2, href: "/settings" },
               { label: "Account Settings", icon: Settings, href: "/settings" },
               { label: "System Theme", component: <div className="px-2 py-1"><ColorPicker /></div> },
-              { label: "Divider", component: <div className="h-px bg-slate-100 my-1 mx-2" /> },
+              { label: "Divider", component: <div className="my-1 mx-2 h-px bg-[var(--border)]" /> },
               { label: "Get Help", icon: HelpCircle, href: "/help" },
               { label: "Sign Out", icon: LogOut, onClick: () => undefined, danger: true },
             ]}
