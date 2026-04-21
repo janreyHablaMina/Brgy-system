@@ -4,10 +4,10 @@ import { FileCheck, UserPlus, Inbox, Calendar } from "lucide-react";
 
 export function DailyBriefing() {
   const stats = [
-    { label: "Clearances Issued", value: "12", icon: FileCheck, color: "var(--primary)" },
-    { label: "New Residents", value: "5", icon: UserPlus, color: "#10B981" },
-    { label: "Requests Received", value: "8", icon: Inbox, color: "#F59E0B" },
-    { label: "Cases Scheduled", value: "3", icon: Calendar, color: "#6366F1" },
+    { label: "Clearances Issued Today", value: "12", icon: FileCheck, color: "var(--primary)" },
+    { label: "New Residents Today", value: "5", icon: UserPlus, color: "#10B981" },
+    { label: "Requests Received Today", value: "8", icon: Inbox, color: "#F59E0B" },
+    { label: "Cases Scheduled Today", value: "3", icon: Calendar, color: "#6366F1" },
   ];
 
   return (

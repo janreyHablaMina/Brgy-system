@@ -35,14 +35,14 @@ const alerts = [
 
 export function AttentionPanel() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 overflow-hidden">
+    <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 border-l-[6px] border-l-rose-500 overflow-hidden">
       <div className="flex items-center justify-between border-b border-rose-50 dark:border-rose-500/5 bg-rose-50/30 dark:bg-rose-500/5 px-6 py-4">
         <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-200">
           <AlertCircle className="h-5 w-5 text-rose-500" />
           Needs Attention
         </h2>
-        <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[11px] font-bold text-white uppercase tracking-wider">
-          Priority
+        <span className="rounded-full bg-rose-500 px-2 py-1 text-[10px] font-black text-white uppercase tracking-wider shadow-sm">
+          Urgent Action
         </span>
       </div>
 
@@ -52,23 +52,26 @@ export function AttentionPanel() {
           return (
             <button
               key={alert.label}
-              className="group flex w-full items-center gap-4 px-6 py-4 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 text-left"
+              className="group flex w-full items-center gap-4 px-6 py-4 transition-all hover:bg-rose-50/10 dark:hover:bg-rose-500/5 text-left"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-400 group-hover:scale-110 transition-transform">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-400 group-hover:scale-110 group-hover:text-rose-500 transition-all">
                 <Icon className="h-5 w-5" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-500 transition-colors">
+                <p className="font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-600 transition-colors">
                   {alert.label}
                 </p>
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-medium truncate">
                   {alert.description}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-black text-slate-900 dark:text-white">
-                  {alert.count}
-                </span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                  <span className="text-2xl font-black text-rose-600 dark:text-rose-500">
+                    {alert.count}
+                  </span>
+                </div>
                 <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
               </div>
             </button>

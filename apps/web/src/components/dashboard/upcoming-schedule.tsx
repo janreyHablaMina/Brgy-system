@@ -59,9 +59,9 @@ export function UpcomingSchedule() {
                     {event.title}
                   </p>
                   <span className={cn(
-                    "shrink-0 text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full",
+                    "shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
                     event.status === "Today" 
-                      ? "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400" 
+                      ? "bg-rose-600 text-white shadow-sm shadow-rose-500/30" 
                       : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                   )}>
                     {event.status}

@@ -31,7 +31,7 @@ export function Announcements() {
       </div>
 
       <div className="p-4 space-y-4">
-        {news.map((item, idx) => (
+        {news.slice(0, 3).map((item, idx) => (
           <div 
             key={idx} 
             className="group relative rounded-xl border border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-800/20 p-4 transition-all hover:border-[var(--primary)]/30"

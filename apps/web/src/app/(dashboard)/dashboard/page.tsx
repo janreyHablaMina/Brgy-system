@@ -23,11 +23,11 @@ export default function DashboardPage() {
               <span className="text-[var(--primary)]/70">Overview</span>
             </p>
             <h1 className="flex flex-wrap items-baseline gap-x-2 gap-y-1 transition-all">
-              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
-                Activity &
+              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-5xl">
+                Overview of
               </span>
-              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-4xl">
-                insights
+              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-5xl">
+                barangay activity
               </span>
             </h1>
           </div>
