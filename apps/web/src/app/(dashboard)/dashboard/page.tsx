@@ -14,7 +14,12 @@ export default function DashboardPage() {
       <section className="px-1">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-slate-900">
+            <p className="text-base font-normal text-slate-600">
+              Good morning,{" "}
+              <span className="font-medium text-[var(--primary)]">Pauline Seitz!</span>{" "}
+              👋
+            </p>
+            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight text-slate-900">
               Barangay Operations
             </h1>
             <p className="mt-1 text-xs text-slate-400">

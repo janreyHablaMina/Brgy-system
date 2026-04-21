@@ -5,7 +5,7 @@ import {
   ChevronDown,
   HelpCircle,
   LogOut,
-  ArrowLeft,
+  Menu,
   MessageSquare,
   Search,
   Settings,
@@ -28,10 +28,14 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
   // Dynamic Greeting Logic
   const hour = new Date().getHours();
+  const greeting = 
+    hour < 12 ? "Good morning" :
+    hour < 18 ? "Good afternoon" : "Good evening";
+
   return (
     <header className="sticky top-0 z-20 bg-white dark:bg-[#111827] px-4 py-2.5 transition-all duration-300 md:px-10 border-b border-slate-200/50 dark:border-slate-800/40">
       <div className="mx-auto flex h-14 items-center justify-between gap-6">
-        {/* Left Side: Mobile Menu & Logo */}
+        {/* Left Side: Mobile Menu & Dynamic Greeting */}
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -39,17 +43,19 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             aria-label="Open sidebar"
             onClick={onOpenSidebar}
           >
-            <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
+            <Menu className="h-5 w-5" strokeWidth={1.5} />
           </button>
-          <div className="flex items-center gap-2">
-            <img 
-              src="/brgyAssist.png" 
-              alt="BrgyAssist Logo" 
-              className="h-11 w-auto object-contain"
-            />
-            <span className="hidden sm:block font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              BrgyAssist
-            </span>
+          <div className="hidden lg:block">
+            <div className="flex items-center gap-2.5 transition-all hover:opacity-80">
+              <img 
+                src="/brgyAssist.png" 
+                alt="BrgyAssist Logo" 
+                className="h-11 w-auto object-contain"
+              />
+              <span className="font-display text-xl font-semibold tracking-tight text-slate-800 dark:text-white">
+                BrgyAssist
+              </span>
+            </div>
           </div>
         </div>
 

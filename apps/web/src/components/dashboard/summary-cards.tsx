@@ -1,8 +1,58 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import {
+  Clock3,
+  FileBadge,
+  Scale,
+  ShieldCheck,
+  Users,
+  TrendingUp,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SUMMARY_STATS } from "@/lib/mock-data";
+
+const cards = [
+  {
+    label: "Queue Health",
+    value: "Stable",
+    note: "All systems normal",
+    icon: ShieldCheck,
+    color: "emerald",
+    isLive: true,
+  },
+  {
+    label: "Priority Cases",
+    value: "3",
+    note: "Requires attention",
+    icon: Scale,
+    color: "amber",
+    isLive: false,
+  },
+  {
+    label: "Staff Online",
+    value: "3",
+    note: "Active now",
+    icon: Users,
+    color: "blue",
+    isLive: true,
+  },
+  {
+    label: "Avg Turnaround",
+    value: "5m",
+    note: "This week",
+    icon: Clock3,
+    color: "violet",
+    isLive: false,
+  },
+  {
+    label: "Documents Today",
+    value: "12",
+    note: "Compared to yesterday",
+    trend: "+20%",
+    icon: FileBadge,
+    color: "cyan",
+    isLive: false,
+  },
+];
 
 const colorStyles: Record<string, string> = {
   emerald: "text-emerald-600 bg-emerald-50 border-emerald-100 glow-emerald-500/20",
@@ -15,7 +65,7 @@ const colorStyles: Record<string, string> = {
 export function SummaryCards() {
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-      {SUMMARY_STATS.map((card) => {
+      {cards.map((card) => {
         const Icon = card.icon;
         const style = colorStyles[card.color];
 
@@ -65,7 +115,7 @@ export function SummaryCards() {
               {card.note}
             </p>
 
-            {/* Subtle background glow effect */}
+            {/* Subtle background glow effect (optional refinement) */}
             <div className={cn(
               "absolute -right-4 -top-4 h-16 w-16 opacity-[0.03] transition-opacity group-hover:opacity-[0.07]",
               card.color === 'emerald' ? 'bg-emerald-500' : 

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { DM_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { ACCENT_COLOR_STORAGE_KEY, DEFAULT_ACCENT_COLOR } from "@/lib/theme";
