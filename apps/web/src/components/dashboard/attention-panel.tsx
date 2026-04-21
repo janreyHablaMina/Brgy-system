@@ -35,52 +35,52 @@ const alerts = [
 
 export function AttentionPanel() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 border-l-[6px] border-l-rose-500 overflow-hidden">
-      <div className="flex items-center justify-between border-b border-rose-50 dark:border-rose-500/5 bg-rose-50/30 dark:bg-rose-500/5 px-6 py-4">
-        <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800 dark:text-slate-200">
+    <article className="overflow-hidden rounded-2xl border border-rose-200/70 bg-rose-50/60 dark:border-rose-900/50 dark:bg-rose-950/20">
+      <div className="flex items-center justify-between border-b border-rose-200/60 px-5 py-4 dark:border-rose-900/40">
+        <h2 className="flex items-center gap-2 text-base font-semibold text-slate-800 dark:text-slate-200">
           <AlertCircle className="h-5 w-5 text-rose-500" />
           Needs Attention
         </h2>
-        <span className="rounded-full bg-rose-500 px-2 py-1 text-[10px] font-black text-white uppercase tracking-wider shadow-sm">
-          Urgent Action
+        <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">
+          Priority
         </span>
       </div>
 
-      <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+      <div className="divide-y divide-rose-100/80 dark:divide-rose-900/30">
         {alerts.map((alert) => {
           const Icon = alert.icon;
           return (
             <button
               key={alert.label}
-              className="group flex w-full items-center gap-4 px-6 py-4 transition-all hover:bg-rose-50/10 dark:hover:bg-rose-500/5 text-left"
+              className="group flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-white/60 dark:hover:bg-rose-950/20"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-950 text-slate-400 group-hover:scale-110 group-hover:text-rose-500 transition-all">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/90 text-slate-500 transition-colors group-hover:text-rose-500 dark:bg-slate-900">
                 <Icon className="h-5 w-5" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-rose-600 transition-colors">
+                <p className="truncate text-sm font-semibold text-slate-800 transition-colors group-hover:text-rose-600 dark:text-slate-200">
                   {alert.label}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 font-medium truncate">
+                <p className="truncate text-xs font-medium text-slate-500 dark:text-slate-400">
                   {alert.description}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-                  <span className="text-2xl font-black text-rose-600 dark:text-rose-500">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  <span className="text-xl font-semibold text-rose-600 dark:text-rose-500">
                     {alert.count}
                   </span>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="h-4 w-4 text-slate-300 transition-transform group-hover:translate-x-1" />
               </div>
             </button>
           );
         })}
       </div>
 
-      <div className="bg-slate-50/50 dark:bg-slate-800/20 px-6 py-3">
-        <button className="text-xs font-bold text-rose-500 hover:text-rose-600 transition-colors uppercase tracking-widest">
+      <div className="bg-white/60 px-5 py-3 dark:bg-rose-950/10">
+        <button className="text-xs font-semibold uppercase tracking-widest text-rose-500 transition-colors hover:text-rose-600">
           View All Priority Tasks
         </button>
       </div>

@@ -38,7 +38,7 @@ const metrics = [
   },
   {
     label: "Monthly Collections",
-    value: "₱284.5K",
+    value: "PHP 284.5K",
     delta: "+7.4%",
     icon: Wallet,
     positive: true,
@@ -56,55 +56,52 @@ const metrics = [
 
 export function DashboardMetrics() {
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-      {metrics.map((metric) => {
-        const Icon = metric.icon;
-        const TrendIcon = metric.positive ? ArrowUpRight : ArrowDownRight;
+    <section className="rounded-2xl border border-slate-200/70 bg-white px-4 py-4 dark:border-slate-800/70 dark:bg-slate-900 md:px-5">
+      <div className="mb-3">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+          Key Metrics
+        </h2>
+      </div>
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-0">
+        {metrics.map((metric) => {
+          const Icon = metric.icon;
+          const TrendIcon = metric.positive ? ArrowUpRight : ArrowDownRight;
 
-        return (
-          <div
-            key={metric.label}
-            className="group relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--primary)]/30 active:scale-[0.98]"
-          >
-            {/* Ambient Background Glow */}
-            <div 
-              className="absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-[0.03] transition-opacity group-hover:opacity-[0.08]" 
-              style={{ backgroundColor: metric.color }}
-            />
-
-            <div className="flex items-center justify-between mb-4">
-              <div 
-                className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors"
-                style={{ backgroundColor: `${metric.color}15`, color: metric.color }}
-              >
-                <Icon className="h-5 w-5" strokeWidth={2} />
+          return (
+            <div
+              key={metric.label}
+              className="group relative rounded-xl px-3 py-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/40 md:rounded-none md:border-l md:border-slate-100 md:px-4 md:first:border-l-0 dark:md:border-slate-800"
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+                  style={{ backgroundColor: `${metric.color}15`, color: metric.color }}
+                >
+                  <Icon className="h-4 w-4" strokeWidth={2} />
+                </div>
+                <div
+                  className={cn(
+                    "flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold",
+                    metric.positive
+                      ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+                      : "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
+                  )}
+                >
+                  {metric.delta}
+                  <TrendIcon className="h-3 w-3" />
+                </div>
               </div>
-              <div className={cn(
-                "flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full",
-                metric.positive 
-                  ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400" 
-                  : "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
-              )}>
-                {metric.delta}
-                <TrendIcon className="h-3 w-3" />
+
+              <div className="space-y-1">
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
+                  {metric.label}
+                </h3>
+                <p className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">{metric.value}</p>
               </div>
             </div>
-
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium text-slate-500 dark:text-slate-400">{metric.label}</h3>
-              <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {metric.value}
-              </p>
-            </div>
-
-            {/* Micro-Interaction Indicator */}
-            <div 
-              className="absolute bottom-0 left-0 h-1 w-0 bg-current transition-all duration-500 group-hover:w-full"
-              style={{ color: metric.color }}
-            />
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

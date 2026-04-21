@@ -1,21 +1,20 @@
-import { JetBrains_Mono, Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
+import { DM_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { ACCENT_COLOR_STORAGE_KEY, DEFAULT_ACCENT_COLOR } from "@/lib/theme";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta-sans",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
-
-const dmSerifDisplay = DM_Serif_Display({
-  variable: "--font-serif",
-  weight: "400",
   subsets: ["latin"],
 });
 
@@ -33,7 +32,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${jetBrainsMono.variable} ${dmSerifDisplay.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${outfit.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
       <head>
         <script

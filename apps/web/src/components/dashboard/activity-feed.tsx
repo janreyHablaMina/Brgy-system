@@ -1,95 +1,103 @@
 "use client";
 
-import { FileText, UserPlus, CheckCircle2, RotateCcw, Clock } from "lucide-react";
+import { History } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const activities = [
   {
-    resident: "Juan Dela Cruz",
+    name: "Juan Dela Cruz",
+    initials: "JD",
     action: "Requested Barangay Clearance",
     time: "5 mins ago",
-    type: "request",
-    icon: FileText,
-    color: "var(--primary)",
+    type: "REQUEST",
+    avatarColor: "bg-indigo-600",
+    badgeColor: "text-indigo-600 bg-indigo-50",
   },
   {
-    resident: "Ana Santos",
-    action: "Registry Profile Updated",
+    name: "Ana Santos",
+    initials: "AS",
+    action: "Updated Registry Profile",
     time: "12 mins ago",
-    type: "update",
-    icon: RotateCcw,
-    color: "#8B5CF6",
+    type: "UPDATE",
+    avatarColor: "bg-amber-500",
+    badgeColor: "text-amber-600 bg-amber-50",
   },
   {
-    resident: "Pauline Seitz",
+    name: "Pauline Seitz",
+    initials: "PS",
     action: "Approved 12 Clearance Requests",
-    time: "24 mins ago",
-    type: "approval",
-    icon: CheckCircle2,
-    color: "#10B981",
+    time: "34 mins ago",
+    type: "APPROVAL",
+    avatarColor: "bg-emerald-500",
+    badgeColor: "text-emerald-600 bg-emerald-50",
   },
   {
-    resident: "Mark Rivera",
+    name: "Mark Rivera",
+    initials: "MR",
     action: "New Resident Registration",
     time: "48 mins ago",
-    type: "registration",
-    icon: UserPlus,
-    color: "#3B82F6",
+    type: "REGISTRATION",
+    avatarColor: "bg-blue-600",
+    badgeColor: "text-blue-600 bg-blue-50",
   },
 ];
 
 export function ActivityFeed() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 overflow-hidden">
-      <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800/50 px-6 py-4">
-        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Recent Activity</h2>
-        <button className="text-xs font-bold text-[var(--primary)] hover:underline uppercase tracking-wide">
+    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <History className="h-4 w-4 text-slate-400" />
+          <h3 className="text-sm font-bold tracking-tight text-slate-800">
+            Operations Stream
+          </h3>
+        </div>
+        <button className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:underline">
           View History
         </button>
-      </div>
+      </header>
 
-      <div className="p-6">
-        <div className="space-y-8 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-px before:bg-slate-100 dark:before:bg-slate-800">
-          {activities.map((activity, idx) => {
-            const Icon = activity.icon;
-            return (
-              <div key={idx} className="relative flex items-start gap-4">
-                {/* Timeline Icon */}
-                <div 
-                  className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-4 border-white dark:border-slate-900 shadow-sm transition-transform hover:scale-110"
-                  style={{ backgroundColor: `${activity.color}15`, color: activity.color }}
-                >
-                  <Icon className="h-5 w-5" strokeWidth={2} />
-                </div>
-
-                <div className="flex-1 space-y-1 pt-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-bold text-slate-900 dark:text-white leading-tight">
-                      {activity.resident}
-                    </p>
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400">
-                      <Clock className="h-3 w-3" />
-                      {activity.time}
-                    </div>
-                  </div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {activity.action}
-                  </p>
-                  
-                  {/* Performance Badge */}
-                  <div className="pt-2">
-                    <span 
-                      className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
-                      style={{ backgroundColor: activity.color }}
-                    >
-                      {activity.type}
-                    </span>
-                  </div>
-                </div>
+      <div className="grid gap-3 p-4 sm:grid-cols-2 2xl:grid-cols-4">
+        {activities.map((item) => (
+          <div
+            key={item.name}
+            className="group relative flex flex-col gap-3 rounded-xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
+          >
+            {/* Header: Avatar + Badge */}
+            <div className="flex items-start justify-between">
+              <div
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white",
+                  item.avatarColor
+                )}
+              >
+                {item.initials}
               </div>
-            );
-          })}
-        </div>
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest",
+                  item.badgeColor
+                )}
+              >
+                {item.type}
+              </span>
+            </div>
+
+            {/* Body: Info */}
+            <div className="flex flex-col gap-0.5">
+              <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                {item.name}
+              </p>
+              <p className="text-xs text-slate-500 line-clamp-1">{item.action}</p>
+            </div>
+
+            {/* Footer: Time */}
+            <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-200" />
+              {item.time}
+            </div>
+          </div>
+        ))}
       </div>
     </article>
   );

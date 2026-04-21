@@ -1,86 +1,52 @@
 "use client";
 
-import { Gavel, Users, Bell, ChevronRight } from "lucide-react";
+import { Bell, Calendar, Gavel, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const events = [
-  {
-    title: "Blotter Hearing",
-    time: "2:00 PM",
-    type: "Hearing",
-    icon: Gavel,
-    color: "#EF4444",
-    status: "Today"
-  },
-  {
-    title: "Barangay Meeting",
-    time: "Tomorrow",
-    type: "Meeting",
-    icon: Users,
-    color: "var(--primary)",
-    status: "Upcoming"
-  },
-  {
-    title: "Quarterly Report",
-    time: "Friday",
-    type: "Deadline",
-    icon: Bell,
-    color: "#F59E0B",
-    status: "Deadline"
-  }
+  { title: "Blotter Hearing", time: "2:00 PM", place: "Barangay Hall", status: "Today", icon: Gavel, iconClass: "bg-rose-100 text-rose-500" },
+  { title: "Barangay Meeting", time: "Tomorrow", place: "9:00 AM", status: "Upcoming", icon: Users, iconClass: "bg-blue-100 text-blue-500" },
+  { title: "Monthly Report Submission", time: "April 30", place: "5:00 PM", status: "Deadline", icon: Bell, iconClass: "bg-amber-100 text-amber-500" },
 ];
+
+const statusClass: Record<string, string> = {
+  Today: "bg-rose-500 text-white",
+  Upcoming: "bg-blue-100 text-blue-600",
+  Deadline: "bg-amber-500 text-white",
+};
 
 export function UpcomingSchedule() {
   return (
-    <article className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-6 overflow-hidden">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-serif text-xl text-slate-800 dark:text-slate-100 italic">Upcoming</h2>
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-800/50">
-          <ChevronRight className="h-4 w-4 text-slate-400" />
-        </div>
-      </div>
+    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+          <Calendar className="h-3.5 w-3.5 text-slate-400" />
+          Upcoming Schedule
+        </h3>
+        <button className="text-xs font-medium text-[var(--primary)] hover:underline">
+          View calendar
+        </button>
+      </header>
 
-      <div className="space-y-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100 dark:before:bg-slate-800">
-        {events.map((event, idx) => {
+      <div className="space-y-2 p-3">
+        {events.map((event) => {
           const Icon = event.icon;
           return (
-            <div key={idx} className="relative flex items-start gap-4 group">
-              {/* Timeline Indicator */}
-              <div 
-                className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-4 border-white dark:border-slate-900 shadow-sm transition-transform group-hover:scale-110"
-                style={{ backgroundColor: `${event.color}15`, color: event.color }}
-              >
-                <Icon className="h-5 w-5" strokeWidth={2} />
+            <div key={event.title} className="flex items-center gap-2.5 rounded-lg bg-slate-50 px-3 py-2 transition-colors hover:bg-slate-100">
+              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${event.iconClass}`}>
+                <Icon className="h-3.5 w-3.5" />
               </div>
-
-              <div className="flex-1 min-w-0 pt-0.5">
-                <div className="flex items-center justify-between gap-2 mb-0.5">
-                  <p className="font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-[var(--primary)] transition-colors">
-                    {event.title}
-                  </p>
-                  <span className={cn(
-                    "shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
-                    event.status === "Today" 
-                      ? "bg-rose-600 text-white shadow-sm shadow-rose-500/30" 
-                      : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-                  )}>
-                    {event.status}
-                  </span>
-                </div>
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  {event.time}
-                  <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-                  <span className="text-[10px] uppercase font-bold text-slate-400">{event.type}</span>
-                </p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-800 truncate leading-tight">{event.title}</p>
+                <p className="text-[11px] text-slate-400 truncate">{event.time} · {event.place}</p>
               </div>
+              <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", statusClass[event.status] ?? "bg-slate-100 text-slate-600")}>
+                {event.status}
+              </span>
             </div>
           );
         })}
       </div>
-      
-      <button className="mt-8 w-full rounded-xl border border-dashed border-slate-200 dark:border-slate-700 p-2.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all">
-        View Full Calendar
-      </button>
     </article>
   );
 }

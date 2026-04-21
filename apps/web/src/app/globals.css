@@ -28,9 +28,9 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-plus-jakarta-sans);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-outfit);
   --font-mono: var(--font-jetbrains-mono);
-  --font-serif: var(--font-serif);
 }
 
 * {

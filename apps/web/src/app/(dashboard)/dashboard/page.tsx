@@ -1,80 +1,74 @@
-import { DailyBriefing } from "@/components/dashboard/daily-briefing";
-import { DashboardMetrics } from "@/components/dashboard/metrics";
-import { QuickActions } from "@/components/dashboard/quick-actions";
+import { SummaryCards } from "@/components/dashboard/summary-cards";
+import { NeedsAttention } from "@/components/dashboard/needs-attention";
 import { RecentRequests } from "@/components/dashboard/recent-requests";
 import { StaffActivity } from "@/components/dashboard/staff-activity";
-import { AttentionPanel } from "@/components/dashboard/attention-panel";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
-import { SecondaryPanels } from "@/components/dashboard/secondary-panels";
 import { Announcements } from "@/components/dashboard/announcements";
-import { LiveClockBadge } from "@/components/dashboard/live-clock-badge";
+import { TodaySnapshot } from "@/components/dashboard/today-snapshot";
+import { UpcomingSchedule } from "@/components/dashboard/upcoming-schedule";
 
 export default function DashboardPage() {
   return (
-    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Hero Welcome & Identity Section */}
-      <section className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <div className="h-12 w-[1.5px] bg-[var(--primary)]/30 dark:bg-[var(--primary)]/40 hidden md:block" />
-          <div className="space-y-1.5">
-            <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
-              <span>Dashboard</span>
-              <span className="opacity-30">/</span>
-              <span className="text-[var(--primary)]/70">Overview</span>
+    <div className="w-full space-y-4">
+      {/* ── Hero / Greeting ─────────────────────────────────────── */}
+      <section className="px-1">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-base font-normal text-slate-600">
+              Good morning,{" "}
+              <span className="font-medium text-[var(--primary)]">Pauline Seitz!</span>{" "}
+              👋
             </p>
-            <h1 className="flex flex-wrap items-baseline gap-x-2 gap-y-1 transition-all">
-              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-5xl">
-                Overview of
-              </span>
-              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white md:text-5xl">
-                barangay activity
-              </span>
+            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight text-slate-900">
+              Barangay Operations
             </h1>
+            <p className="mt-1 text-xs text-slate-400">
+              Real-time overview of residents, requests, and operations.
+            </p>
+          </div>
+          <div className="shrink-0 flex items-center gap-3">
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="font-display text-lg font-bold tracking-tight text-slate-900 leading-none">
+                  10:16 AM
+                </span>
+              </div>
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Tuesday, April 21, 2026
+              </p>
+            </div>
           </div>
         </div>
-        <LiveClockBadge />
       </section>
-      <div className="space-y-10">
-        {/* Daily Summary: Today's Briefing */}
-        <DailyBriefing />
 
-        {/* Pillar 1: Quick Summary Metrics */}
-        <DashboardMetrics />
+      {/* ── Summary Stat Cards ──────────────────────────────────── */}
+      <SummaryCards />
 
-        {/* Pillar 4: Quick Actions Command Bar */}
-        <QuickActions />
+      {/* ── Main Content Grid ───────────────────────────────────── */}
+      <section className="grid gap-4 xl:grid-cols-[2fr_1fr]">
+        {/* Left column */}
+        <div className="space-y-4">
+          <NeedsAttention />
 
-        {/* Primary Action & Activity Grid */}
-        <section className="grid gap-8 lg:grid-cols-3">
-          {/* Main Column (Pillars 2 & 3) */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Pillar 2: Action Required / Needs Attention */}
-            <AttentionPanel />
-
-            {/* Pillar 8: Recent Service Requests */}
+          <div className="grid gap-4 lg:grid-cols-2">
             <RecentRequests />
-
-            {/* Pillar 11: Staff Accountability */}
             <StaffActivity />
-
-            {/* Pillar 3: Activity Stream */}
-            <ActivityFeed />
           </div>
 
-          {/* Sidebar Column (Pillars 5, 6, 7, 9, 10, 12) */}
-          <div className="space-y-8">
-            <Announcements />
-            <SecondaryPanels />
-          </div>
-        </section>
-      </div>
-      
-      {/* Decorative Footer Accent */}
-      <div className="mt-20 flex items-center justify-center gap-4 opacity-20">
-        <div className="h-px w-10 bg-slate-400"></div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-slate-400">Lingkod 2026 Vision</p>
-        <div className="h-px w-10 bg-slate-400"></div>
-      </div>
+          <ActivityFeed />
+        </div>
+
+        {/* Right rail */}
+        <aside className="space-y-4">
+          <Announcements />
+          <TodaySnapshot />
+          <UpcomingSchedule />
+        </aside>
+      </section>
     </div>
   );
 }
