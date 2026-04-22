@@ -239,6 +239,8 @@ export function EstablishmentsManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [viewItem, setViewItem] = useState<Establishment | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<EstablishmentStatus | "">("");
 
   const processed = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -282,6 +284,60 @@ export function EstablishmentsManagementPage() {
   const totalPages = Math.max(1, Math.ceil(processed.length / rowsPerPage));
   const safePage = Math.min(currentPage, totalPages);
   const paginated = processed.slice((safePage - 1) * rowsPerPage, safePage * rowsPerPage);
+
+  const allVisibleSelected =
+    paginated.length > 0 && paginated.every((item) => selectedIds.has(item.id));
+
+  function toggleSelectRow(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectVisibleRows() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleSelected) {
+        paginated.forEach((item) => next.delete(item.id));
+      } else {
+        paginated.forEach((item) => next.add(item.id));
+      }
+      return next;
+    });
+  }
+
+  function handleBulkDelete() {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedIds.size} selected establishments?`)) return;
+    
+    const idsToDelete = Array.from(selectedIds);
+    setEstablishments((prev) => prev.filter((item) => !idsToDelete.includes(item.id)));
+    setSelectedIds(new Set());
+  }
+
+  function handleBulkStatusUpdate(status: EstablishmentStatus) {
+    if (selectedIds.size === 0) return;
+    const updated = new Date().toISOString().slice(0, 10);
+    setEstablishments((prev) =>
+      prev.map((item) =>
+        selectedIds.has(item.id)
+          ? {
+              ...item,
+              status,
+              lastUpdated: updated,
+              activityLog: [`Bulk status updated to ${status}`, ...item.activityLog],
+            }
+          : item
+      )
+    );
+    setBulkStatus("");
+  }
 
   function toggleSort(next: "name" | "owner" | "address" | "businessType" | "status" | "permitExpiry" | "lastUpdated") {
     if (sortBy === next) {
@@ -427,6 +483,15 @@ export function EstablishmentsManagementPage() {
           <table className="min-w-full border-collapse text-sm">
             <thead>
               <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
+                <th className="px-4 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectVisibleRows}
+                    className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
+                    aria-label="Select all visible establishments"
+                  />
+                </th>
                 <ThButton label="ID / Establishment" active={sortBy === "name"} direction={sortDirection} onClick={() => toggleSort("name")} />
                 <ThButton label="Owner" active={sortBy === "owner"} direction={sortDirection} onClick={() => toggleSort("owner")} />
                 <ThButton label="Address" active={sortBy === "address"} direction={sortDirection} onClick={() => toggleSort("address")} />
@@ -441,12 +506,21 @@ export function EstablishmentsManagementPage() {
               {paginated.map((item) => {
                 const permitState = getPermitState(item.permitExpiry);
                 return (
-                  <tr key={item.id} className="group text-[var(--text)]">
+                  <tr key={item.id} className={cn("group text-[var(--text)] transition-colors", selectedIds.has(item.id) && "bg-[var(--primary)]/5")}>
                     <td className="relative px-4 py-3.5">
                       <span
                         aria-hidden="true"
                         className="pointer-events-none absolute left-0 top-0 h-full w-0.5 bg-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
                       />
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(item.id)}
+                        onChange={() => toggleSelectRow(item.id)}
+                        className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
+                        aria-label={`Select ${item.name}`}
+                      />
+                    </td>
+                    <td className="px-4 py-3.5">
                       <p className="text-[var(--text)]">{item.name}</p>
                       <p className="text-[11px] font-medium text-[var(--muted)]">{item.id}</p>
                     </td>
@@ -482,6 +556,52 @@ export function EstablishmentsManagementPage() {
             </tbody>
           </table>
         </div>
+
+        {selectedIds.size > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--primary)]/[0.03] px-6 py-3 animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="flex items-center gap-3">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] font-bold text-white">
+                {selectedIds.size}
+              </span>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--text)]">Establishments Selected</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center h-9 bg-[var(--card)] rounded-xl border border-[var(--border)] px-1">
+                <div className="relative group/bulk flex items-center">
+                  <select
+                    value={bulkStatus}
+                    onChange={(event) => {
+                      const newStatus = event.target.value as EstablishmentStatus;
+                      setBulkStatus(newStatus);
+                      if (newStatus) handleBulkStatusUpdate(newStatus);
+                    }}
+                    className="h-7 w-40 bg-transparent px-3 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] outline-none appearance-none cursor-pointer group-hover/bulk:text-[var(--primary)] transition-colors"
+                  >
+                    <option value="" disabled>Update Status...</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Suspended">Suspended</option>
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--muted)]/40 pointer-events-none group-hover/bulk:text-[var(--primary)] transition-colors" />
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleBulkDelete}
+                className="flex h-9 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-[10px] font-bold uppercase tracking-widest text-rose-600 transition-all hover:bg-rose-100 hover:border-rose-300"
+              >
+                Delete Selected
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedIds(new Set())}
+                className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition-colors px-2"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
           <div className="flex items-center gap-4">
