@@ -226,18 +226,36 @@ const ACTIVITY_SEED: ActivityLog[] = [
     actor: "Aira Flores",
     action: "Generated",
     entityType: "document",
-    entityId: "DOC-2026-00001",
-    message: "Generated Certificate of Residency for Carla Mendoza Rivera.",
-    createdAt: "2026-04-18T14:12:00.000Z",
+    entityId: "DOC-2026-50000",
+    message: "Generated Certificate of Residency for Ana Garcia Reyes.",
+    createdAt: "2026-04-18T22:12:00.000Z",
   },
   {
     id: "ACT-000002",
     actor: "Rico Santos",
     action: "Processing",
     entityType: "request",
-    entityId: "REQ-2026-00002",
-    message: "Moved request REQ-2026-00002 to Processing.",
-    createdAt: "2026-04-19T03:35:00.000Z",
+    entityId: "REQ-2026-10002",
+    message: "Moved request REQ-2026-10002 to Processing.",
+    createdAt: "2026-04-19T11:35:00.000Z",
+  },
+  {
+    id: "ACT-000003",
+    actor: "Aira Flores",
+    action: "Approved",
+    entityType: "request",
+    entityId: "REQ-2026-10003",
+    message: "Approved request REQ-2026-10003.",
+    createdAt: "2026-04-18T10:05:00.000Z",
+  },
+  {
+    id: "ACT-000004",
+    actor: "Pauline Seitz",
+    action: "Generated",
+    entityType: "document",
+    entityId: "DOC-2026-50001",
+    message: "Generated Barangay Clearance for Juan Reyes Dela Cruz.",
+    createdAt: "2026-04-17T15:20:00.000Z",
   },
 ];
 
@@ -1407,37 +1425,60 @@ export function DocumentsWorkflowPage() {
             </section>
           ) : null}
 
-          <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-2 border-b border-[var(--border)]/50 pb-3">
-              <div className="flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-[var(--primary)]" />
-                <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Recent Activity</h2>
-              </div>
-              <span className="rounded-full bg-[var(--primary)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--primary)] border border-[var(--primary)]/10">Live Feed</span>
+          <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] transition-all">
+            <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--card)] p-4 px-5">
+              <h2 className="text-sm font-bold text-[var(--text)]">Recent Activity</h2>
+              <button className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] transition-all hover:bg-[var(--card-soft)] hover:text-[var(--text)] active:scale-95">
+                View All Activity
+              </button>
             </div>
-            <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {activities.filter((activity) => {
-                if (activity.entityType === "request") {
-                  return requests.some((request) => request.id === activity.entityId && request.source === activeSource);
-                }
-                return documents.some((document) => document.code === activity.entityId && document.source === activeSource);
-              }).slice(0, 6).map((activity) => (
-                <div key={activity.id} className="group relative flex gap-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)]/50 p-3 transition-all hover:bg-[var(--card)] hover:shadow-sm">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--card)]">
-                    <div className="h-2 w-2 rounded-full bg-[var(--primary)] animate-pulse" />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xs font-medium text-[var(--text)] leading-relaxed line-clamp-2">{activity.message}</p>
-                    <div className="flex items-center gap-2 text-[10px] text-[var(--muted)]">
-                      <span className="font-bold uppercase tracking-tight text-[var(--primary)]/80">{activity.actor}</span>
-                      <span className="opacity-30">•</span>
-                      <span>{formatDate(activity.createdAt)}</span>
+            
+            <div className="divide-y divide-[var(--border)]/40 px-5 transition-all">
+              {activities
+                .filter((activity) => {
+                  if (activity.entityType === "request") {
+                    return requests.some((request) => request.id === activity.entityId && request.source === activeSource);
+                  }
+                  return documents.some((document) => document.code === activity.entityId && document.source === activeSource);
+                })
+                .slice(0, 5)
+                .map((activity) => {
+                  const getActionStyle = (action: string) => {
+                    switch (action) {
+                      case "Generated":
+                        return { icon: FileCheck2, bg: "bg-emerald-50 text-emerald-600 border-emerald-100/50" };
+                      case "Approved":
+                        return { icon: CheckCircle2, bg: "bg-amber-50 text-amber-600 border-amber-100/50" };
+                      case "Processing":
+                        return { icon: FileText, bg: "bg-blue-50 text-blue-600 border-blue-100/50" };
+                      case "Rejected":
+                        return { icon: XCircle, bg: "bg-rose-50 text-rose-600 border-rose-100/50" };
+                      default:
+                        return { icon: Clock3, bg: "bg-slate-50 text-slate-600 border-slate-100/50" };
+                    }
+                  };
+                  
+                  const style = getActionStyle(activity.action);
+                  const IconNode = style.icon;
+                  
+                  return (
+                    <div key={activity.id} className="group flex items-start gap-4 py-4 transition-colors hover:bg-[var(--primary)]/[0.01]">
+                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-transform group-hover:scale-105", style.bg)}>
+                        <IconNode className="h-5 w-5" />
+                      </div>
+                      <div className="flex flex-col gap-1 pt-0.5">
+                        <p className="text-sm font-medium leading-relaxed text-[var(--text)]">{activity.message}</p>
+                        <div className="flex items-center gap-2 text-[11px] text-[var(--muted)]">
+                          <span className="font-semibold transition-colors group-hover:text-[var(--text)]">{activity.actor}</span>
+                          <span className="opacity-30">•</span>
+                          <span>{formatDateTime(activity.createdAt)}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                ))}
-              </div>
-            </section>
+                  );
+                })}
+            </div>
+          </section>
           
       {viewRequest ? (
         <Modal title={`Request Details | ${viewRequest.id}`} onClose={() => setViewRequest(null)}>
