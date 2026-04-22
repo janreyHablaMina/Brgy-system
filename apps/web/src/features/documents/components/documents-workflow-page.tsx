@@ -118,114 +118,98 @@ const ENTITY_SEED: EntityRecord[] = [
   { id: "RES-2026-0001", source: "Residents", displayName: "Maria Lopez Santos", subtitle: "Purok 1", href: "/residents?search=RES-2026-0001" },
   { id: "RES-2026-0002", source: "Residents", displayName: "Juan Reyes Dela Cruz", subtitle: "Purok 2", href: "/residents?search=RES-2026-0002" },
   { id: "RES-2026-0005", source: "Residents", displayName: "Carla Mendoza Rivera", subtitle: "Purok 4", href: "/residents?search=RES-2026-0005" },
+  { id: "RES-2026-0007", source: "Residents", displayName: "Pedro Cruz Luna", subtitle: "Purok 1", href: "/residents?search=RES-2026-0007" },
+  { id: "RES-2026-0008", source: "Residents", displayName: "Mark Lim Aquino", subtitle: "Purok 2", href: "/residents?search=RES-2026-0008" },
   { id: "EST-2026-0001", source: "Establishments", displayName: "Salaza Mart", subtitle: "Retail | Purok 1", href: "/establishments?search=EST-2026-0001" },
   { id: "EST-2026-0002", source: "Establishments", displayName: "Kusina ni Liza", subtitle: "Food & Beverage | Purok 2", href: "/establishments?search=EST-2026-0002" },
   { id: "LOT-2026-0001", source: "Lots / Buildings", displayName: "Lot 12 Block 4", subtitle: "Purok 3 | Tax Dec 2026-3321", href: "/reports" },
   { id: "CASE-2026-0009", source: "Case Records / VAWC", displayName: "Case Referral 2026-0009", subtitle: "VAWC | Confidential Record", href: "/reports" },
 ];
 
-const REQUEST_SEED: DocumentRequest[] = [
-  {
-    id: "REQ-2026-00001",
-    source: "Residents",
-    entityId: "RES-2026-0001",
-    documentType: "Barangay Clearance",
-    purpose: "Local employment requirement",
-    requestedAt: "2026-04-20T08:50:00.000Z",
-    status: "Pending",
-  },
-  {
-    id: "REQ-2026-00002",
-    source: "Residents",
-    entityId: "RES-2026-0002",
-    documentType: "Certificate of Indigency",
-    purpose: "Medical assistance application",
-    requestedAt: "2026-04-19T03:20:00.000Z",
-    status: "Processing",
-    assignedTo: "Rico Santos",
-  },
-  {
-    id: "REQ-2026-00003",
-    source: "Residents",
-    entityId: "RES-2026-0005",
-    documentType: "Certificate of Residency",
-    purpose: "School scholarship submission",
-    requestedAt: "2026-04-18T13:42:00.000Z",
-    status: "Approved",
-    assignedTo: "Aira Flores",
-    generatedDocumentId: "DOC-ROW-001",
-  },
-  {
-    id: "REQ-2026-00004",
-    source: "Establishments",
-    entityId: "EST-2026-0001",
-    documentType: "Business Endorsement",
-    purpose: "Permit renewal endorsement",
-    requestedAt: "2026-04-17T10:10:00.000Z",
-    status: "Processing",
-    assignedTo: "Miguel Ramos",
-  },
-  {
-    id: "REQ-2026-00005",
-    source: "Lots / Buildings",
-    entityId: "LOT-2026-0001",
-    documentType: "Barangay Clearance",
-    purpose: "Lot occupancy validation",
-    requestedAt: "2026-04-16T05:30:00.000Z",
-    status: "Pending",
-  },
-  {
-    id: "REQ-2026-00006",
-    source: "Case Records / VAWC",
-    entityId: "CASE-2026-0009",
-    documentType: "Certificate of Indigency",
-    purpose: "Legal aid support documentation",
-    requestedAt: "2026-04-16T02:30:00.000Z",
-    status: "Rejected",
-    remarks: "Requires additional referral form",
-  },
-];
+function generateRequestSeed(): DocumentRequest[] {
+  const requests: DocumentRequest[] = [];
+  const resEntities = ENTITY_SEED.filter(e => e.source === "Residents");
+  
+  // 18 Pending
+  for (let i = 1; i <= 18; i++) {
+    requests.push({
+      id: `REQ-2026-${10000 + i}`,
+      source: "Residents",
+      entityId: resEntities[i % resEntities.length].id,
+      documentType: DOCUMENT_TYPES[i % DOCUMENT_TYPES.length],
+      purpose: "General requirement",
+      requestedAt: new Date(Date.now() - i * 3600000).toISOString(),
+      status: "Pending",
+    });
+  }
+  // 7 Processing
+  for (let i = 1; i <= 7; i++) {
+    requests.push({
+      id: `REQ-2026-${20000 + i}`,
+      source: "Residents",
+      entityId: resEntities[i % resEntities.length].id,
+      documentType: DOCUMENT_TYPES[i % DOCUMENT_TYPES.length],
+      purpose: "Processing request",
+      requestedAt: new Date(Date.now() - i * 7200000).toISOString(),
+      status: "Processing",
+      assignedTo: STAFF_MEMBERS[i % STAFF_MEMBERS.length],
+    });
+  }
+  // 42 Approved
+  for (let i = 1; i <= 42; i++) {
+    requests.push({
+      id: `REQ-2026-${30000 + i}`,
+      source: "Residents",
+      entityId: resEntities[i % resEntities.length].id,
+      documentType: DOCUMENT_TYPES[i % DOCUMENT_TYPES.length],
+      purpose: "Approved requirement",
+      requestedAt: new Date(Date.now() - i * 86400000).toISOString(),
+      status: "Approved",
+      assignedTo: STAFF_MEMBERS[i % STAFF_MEMBERS.length],
+    });
+  }
+  // 6 Rejected
+  for (let i = 1; i <= 6; i++) {
+    requests.push({
+      id: `REQ-2026-${40000 + i}`,
+      source: "Residents",
+      entityId: resEntities[i % resEntities.length].id,
+      documentType: DOCUMENT_TYPES[i % DOCUMENT_TYPES.length],
+      purpose: "Incomplete details",
+      requestedAt: new Date(Date.now() - i * 172800000).toISOString(),
+      status: "Rejected",
+      remarks: "Missing supporting documents",
+    });
+  }
+  return requests;
+}
 
-const DOCUMENT_SEED: GeneratedDocument[] = [
-  {
-    id: "DOC-ROW-001",
-    code: "DOC-2026-00001",
-    requestId: "REQ-2026-00003",
-    source: "Residents",
-    entityId: "RES-2026-0005",
-    documentType: "Certificate of Residency",
-    purpose: "School scholarship submission",
-    generatedBy: "Aira Flores",
-    generatedAt: "2026-04-18T14:12:00.000Z",
-    validUntil: "2027-04-18T14:12:00.000Z",
-    status: "Released",
-  },
-  {
-    id: "DOC-ROW-002",
-    code: "DOC-2026-00002",
-    requestId: "REQ-2026-00004",
-    source: "Establishments",
-    entityId: "EST-2026-0001",
-    documentType: "Business Endorsement",
-    purpose: "Permit renewal endorsement",
-    generatedBy: "Miguel Ramos",
-    generatedAt: "2026-04-17T11:00:00.000Z",
-    status: "Generated",
-  },
-  {
-    id: "DOC-ROW-003",
-    code: "DOC-2026-00003",
-    requestId: "REQ-2026-08812",
-    source: "Residents",
-    entityId: "RES-2026-0001",
-    documentType: "Barangay Clearance",
-    purpose: "Job application",
-    generatedBy: "Pauline Seitz",
-    generatedAt: "2026-03-28T02:45:00.000Z",
-    validUntil: "2026-09-24T02:45:00.000Z",
-    status: "Archived",
-  },
-];
+function generateDocumentSeed(reqs: DocumentRequest[]): GeneratedDocument[] {
+  const documents: GeneratedDocument[] = [];
+  const approvedReqs = reqs.filter(r => r.status === "Approved");
+  
+  // 35 Generated (recent)
+  for (let i = 0; i < 35; i++) {
+    const r = approvedReqs[i % approvedReqs.length];
+    documents.push({
+      id: `DOC-ROW-${i}`,
+      code: `DOC-2026-${50000 + i}`,
+      requestId: r.id,
+      source: r.source,
+      entityId: r.entityId,
+      documentType: r.documentType,
+      purpose: r.purpose,
+      generatedBy: r.assignedTo || STAFF_MEMBERS[0],
+      generatedAt: new Date(Date.now() - i * 1800000).toISOString(),
+      validUntil: new Date(Date.now() + 180 * 86400000).toISOString(),
+      status: "Generated",
+    });
+  }
+  return documents;
+}
+
+const REQUEST_SEED = generateRequestSeed();
+const DOCUMENT_SEED = generateDocumentSeed(REQUEST_SEED);
 
 const ACTIVITY_SEED: ActivityLog[] = [
   {
@@ -649,13 +633,13 @@ export function DocumentsWorkflowPage() {
 
   return (
     <section className="space-y-6">
-      <header className="space-y-5 px-1">
+      <header className="px-1">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold text-[var(--text)]">Documents & Certificates</h1>
-            <p className="mt-1 text-xs text-[var(--muted)]">Manage document requests, processing, and generated certificates for residents and other entities.</p>
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--text)]">Documents & Certificates</h1>
+            <p className="mt-1 text-sm text-[var(--muted)]">Manage document requests, processing, and generated certificates for residents and other entities.</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => {
@@ -665,9 +649,9 @@ export function DocumentsWorkflowPage() {
                 ];
                 exportCsv(`report-${activeSource.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.csv`, csvData);
               }}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] shadow-sm"
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] hover:border-[var(--primary)]/40"
             >
-              <FileDown className="h-4 w-4 text-[var(--primary)]" />
+              <Download className="h-4 w-4 text-[var(--primary)]" />
               Export Report
             </button>
             <button
@@ -682,7 +666,7 @@ export function DocumentsWorkflowPage() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <SummaryCard icon={ClipboardList} label="Pending Requests" value={summary.pending} tone="blue" viewAllText="View all pending" />
           <SummaryCard icon={Clock3} label="Processing" value={summary.processing} tone="amber" viewAllText="View all processing" />
           <SummaryCard icon={CheckCircle2} label="Approved" value={summary.approved} tone="emerald" viewAllText="View all approved" />
@@ -690,7 +674,7 @@ export function DocumentsWorkflowPage() {
           <SummaryCard icon={XCircle} label="Rejected" value={summary.rejected} tone="rose" viewAllText="View all rejected" />
         </div>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)]/90 p-3 shadow-sm">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/90 p-3 shadow-sm">
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Source Workspace</p>
             <span className="text-xs text-[var(--muted)]">Choose dataset</span>
@@ -730,7 +714,7 @@ export function DocumentsWorkflowPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
           <div className="mb-2 flex items-center justify-between">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Workflow Visibility</p>
             <span className="text-xs text-[var(--muted)]">{activeSource}</span>
@@ -751,7 +735,7 @@ export function DocumentsWorkflowPage() {
           ) : null}
         </div>
 
-        <div className="inline-flex flex-wrap gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm">
+        <div className="inline-flex flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm">
           {VIEW_TABS.map((tab) => (
             <button
               key={tab}
@@ -771,7 +755,7 @@ export function DocumentsWorkflowPage() {
       </header>
 
       {activeTab === "Requests" ? (
-        <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+        <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
           <div className="border-b border-[var(--border)] p-4">
             <div className="grid gap-3 md:grid-cols-[1.7fr_auto_auto]">
               <label>
@@ -946,7 +930,7 @@ export function DocumentsWorkflowPage() {
       ) : null}
 
       {activeTab === "Generated Documents" ? (
-        <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+        <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
           <div className="border-b border-[var(--border)] p-4">
             <div className="grid gap-3 md:grid-cols-[1.7fr_auto_auto]">
               <label>
@@ -1114,7 +1098,7 @@ export function DocumentsWorkflowPage() {
         </section>
       ) : null}
 
-      <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+      <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Recent Activity</h2>
           <span className="rounded-full border border-[var(--border)] bg-[var(--card-soft)] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Audit Log</span>
@@ -1171,7 +1155,7 @@ export function DocumentsWorkflowPage() {
 
       {viewDocument ? (
         <Modal title={`Generated Document | ${viewDocument.code}`} onClose={() => setViewDocument(null)}>
-          <DetailGrid
+          <DetailGrid
             items={[
               { label: "Document Code", value: viewDocument.code },
               { label: "Request ID", value: viewDocument.requestId },
@@ -1217,23 +1201,43 @@ function SummaryCard({
               ? "border-purple-300/30 bg-purple-500/5 text-purple-600"
               : "border-emerald-300/30 bg-emerald-500/5 text-emerald-600";
 
+  const iconBg = 
+    tone === "amber" ? "bg-amber-50" :
+    tone === "blue" ? "bg-blue-50" :
+    tone === "rose" ? "bg-rose-50" :
+    tone === "cyan" ? "bg-cyan-50" :
+    tone === "purple" ? "bg-purple-50" : "bg-emerald-50";
+
   return (
-    <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-sm transition-all hover:shadow-md">
-      <div className="flex items-center justify-between">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{label}</p>
-        <div className={cn("rounded-lg border p-2", toneClass)}>
-          <Icon className="h-4 w-4" />
+    <article className={cn(
+      "relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition-all hover:border-[var(--primary)]/20",
+      "before:absolute before:left-0 before:top-0 before:h-full before:w-1",
+      tone === "amber" ? "before:bg-amber-400" :
+      tone === "blue" ? "before:bg-blue-400" :
+      tone === "rose" ? "before:bg-rose-400" :
+      tone === "cyan" ? "before:bg-cyan-400" :
+      tone === "purple" ? "before:bg-purple-400" : "before:bg-emerald-400"
+    )}>
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">{label}</p>
+          <p className="text-3xl font-bold text-[var(--text)]">{value}</p>
+        </div>
+        <div className={cn("rounded-xl p-2.5", iconBg, toneClass.split(' ')[2])}>
+          <Icon className="h-5 w-5" />
         </div>
       </div>
-      <div>
-        <p className="mt-1 text-2xl font-semibold text-[var(--text)]">{value}</p>
-        {viewAllText ? (
-          <div className="mt-3 flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)] transition-colors hover:text-[var(--primary)] cursor-pointer">
+      
+      {viewAllText && (
+        <div className="group mt-4 flex items-center justify-between border-t border-[var(--border)]/50 pt-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] transition-colors group-hover:text-[var(--primary)]">
             {viewAllText}
+          </span>
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--card-soft)] transition-all group-hover:bg-[var(--primary)] group-hover:text-white">
             <ChevronRight className="h-3 w-3" />
           </div>
-        ) : null}
-      </div>
+        </div>
+      )}
     </article>
   );
 }
@@ -1387,7 +1391,7 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-2xl">
+      <div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-2xl">
         <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
           <h2 className="text-lg font-semibold text-[var(--text)]">{title}</h2>
           <button type="button" onClick={onClose} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] hover:border-[var(--primary)]/40">
