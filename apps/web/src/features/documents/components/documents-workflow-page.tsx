@@ -1391,32 +1391,51 @@ export function DocumentsWorkflowPage() {
       </main>
 
           {activeTab === "Analytics" ? (
-            <section className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
-              <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Request Volume By Type</h2>
-                <div className="mt-4 space-y-3">
+            <section className="grid gap-6 xl:grid-cols-[1.6fr_1fr] transition-all">
+              <article className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5">
+                <div className="flex items-center gap-2 border-b border-[var(--border)]/50 pb-3">
+                  <Layers3 className="h-4 w-4 text-[var(--primary)]" />
+                  <h2 className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Request Volume By Type</h2>
+                </div>
+                <div className="mt-6 space-y-6">
                   {requestTypeCounts().map((row) => (
-                    <div key={row.type}>
-                      <div className="mb-1 flex items-center justify-between text-xs">
-                        <span className="font-medium text-[var(--text)]">{row.type}</span>
-                        <span className="text-[var(--muted)]">{row.count}</span>
+                    <div key={row.type} className="group">
+                      <div className="mb-2.5 flex items-center justify-between text-xs">
+                        <span className="font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--primary)]">{row.type}</span>
+                        <span className="text-[11px] font-bold text-[var(--muted)]">{row.count}</span>
                       </div>
-                      <div className="h-2 rounded-full bg-[var(--card-soft)]">
-                        <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${Math.max(6, (row.count / Math.max(1, filteredRequests.length || 1)) * 100)}%` }} />
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--primary)]/[0.04]">
+                        <div 
+                          className="h-full rounded-full bg-[var(--primary)] transition-all duration-1000 group-hover:bg-[var(--primary)]" 
+                          style={{ width: `${Math.max(6, (row.count / Math.max(1, filteredRequests.length || 1)) * 100)}%` }} 
+                        />
                       </div>
                     </div>
                   ))}
                 </div>
               </article>
-              <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Staff Productivity</h2>
-                <div className="mt-4 space-y-3">
+
+              <article className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5">
+                <div className="flex items-center gap-2 border-b border-[var(--border)]/50 pb-3">
+                  <UserRound className="h-4 w-4 text-[var(--primary)]" />
+                  <h2 className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Staff Productivity</h2>
+                </div>
+                <div className="mt-6 space-y-4">
                   {staffOutput().map((staff) => (
-                    <div key={staff.staff} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3 shadow-sm transition-all hover:border-[var(--primary)]/30">
-                      <p className="text-sm font-semibold text-[var(--text)]">{staff.staff}</p>
-                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-[var(--muted)]">
-                        <span>Assigned: {staff.assigned}</span>
-                        <span>Generated: {staff.generated}</span>
+                    <div key={staff.staff} className="group rounded-2xl border border-[var(--border)] bg-[var(--card-soft)]/40 p-4 transition-all hover:border-[var(--primary)]/30 hover:bg-[var(--card)]">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-bold text-[var(--text)]">{staff.staff}</p>
+                        <div className="h-1.5 w-1.5 rounded-full bg-[var(--primary)]/40" />
+                      </div>
+                      <div className="mt-4 grid grid-cols-2 gap-6 border-t border-[var(--border)]/20 pt-4">
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Assigned</span>
+                          <p className="text-sm font-black tracking-tight text-[var(--text)]">{staff.assigned}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Generated</span>
+                          <p className="text-sm font-black tracking-tight text-[var(--primary)]">{staff.generated}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
