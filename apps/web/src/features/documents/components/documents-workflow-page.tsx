@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState, Fragment } from "react";
 import {
   Archive,
   ArrowUpDown,
@@ -20,15 +20,24 @@ import {
   FileText,
   Filter,
   Layers3,
+  MoreHorizontal,
+  Pencil,
   Plus,
   Printer,
   RefreshCcw,
+  RotateCcw,
   Search,
   ShieldAlert,
+  Trash2,
   UserRound,
+  Calendar,
+  X,
   XCircle,
 } from "lucide-react";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { Avatar } from "@/components/ui/avatar";
+import { Sheet } from "@/components/ui/sheet";
 import type {
   ActivityLog,
   DocumentRequest,
@@ -237,6 +246,7 @@ export function DocumentsWorkflowPage() {
   const [role, setRole] = useState<UserRole>("Admin");
   const [activeSource, setActiveSource] = useState<DocumentSource>("Residents");
   const [activeTab, setActiveTab] = useState<(typeof VIEW_TABS)[number]>("Requests");
+  const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
 
   const [requests, setRequests] = useState<DocumentRequest[]>(REQUEST_SEED);
   const [documents, setDocuments] = useState<GeneratedDocument[]>(DOCUMENT_SEED);
@@ -268,6 +278,9 @@ export function DocumentsWorkflowPage() {
   const [documentSortBy, setDocumentSortBy] = useState<"date" | "name" | "type">("date");
   const [documentSortDirection, setDocumentSortDirection] = useState<"asc" | "desc">("desc");
   const [documentPage, setDocumentPage] = useState(1);
+
+  const requestRowsPerPage = 8;
+  const documentRowsPerPage = 8;
 
   const permissions = ROLE_PERMISSIONS[role];
   const currentActor = role === "Viewer" ? "Read Only User" : "Pauline Seitz";
@@ -305,14 +318,60 @@ export function DocumentsWorkflowPage() {
     [documentRows, entityMap, documentSortBy, documentSortDirection]
   );
 
-  const requestRowsPerPage = 8;
-  const documentRowsPerPage = 8;
   const requestPages = Math.max(1, Math.ceil(filteredRequests.length / requestRowsPerPage));
   const documentPages = Math.max(1, Math.ceil(filteredDocuments.length / documentRowsPerPage));
   const safeRequestPage = Math.min(requestPage, requestPages);
   const safeDocumentPage = Math.min(documentPage, documentPages);
   const paginatedRequests = filteredRequests.slice((safeRequestPage - 1) * requestRowsPerPage, safeRequestPage * requestRowsPerPage);
   const paginatedDocuments = filteredDocuments.slice((safeDocumentPage - 1) * documentRowsPerPage, safeDocumentPage * documentRowsPerPage);
+
+  const allVisibleRequestsSelected =
+    paginatedRequests.length > 0 && paginatedRequests.every((r) => selectedRequestIds.has(r.id));
+
+  const allVisibleDocumentsSelected =
+    paginatedDocuments.length > 0 && paginatedDocuments.every((d) => selectedDocumentIds.has(d.id));
+
+  function toggleSelectRequest(id: string) {
+    setSelectedRequestIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectVisibleRequests() {
+    setSelectedRequestIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleRequestsSelected) {
+        paginatedRequests.forEach((r) => next.delete(r.id));
+      } else {
+        paginatedRequests.forEach((r) => next.add(r.id));
+      }
+      return next;
+    });
+  }
+
+  function toggleSelectDocument(id: string) {
+    setSelectedDocumentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectVisibleDocuments() {
+    setSelectedDocumentIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleDocumentsSelected) {
+        paginatedDocuments.forEach((d) => next.delete(d.id));
+      } else {
+        paginatedDocuments.forEach((d) => next.add(d.id));
+      }
+      return next;
+    });
+  }
 
   const summary = useMemo(() => {
     const sourceRequests = requests.filter((request) => request.source === activeSource);
@@ -674,450 +733,712 @@ export function DocumentsWorkflowPage() {
           <SummaryCard icon={XCircle} label="Rejected" value={summary.rejected} tone="rose" viewAllText="View all rejected" />
         </div>
 
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)]/90 p-3 shadow-sm">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Source Workspace</p>
-            <span className="text-xs text-[var(--muted)]">Choose dataset</span>
-          </div>
-          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-            {SOURCES.map((source) => {
-              const count = sourceCounts.find((row) => row.source === source)?.requests ?? 0;
+        <div className="mt-8 flex items-center gap-1.5 rounded-2xl bg-[var(--card-soft)]/50 p-2 border border-[var(--border)]/50">
+          {SOURCES.map((source) => {
+            const count = sourceCounts.find((row) => row.source === source)?.requests ?? 0;
+            const isActive = activeSource === source;
+            return (
+              <button
+                key={source}
+                type="button"
+                onClick={() => {
+                  setActiveSource(source);
+                  setRequestPage(1);
+                  setDocumentPage(1);
+                  setSelectedRequestIds(new Set());
+                  setSelectedDocumentIds(new Set());
+                  setExpandedRequestId(null);
+                }}
+                className={cn(
+                  "relative flex flex-1 items-center justify-center gap-3 rounded-xl px-6 py-3 text-[13px] font-bold tracking-tight transition-all duration-300",
+                  isActive
+                    ? "bg-[var(--primary)] text-white shadow-sm"
+                    : "text-[var(--muted)] hover:bg-[var(--card)]/80 hover:text-[var(--text)]"
+                )}
+              >
+                <div className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-300",
+                  isActive ? "bg-white/20 scale-110" : "bg-[var(--card-soft)] group-hover:bg-[var(--card)]"
+                )}>
+                  {source === "Residents" ? <UserRound className="h-4 w-4" /> : null}
+                  {source === "Establishments" ? <Building2 className="h-4 w-4" /> : null}
+                  {source === "Lots / Buildings" ? <Layers3 className="h-4 w-4" /> : null}
+                  {source === "Case Records / VAWC" ? <ShieldAlert className="h-4 w-4" /> : null}
+                </div>
+                {source}
+                <span className={cn(
+                  "ml-1 flex h-6 min-w-[24px] items-center justify-center rounded-full px-2 text-[10px] font-black tracking-tighter transition-all duration-300",
+                  isActive 
+                    ? "bg-white text-[var(--primary)] shadow-sm" 
+                    : "bg-[var(--border)] text-[var(--muted)] group-hover:bg-[var(--primary)]/20"
+                )}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+
+        <div className="mt-8">
+          <div className="flex items-center gap-1.5 rounded-2xl bg-[var(--card-soft)]/50 p-2 border border-[var(--border)]/50">
+            {VIEW_TABS.map((tab) => {
+              const isActive = activeTab === tab;
               return (
                 <button
-                  key={source}
+                  key={tab}
                   type="button"
-                  onClick={() => {
-                    setActiveSource(source);
-                    setRequestPage(1);
-                    setDocumentPage(1);
-                    setSelectedRequestIds(new Set());
-                    setSelectedDocumentIds(new Set());
-                  }}
+                  onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "inline-flex items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left text-xs font-bold uppercase tracking-[0.11em] transition-all",
-                    activeSource === source
-                      ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_8px_18px_rgba(var(--primary-rgb),0.2)]"
-                      : "border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:border-[var(--primary)]/40 hover:bg-[var(--card-soft)] hover:text-[var(--text)]"
+                    "flex-1 rounded-xl px-6 py-3 text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300",
+                    isActive
+                      ? "bg-[var(--primary)] text-white shadow-sm"
+                      : "text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--card)]/40"
                   )}
                 >
-                  <span className="inline-flex items-center gap-2">
-                    {source === "Residents" ? <UserRound className="h-4 w-4" /> : null}
-                    {source === "Establishments" ? <Building2 className="h-4 w-4" /> : null}
-                    {source === "Lots / Buildings" ? <Layers3 className="h-4 w-4" /> : null}
-                    {source === "Case Records / VAWC" ? <ShieldAlert className="h-4 w-4" /> : null}
-                    {source}
-                  </span>
-                  <span className={cn("rounded-full px-2 py-0.5 text-[10px]", activeSource === source ? "bg-white/20" : "bg-[var(--card-soft)]")}>{count}</span>
+                  {tab}
                 </button>
               );
             })}
           </div>
         </div>
-
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Workflow Visibility</p>
-            <span className="text-xs text-[var(--muted)]">{activeSource}</span>
-          </div>
-          <div className="grid gap-2 md:grid-cols-5">
-            {WORKFLOW_STEPS.map((step, index) => (
-              <div key={step} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 text-center shadow-sm">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Step {index + 1}</p>
-                <p className="mt-0.5 text-xs font-semibold text-[var(--text)]">{step}</p>
-              </div>
-            ))}
-          </div>
-          {(pendingAlerts > 0 || rejectedAlerts > 0) ? (
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-              {pendingAlerts > 0 ? <AlertPill tone="amber" text={`${pendingAlerts} requests need processing`} /> : null}
-              {rejectedAlerts > 0 ? <AlertPill tone="rose" text={`${rejectedAlerts} rejected requests need review`} /> : null}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="inline-flex flex-wrap gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm">
-          {VIEW_TABS.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={cn(
-                "rounded-xl border px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-all",
-                activeTab === tab
-                  ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-                  : "border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:border-[var(--primary)]/40 hover:text-[var(--text)]"
-              )}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
       </header>
 
-      {activeTab === "Requests" ? (
-        <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-          <div className="border-b border-[var(--border)] p-4">
-            <div className="grid gap-3 md:grid-cols-[1.7fr_auto_auto]">
-              <label>
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Search Requests</span>
-                <div className="relative mt-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                  <input
-                    value={requestSearch}
-                    onChange={(event) => {
-                      setRequestSearch(event.target.value);
-                      setRequestPage(1);
-                    }}
-                    placeholder="Request ID, entity, type, assignee"
-                    className="h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] pl-9 pr-3 text-sm text-[var(--text)] shadow-sm outline-none focus:border-[var(--primary)]/40"
+      <main className="relative px-1">
+        <div className="w-full">
+          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] transition-all">
+            <div className="border-b border-[var(--border)] bg-[var(--card)] p-5">
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 items-end">
+                  <label className="flex flex-col gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] px-1">Search Records</span>
+                    <div className="relative group">
+                      <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)] transition-colors group-focus-within:text-[var(--primary)]" />
+                      <input
+                        type="text"
+                        placeholder="ID, Name, Type, Purpose..."
+                        value={activeTab === "Requests" ? requestSearch : documentSearch}
+                        onChange={(e) => (activeTab === "Requests" ? setRequestSearch(e.target.value) : setDocumentSearch(e.target.value))}
+                        className="h-10 w-full rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] pl-10 pr-4 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]/40 hover:border-[var(--border-hover)] transition-all"
+                      />
+                    </div>
+                  </label>
+
+                  <FilterSelect 
+                    label="Status" 
+                    value={activeTab === "Requests" ? requestStatusFilter : documentStatusFilter} 
+                    options={activeTab === "Requests" ? REQUEST_STATUS_OPTIONS : GENERATED_STATUS_OPTIONS} 
+                    onChange={(v) => activeTab === "Requests" ? setRequestStatusFilter(v as any) : setDocumentStatusFilter(v as any)} 
                   />
+                  
+                  <FilterSelect 
+                    label="Document Type" 
+                    value={activeTab === "Requests" ? requestTypeFilter : documentTypeFilter} 
+                    options={["All", ...DOCUMENT_TYPES]} 
+                    onChange={(v) => activeTab === "Requests" ? setRequestTypeFilter(v as any) : setDocumentTypeFilter(v as any)} 
+                  />
+
+                  <DateFilter label="From Date" value={activeTab === "Requests" ? requestFrom : documentFrom} onChange={(v) => activeTab === "Requests" ? setRequestFrom(v) : setDocumentFrom(v)} />
+                  <DateFilter label="To Date" value={activeTab === "Requests" ? requestTo : documentTo} onChange={(v) => activeTab === "Requests" ? setRequestTo(v) : setDocumentTo(v)} />
+                  <button 
+                    onClick={() => {
+                      if (activeTab === "Requests") {
+                        setRequestSearch("");
+                        setRequestStatusFilter("All");
+                        setRequestTypeFilter("All");
+                        setRequestFrom("");
+                        setRequestTo("");
+                      } else {
+                        setDocumentSearch("");
+                        setDocumentStatusFilter("All");
+                        setDocumentTypeFilter("All");
+                        setDocumentFrom("");
+                        setDocumentTo("");
+                      }
+                    }}
+                    className="flex h-10 items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-5 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:bg-[var(--card)] hover:text-[var(--text)] hover:border-[var(--primary)]/30 transition-all active:scale-95 whitespace-nowrap"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Reset Filters
+                  </button>
                 </div>
-              </label>
-              <SortButton
-                label={`Sort: ${requestSortBy}`}
-                onClick={() => setRequestSortBy((prev) => (prev === "date" ? "name" : prev === "name" ? "type" : "date"))}
-              />
-              <button
-                type="button"
-                onClick={() => setShowRequestFilters((prev) => !prev)}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-xs font-semibold text-[var(--text)] shadow-sm"
-              >
-                <Filter className="h-4 w-4" />
-                Filters
-                <ChevronDown className={cn("h-4 w-4 transition-transform", showRequestFilters ? "rotate-180" : "")} />
-              </button>
+              </div>
             </div>
 
-            {showRequestFilters ? (
-              <div className="mt-3 grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)]/55 p-3 md:grid-cols-4">
-                <FilterSelect label="Status" value={requestStatusFilter} options={REQUEST_STATUS_OPTIONS} onChange={(value) => setRequestStatusFilter(value as "All" | RequestStatus)} />
-                <FilterSelect label="Type" value={requestTypeFilter} options={["All", ...DOCUMENT_TYPES]} onChange={(value) => setRequestTypeFilter(value as "All" | DocumentType)} />
-                <DateFilter label="From" value={requestFrom} onChange={setRequestFrom} />
-                <DateFilter label="To" value={requestTo} onChange={setRequestTo} />
-              </div>
+            {activeTab === "Requests" ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <thead>
+                      <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
+                        <th className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={allVisibleRequestsSelected}
+                            onChange={toggleSelectVisibleRequests}
+                            className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
+                            aria-label="Select all visible requests"
+                          />
+                        </th>
+                        <ThButton label="Request ID / Type" active={requestSortBy === "type"} direction={requestSortDirection} onClick={() => { setRequestSortBy("type"); setRequestSortDirection(d => d === "asc" ? "desc" : "asc"); }} />
+                        <ThButton label="Resident" active={requestSortBy === "name"} direction={requestSortDirection} onClick={() => { setRequestSortBy("name"); setRequestSortDirection(d => d === "asc" ? "desc" : "asc"); }} />
+                        <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Purpose</th>
+                        <ThButton label="Requested At" active={requestSortBy === "date"} direction={requestSortDirection} onClick={() => { setRequestSortBy("date"); setRequestSortDirection(d => d === "asc" ? "desc" : "asc"); }} />
+                        <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Assigned To</th>
+                        <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Status</th>
+                        <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--border)]/40">
+                      {paginatedRequests.map((request) => {
+                        const entity = resolveEntity(request.source, request.entityId);
+                        const isSelected = selectedRequestIds.has(request.id);
+                        const isExpanded = expandedRequestId === request.id;
+                        
+                        return (
+                          <React.Fragment key={request.id}>
+                            <tr 
+                              className={cn(
+                                "group relative transition-all hover:bg-[var(--primary)]/[0.02]",
+                                isSelected && "bg-[var(--primary)]/[0.04]",
+                                isExpanded && "bg-[var(--primary)]/[0.06]"
+                              )}
+                            >
+                              <td className="relative px-4 py-3.5 text-center">
+                                <span
+                                  aria-hidden="true"
+                                  className="pointer-events-none absolute left-0 top-0 h-full w-0.5 bg-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
+                                />
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleSelectRequest(request.id)}
+                                  className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
+                                />
+                              </td>
+                              <td className="px-4 py-3.5 cursor-pointer" onClick={() => setExpandedRequestId(isExpanded ? null : request.id)}>
+                                <div className="flex flex-col">
+                                  <span className="text-[11px] font-medium text-[var(--muted)] uppercase tracking-wider">{request.id}</span>
+                                  <span className="tracking-tight text-[var(--text)]">{request.documentType}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3.5">
+                                <div className="flex items-center gap-3">
+                                  <Avatar 
+                                    src="/avatar.png"
+                                    name={entity?.displayName ?? request.entityId} 
+                                    hideText 
+                                    className="h-9 w-9" 
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="tracking-tight text-[var(--text)] font-medium">{entity?.displayName ?? request.entityId}</span>
+                                    <span className="text-[10px] font-medium text-[var(--muted)]">resident-profile.v1</span>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3.5">
+                                <p className="max-w-[160px] truncate text-xs font-medium text-[var(--muted)]" title={request.purpose}>{request.purpose}</p>
+                              </td>
+                              <td className="px-4 py-3.5">
+                                  <div className="flex flex-col">
+                                    <span className="text-xs font-medium text-[var(--text)] tracking-tight">{formatDate(request.requestedAt)}</span>
+                                    <span className="text-[10px] font-medium text-[var(--muted)]">{new Date(request.requestedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  </div>
+                              </td>
+                              <td className="px-4 py-3.5">
+                                {request.assignedTo ? (
+                                  <div className="flex items-center gap-2 rounded-lg bg-[var(--card-soft)]/50 px-2 py-1 border border-[var(--border)]/50 w-fit">
+                                    <Avatar name={request.assignedTo} hideText className="scale-75 origin-left" />
+                                    <span className="text-[11px] font-medium text-[var(--text)]">{request.assignedTo.split(' ')[0]}</span>
+                                  </div>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] opacity-50">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                                    Unassigned
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3.5">
+                                <StatusChip status={request.status} tone={requestStatusTone(request.status)} />
+                              </td>
+                              <td className="px-4 py-3.5 text-right">
+                                <DropdownMenu
+                                  className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
+                                  trigger={<MoreHorizontal className="h-4 w-4" />}
+                                  items={[
+                                    { label: "View Details", icon: Eye, onClick: () => setExpandedRequestId(isExpanded ? null : request.id) },
+                                    { label: "Approve Request", icon: FileCheck2, onClick: () => updateRequestStatus(request.id, "Approved"), disabled: request.status === "Approved" || request.status === "Rejected" },
+                                    { label: "Reject Request", icon: XCircle, onClick: () => updateRequestStatus(request.id, "Rejected"), disabled: request.status === "Approved" || request.status === "Rejected" },
+                                    { label: "Generate Document", icon: Download, onClick: () => generateFromRequest(request.id), disabled: request.status === "Rejected" },
+                                    { type: "separator" },
+                                    { label: "Edit Purpose", icon: Pencil },
+                                    { label: "Delete Request", icon: Trash2, className: "text-rose-600 hover:bg-rose-50" },
+                                  ]}
+                                />
+                              </td>
+                            </tr>
+                            {isExpanded && (
+                              <tr className="bg-[var(--primary)]/[0.02]">
+                                <td colSpan={9} className="px-6 py-8 border-b border-[var(--border)]">
+                                  <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                                    <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-8">
+                                      <div className="space-y-6">
+                                        <div className="flex items-start gap-5">
+                                          <Avatar name={entity?.displayName ?? request.entityId} className="h-20 w-20 shrink-0 border-4 border-white shadow-xl ring-1 ring-[var(--border)]" />
+                                          <div className="flex-1">
+                                            <div className="flex items-center gap-3">
+                                              <h4 className="text-2xl font-black tracking-tight text-[var(--text)]">{entity?.displayName ?? request.entityId}</h4>
+                                              <StatusChip status={request.status} tone={requestStatusTone(request.status)} />
+                                            </div>
+                                            <p className="mt-1 text-sm text-[var(--muted)] font-bold uppercase tracking-widest">{entity?.subtitle ?? "Resident Profile"}</p>
+                                            
+                                            <div className="mt-4 grid grid-cols-2 gap-4">
+                                              <div className="rounded-xl bg-white p-3 border border-[var(--border)] shadow-sm">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Requested Document</p>
+                                                <p className="mt-1 font-bold text-[var(--text)]">{request.documentType}</p>
+                                              </div>
+                                              <div className="rounded-xl bg-white p-3 border border-[var(--border)] shadow-sm">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)]">Purpose / Reason</p>
+                                                <p className="mt-1 font-bold text-[var(--text)]">{request.purpose}</p>
+                                              </div>
+                                            </div>
+
+                                            <div className="mt-6 flex items-center gap-3">
+                                              <button className="flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-xl shadow-[var(--primary)]/20 hover:brightness-110 active:scale-95 transition-all">
+                                                <Eye className="h-4 w-4" />
+                                                View Profile
+                                              </button>
+                                              <button className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-white px-6 py-3 text-[11px] font-black uppercase tracking-widest text-[var(--muted)] hover:bg-[var(--card-soft)] active:scale-95 transition-all">
+                                                Entity History
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="pt-4 flex items-center gap-3">
+                                          <button 
+                                            onClick={() => updateRequestStatus(request.id, "Approved")}
+                                            disabled={request.status === "Approved"}
+                                            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-4 text-[11px] font-black uppercase tracking-widest text-white shadow-xl shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:scale-100"
+                                          >
+                                            <FileCheck2 className="h-4 w-4" />
+                                            Approve
+                                          </button>
+                                          <button 
+                                            onClick={() => generateFromRequest(request.id)}
+                                            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-4 text-[11px] font-black uppercase tracking-widest text-white shadow-xl shadow-[var(--primary)]/20 hover:brightness-110 active:scale-95 transition-all"
+                                          >
+                                            <Download className="h-4 w-4" />
+                                            Generate
+                                          </button>
+                                          <button 
+                                            onClick={() => updateRequestStatus(request.id, "Rejected")}
+                                            disabled={request.status === "Rejected"}
+                                            className="flex items-center justify-center h-14 w-14 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all disabled:opacity-40"
+                                          >
+                                            <XCircle className="h-5 w-5" />
+                                          </button>
+                                        </div>
+                                      </div>
+
+                                      <div className="rounded-3xl border border-[var(--border)] bg-white/60 p-6 shadow-sm backdrop-blur-md">
+                                        <div className="flex items-center gap-2 mb-8">
+                                          <RotateCcw className="h-4 w-4 text-[var(--primary)]" />
+                                          <h5 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Workflow Progress</h5>
+                                        </div>
+                                        <div className="relative pl-7 space-y-7 before:absolute before:left-[13.5px] before:top-2 before:h-[calc(100%-15px)] before:w-[2px] before:bg-[var(--border)]/60">
+                                          {["Requested", "Processing", "Approved", "Generated", "Released"].map((step, idx) => {
+                                            const currentIdx = workflowIndex(request, generatedByRequestId.get(request.id));
+                                            const isCompleted = idx <= currentIdx;
+                                            const isCurrent = idx === currentIdx;
+                                            
+                                            return (
+                                              <div key={step} className="relative flex items-center justify-between group">
+                                                <div className={cn(
+                                                  "absolute -left-[20.5px] h-4 w-4 rounded-full border-2 border-white shadow-sm transition-all duration-300",
+                                                  isCompleted ? "bg-[var(--primary)] ring-4 ring-[var(--primary)]/10" : "bg-[var(--border)]",
+                                                  isCurrent && "animate-pulse scale-125"
+                                                )} />
+                                                <div className="flex flex-col">
+                                                  <span className={cn("text-xs font-black uppercase tracking-wider transition-colors", isCompleted ? "text-[var(--text)]" : "text-[var(--muted)]")}>{step}</span>
+                                                  {isCurrent && <span className="text-[9px] font-bold text-[var(--primary)] animate-in fade-in slide-in-from-left-1">Wait for update...</span>}
+                                                </div>
+                                                <span className="text-[10px] text-[var(--muted)] font-black italic tracking-tighter">{isCompleted ? "DONE" : "PENDING"}</span>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {selectedRequestIds.size > 0 && (
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--primary)]/[0.03] px-6 py-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] font-bold text-white">
+                        {selectedRequestIds.size}
+                      </span>
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--text)]">Requests Selected</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center h-9 bg-[var(--card)] rounded-xl border border-[var(--border)] px-1">
+                        <div className="relative group/bulk flex items-center">
+                          <select
+                            value={bulkAssignTo}
+                            onChange={(e) => {
+                              const staff = e.target.value;
+                              setBulkAssignTo(staff);
+                              if (staff) bulkAssign();
+                            }}
+                            className="h-7 w-40 bg-transparent px-3 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] outline-none appearance-none cursor-pointer group-hover/bulk:text-[var(--primary)] transition-colors"
+                          >
+                            <option value="" disabled>Bulk Assign To...</option>
+                            {STAFF_MEMBERS.map(s => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--muted)]/40 pointer-events-none group-hover/bulk:text-[var(--primary)] transition-colors" />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={bulkApprove}
+                        className="flex h-9 items-center gap-2 rounded-xl bg-emerald-500 px-4 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:brightness-110"
+                      >
+                        Bulk Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={bulkReject}
+                        className="flex h-9 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-[10px] font-bold uppercase tracking-widest text-rose-600 transition-all hover:bg-rose-100"
+                      >
+                        Bulk Reject
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRequestIds(new Set())}
+                        className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition-colors px-2"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
+                  <div className="flex items-center gap-4">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+                      Page <span className="text-[var(--text)]">{safeRequestPage}</span> of {requestPages}
+                    </span>
+                    <div className="h-3 w-px bg-[var(--border)]" />
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+                       Showing <span className="text-[var(--text)]">{paginatedRequests.length}</span> of {requestRows.length} requests
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <button 
+                      disabled={safeRequestPage === 1}
+                      onClick={() => setRequestPage(p => Math.max(1, p - 1))}
+                      className="h-9 min-w-[36px] flex items-center justify-center rounded-xl border border-[var(--border)] bg-white text-[var(--muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/40 disabled:opacity-30 transition-all active:scale-95"
+                    >
+                      <ChevronDown className="h-4 w-4 rotate-90" />
+                    </button>
+                    <div className="flex items-center gap-1.5 mx-1">
+                      {[...Array(Math.min(5, requestPages))].map((_, i) => {
+                        const pageNum = i + 1;
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setRequestPage(pageNum)}
+                            className={cn(
+                              "h-9 min-w-[36px] items-center justify-center rounded-xl text-[11px] font-black tracking-tighter transition-all active:scale-95",
+                              safeRequestPage === pageNum ? "bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20" : "bg-white border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
+                            )}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                      {requestPages > 5 && <span className="text-[var(--muted)] opacity-30">...</span>}
+                    </div>
+                    <button 
+                      disabled={safeRequestPage === requestPages}
+                      onClick={() => setRequestPage(p => Math.min(requestPages, p + 1))}
+                      className="h-9 min-w-[36px] flex items-center justify-center rounded-xl border border-[var(--border)] bg-white text-[var(--muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/40 disabled:opacity-30 transition-all active:scale-95"
+                    >
+                      <ChevronDown className="h-4 w-4 -rotate-90" />
+                    </button>
+                  </div>
+                </footer>
+              </>
+            ) : null}
+
+            {activeTab === "Generated Documents" ? (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
+                        <th className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={allVisibleDocumentsSelected}
+                            onChange={toggleSelectVisibleDocuments}
+                            className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
+                            aria-label="Select all visible documents"
+                          />
+                        </th>
+                        <ThButton label="Document / Type" active={documentSortBy === "type"} direction={documentSortDirection} onClick={() => { setDocumentSortBy("type"); setDocumentSortDirection(d => d === "asc" ? "desc" : "asc"); }} />
+                        <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Entity</th>
+                        <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Purpose</th>
+                        <ThButton label="Generated At" active={documentSortBy === "date"} direction={documentSortDirection} onClick={() => { setDocumentSortBy("date"); setDocumentSortDirection(d => d === "asc" ? "desc" : "asc"); }} />
+                        <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Status</th>
+                        <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[var(--border)]/60">
+                      {paginatedDocuments.map((document) => {
+                        const entity = resolveEntity(document.source, document.entityId);
+                        const isSelected = selectedDocumentIds.has(document.id);
+                        
+                        return (
+                          <tr 
+                            key={document.id} 
+                            className={cn(
+                              "group relative transition-all hover:bg-[var(--primary)]/[0.02]",
+                              isSelected && "bg-[var(--primary)]/[0.04]"
+                            )}
+                          >
+                            <td className="relative px-4 py-3.5 text-center">
+                              <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute left-0 top-0 h-full w-0.5 bg-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
+                              />
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => toggleSelectDocument(document.id)}
+                                className="rounded border-[var(--border)] accent-[var(--accent)] focus:ring-[var(--accent)]/20"
+                              />
+                            </td>
+                            <td className="px-4 py-3.5">
+                              <div className="flex flex-col">
+                                <span className="text-[11px] font-medium text-[var(--muted)] uppercase tracking-wider">{document.code}</span>
+                                <span className="tracking-tight text-[var(--text)]">{document.documentType}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3.5">
+                              <div className="flex items-center gap-3">
+                                  <Avatar 
+                                    src="/avatar.png"
+                                    name={entity?.displayName ?? document.entityId} 
+                                    hideText 
+                                    className="h-9 w-9" 
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="tracking-tight text-[var(--text)] font-medium">{entity?.displayName ?? document.entityId}</span>
+                                    <span className="text-[10px] font-medium text-[var(--muted)]">resident-profile.v1</span>
+                                  </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3.5">
+                              <p className="max-w-[160px] truncate text-xs font-medium text-[var(--muted)]" title={document.purpose}>{document.purpose}</p>
+                            </td>
+                            <td className="px-4 py-3.5">
+                              <div className="flex flex-col">
+                                <span className="text-xs font-medium text-[var(--text)] tracking-tight">By {document.generatedBy.split(' ')[0]}</span>
+                                <span className="text-[10px] font-medium text-[var(--muted)]">{formatDate(document.generatedAt)}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3.5">
+                              <StatusChip status={document.status} tone={documentStatusTone(document.status)} />
+                            </td>
+                            <td className="px-4 py-3.5 text-right">
+                              <DropdownMenu
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
+                                trigger={<MoreHorizontal className="h-4 w-4" />}
+                                items={[
+                                  { label: "View Document", icon: Eye, onClick: () => setViewDocument(document) },
+                                  { label: "Download PDF", icon: Download, onClick: () => downloadDocument(document) },
+                                  { label: "Print Document", icon: Printer, onClick: () => printDocument(document) },
+                                  { type: "separator" },
+                                  { label: "Update Status", icon: Pencil },
+                                  { label: "Archive Document", icon: Archive, onClick: () => updateGeneratedStatus(document.id, "Archived"), disabled: document.status === "Archived" },
+                                  { label: "Regenerate", icon: RotateCcw, onClick: () => regenerateDocument(document) },
+                                  { type: "separator" },
+                                  { label: "Delete Permanently", icon: Trash2, className: "text-rose-600 hover:bg-rose-50" },
+                                ]}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {selectedDocumentIds.size > 0 && (
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--primary)]/[0.03] px-6 py-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] font-bold text-white">
+                        {selectedDocumentIds.size}
+                      </span>
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--text)]">Documents Selected</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={exportSelectedDocs}
+                        className="flex h-9 items-center gap-2 rounded-xl border border-[var(--border)] bg-white px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:bg-[var(--card-soft)] hover:border-[var(--primary)]/40"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Export CSV
+                      </button>
+                      <button
+                        type="button"
+                        onClick={bulkArchive}
+                        className="flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 transition-all hover:bg-slate-50 hover:border-slate-300"
+                      >
+                        <Archive className="h-3.5 w-3.5" />
+                        Archive Selected
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDocumentIds(new Set())}
+                        className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition-colors px-2"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
+                  <div className="flex items-center gap-4">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+                      Page <span className="text-[var(--text)]">{safeDocumentPage}</span> of {documentPages}
+                    </span>
+                    <div className="h-3 w-px bg-[var(--border)]" />
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+                       Showing <span className="text-[var(--text)]">{paginatedDocuments.length}</span> of {documentRows.length} documents
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      disabled={safeDocumentPage === 1}
+                      onClick={() => setDocumentPage(p => Math.max(1, p - 1))}
+                      className="h-9 min-w-[36px] flex items-center justify-center rounded-xl border border-[var(--border)] bg-white text-[var(--muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/40 disabled:opacity-30 transition-all active:scale-95"
+                    >
+                      <ChevronDown className="h-4 w-4 rotate-90" />
+                    </button>
+                    <div className="flex items-center gap-1.5 mx-1">
+                      {[...Array(Math.min(5, documentPages))].map((_, i) => {
+                        const pageNum = i + 1;
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setDocumentPage(pageNum)}
+                            className={cn(
+                              "h-9 min-w-[36px] items-center justify-center rounded-xl text-[11px] font-black tracking-tighter transition-all active:scale-95",
+                              safeDocumentPage === pageNum ? "bg-[var(--primary)] text-white shadow-lg shadow-[var(--primary)]/20" : "bg-white border border-[var(--border)] text-[var(--muted)] hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
+                            )}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                      {documentPages > 5 && <span className="text-[var(--muted)] opacity-30">...</span>}
+                    </div>
+                    <button 
+                      disabled={safeDocumentPage === documentPages}
+                      onClick={() => setDocumentPage(p => Math.min(documentPages, p + 1))}
+                      className="h-9 min-w-[36px] flex items-center justify-center rounded-xl border border-[var(--border)] bg-white text-[var(--muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/40 disabled:opacity-30 transition-all active:scale-95"
+                    >
+                      <ChevronDown className="h-4 w-4 -rotate-90" />
+                    </button>
+                  </div>
+                </footer>
+              </>
             ) : null}
           </div>
+        </div>
+      </main>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] px-4 py-3 text-xs text-[var(--muted)]">
-            <span>Showing {filteredRequests.length} requests - page {safeRequestPage} of {requestPages}</span>
-            <div className="flex items-center gap-2">
-              <SortButton
-                label={requestSortDirection === "asc" ? "Ascending" : "Descending"}
-                onClick={() => setRequestSortDirection((value) => (value === "asc" ? "desc" : "asc"))}
-              />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border)] bg-[var(--card-soft)]/70 text-left text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                  <th className="px-4 py-3">Select</th>
-                  <th className="px-4 py-3">Request</th>
-                  <th className="px-4 py-3">Entity</th>
-                  <th className="px-4 py-3">Purpose</th>
-                  <th className="px-4 py-3">Assigned</th>
-                  <th className="px-4 py-3">Workflow</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border)]/35">
-                {paginatedRequests.map((request) => {
-                  const entity = resolveEntity(request.source, request.entityId);
-                  const generated = generatedByRequestId.get(request.id);
-                  const progress = workflowIndex(request, generated);
-                  const canGenerate = permissions.generateDocuments && request.status !== "Rejected" && request.status !== "Pending";
-                  return (
-                    <tr key={request.id} className="align-top transition-colors hover:bg-[var(--card-soft)]/45">
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedRequestIds.has(request.id)}
-                          onChange={(event) =>
-                            setSelectedRequestIds((prev) => {
-                              const next = new Set(prev);
-                              if (event.target.checked) next.add(request.id);
-                              else next.delete(request.id);
-                              return next;
-                            })
-                          }
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <p className="font-semibold text-[var(--text)]">{request.id}</p>
-                        <p className="text-xs text-[var(--muted)]">{request.documentType}</p>
-                        <p className="text-xs text-[var(--muted)]">{formatDateTime(request.requestedAt)}</p>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={cn("mb-1 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold", sourceTone(request.source))}>{request.source}</span>
-                        <Link href={entity?.href ?? "/reports"} className="block font-semibold text-[var(--primary)]">
-                          {entity?.displayName ?? request.entityId}
-                        </Link>
-                        <p className="text-xs text-[var(--muted)]">{entity?.subtitle ?? "No additional metadata"}</p>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--text)]">{request.purpose}</td>
-                      <td className="px-4 py-3">
-                        <select
-                          value={request.assignedTo ?? ""}
-                          onChange={(event) => assignRequest(request.id, event.target.value)}
-                          disabled={role === "Viewer"}
-                          className="w-full rounded-lg border border-[var(--border)] bg-[var(--card-soft)] px-2 py-1 text-xs text-[var(--text)] disabled:opacity-50"
-                        >
-                          <option value="">Unassigned</option>
-                          {STAFF_MEMBERS.map((staff) => (
-                            <option key={staff} value={staff}>
-                              {staff}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="px-4 py-3">
-                        <WorkflowMini index={progress} />
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={cn("inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider", requestStatusTone(request.status))}>
-                          {request.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          <ActionButton icon={Eye} label="View" onClick={() => setViewRequest(request)} />
-                          <ActionButton icon={Clock3} label="Process" disabled={role === "Viewer" || !permissions.processRequests || request.status !== "Pending"} onClick={() => updateRequestStatus(request.id, "Processing")} />
-                          <ActionButton icon={CheckCircle2} label="Approve" disabled={role === "Viewer" || !permissions.approveReject || request.status === "Approved" || request.status === "Rejected"} onClick={() => updateRequestStatus(request.id, "Approved")} />
-                          <ActionButton icon={XCircle} label="Reject" disabled={role === "Viewer" || !permissions.approveReject || request.status === "Rejected"} onClick={() => updateRequestStatus(request.id, "Rejected", "Rejected by review")} />
-                          <ActionButton icon={FileText} label="Generate" disabled={!canGenerate} onClick={() => generateFromRequest(request.id)} />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={() => setSelectedRequestIds(new Set(paginatedRequests.map((row) => row.id)))} disabled={!permissions.bulkActions} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] disabled:opacity-40">
-                Select Page
-              </button>
-              <button type="button" onClick={bulkProcess} disabled={!permissions.bulkActions || selectedRequestIds.size === 0} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] disabled:opacity-40">
-                Bulk Process
-              </button>
-              <button type="button" onClick={bulkApprove} disabled={!permissions.bulkActions || selectedRequestIds.size === 0} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] disabled:opacity-40">
-                Bulk Approve
-              </button>
-              <button type="button" onClick={bulkReject} disabled={!permissions.bulkActions || selectedRequestIds.size === 0} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] disabled:opacity-40">
-                Bulk Reject
-              </button>
-              <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] px-2 py-1.5">
-                <select value={bulkAssignTo} onChange={(event) => setBulkAssignTo(event.target.value)} className="bg-transparent text-xs text-[var(--text)] outline-none">
-                  <option value="">Assign staff...</option>
-                  {STAFF_MEMBERS.map((staff) => (
-                    <option key={staff} value={staff}>
-                      {staff}
-                    </option>
+          {activeTab === "Analytics" ? (
+            <section className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+              <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Request Volume By Type</h2>
+                <div className="mt-4 space-y-3">
+                  {requestTypeCounts().map((row) => (
+                    <div key={row.type}>
+                      <div className="mb-1 flex items-center justify-between text-xs">
+                        <span className="font-medium text-[var(--text)]">{row.type}</span>
+                        <span className="text-[var(--muted)]">{row.count}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-[var(--card-soft)]">
+                        <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${Math.max(6, (row.count / Math.max(1, filteredRequests.length || 1)) * 100)}%` }} />
+                      </div>
+                    </div>
                   ))}
-                </select>
-                <button type="button" onClick={bulkAssign} disabled={!permissions.bulkActions || selectedRequestIds.size === 0 || !bulkAssignTo} className="rounded-md border border-[var(--border)] px-2 py-0.5 text-[11px] font-semibold disabled:opacity-40">
-                  Bulk Assign
-                </button>
+                </div>
+              </article>
+              <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Staff Productivity</h2>
+                <div className="mt-4 space-y-3">
+                  {staffOutput().map((staff) => (
+                    <div key={staff.staff} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3 shadow-sm transition-all hover:border-[var(--primary)]/30">
+                      <p className="text-sm font-semibold text-[var(--text)]">{staff.staff}</p>
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-[var(--muted)]">
+                        <span>Assigned: {staff.assigned}</span>
+                        <span>Generated: {staff.generated}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            </section>
+          ) : null}
+
+          <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-2 border-b border-[var(--border)]/50 pb-3">
+              <div className="flex items-center gap-2">
+                <Clock3 className="h-4 w-4 text-[var(--primary)]" />
+                <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Recent Activity</h2>
               </div>
+              <span className="rounded-full bg-[var(--primary)]/10 px-2.5 py-1 text-[10px] font-bold text-[var(--primary)] border border-[var(--primary)]/10">Live Feed</span>
             </div>
-            <Pagination page={safeRequestPage} pages={requestPages} onPrevious={() => setRequestPage((value) => Math.max(1, value - 1))} onNext={() => setRequestPage((value) => Math.min(requestPages, value + 1))} />
-          </div>
-        </section>
-      ) : null}
-
-      {activeTab === "Generated Documents" ? (
-        <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-          <div className="border-b border-[var(--border)] p-4">
-            <div className="grid gap-3 md:grid-cols-[1.7fr_auto_auto]">
-              <label>
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">Search Generated</span>
-                <div className="relative mt-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
-                  <input
-                    value={documentSearch}
-                    onChange={(event) => {
-                      setDocumentSearch(event.target.value);
-                      setDocumentPage(1);
-                    }}
-                    placeholder="Document code, entity, generated by"
-                    className="h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] pl-9 pr-3 text-sm text-[var(--text)] shadow-sm outline-none focus:border-[var(--primary)]/40"
-                  />
+            <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {activities.filter((activity) => {
+                if (activity.entityType === "request") {
+                  return requests.some((request) => request.id === activity.entityId && request.source === activeSource);
+                }
+                return documents.some((document) => document.code === activity.entityId && document.source === activeSource);
+              }).slice(0, 6).map((activity) => (
+                <div key={activity.id} className="group relative flex gap-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)]/50 p-3 transition-all hover:bg-[var(--card)] hover:shadow-sm">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--card)]">
+                    <div className="h-2 w-2 rounded-full bg-[var(--primary)] animate-pulse" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xs font-medium text-[var(--text)] leading-relaxed line-clamp-2">{activity.message}</p>
+                    <div className="flex items-center gap-2 text-[10px] text-[var(--muted)]">
+                      <span className="font-bold uppercase tracking-tight text-[var(--primary)]/80">{activity.actor}</span>
+                      <span className="opacity-30">•</span>
+                      <span>{formatDate(activity.createdAt)}</span>
+                    </div>
+                  </div>
                 </div>
-              </label>
-              <SortButton
-                label={`Sort: ${documentSortBy}`}
-                onClick={() => setDocumentSortBy((prev) => (prev === "date" ? "name" : prev === "name" ? "type" : "date"))}
-              />
-              <button type="button" onClick={() => setShowDocumentFilters((prev) => !prev)} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-xs font-semibold text-[var(--text)] shadow-sm">
-                <Filter className="h-4 w-4" />
-                Filters
-                <ChevronDown className={cn("h-4 w-4 transition-transform", showDocumentFilters ? "rotate-180" : "")} />
-              </button>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted)]">
-              <span>Showing {filteredDocuments.length} generated documents - page {safeDocumentPage} of {documentPages}</span>
-              <SortButton
-                label={documentSortDirection === "asc" ? "Ascending" : "Descending"}
-                onClick={() => setDocumentSortDirection((value) => (value === "asc" ? "desc" : "asc"))}
-              />
-            </div>
-            {showDocumentFilters ? (
-              <div className="mt-3 grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--card-soft)]/55 p-3 md:grid-cols-4">
-                <FilterSelect label="Status" value={documentStatusFilter} options={GENERATED_STATUS_OPTIONS} onChange={(value) => setDocumentStatusFilter(value as "All" | GeneratedStatus)} />
-                <FilterSelect label="Type" value={documentTypeFilter} options={["All", ...DOCUMENT_TYPES]} onChange={(value) => setDocumentTypeFilter(value as "All" | DocumentType)} />
-                <DateFilter label="From" value={documentFrom} onChange={setDocumentFrom} />
-                <DateFilter label="To" value={documentTo} onChange={setDocumentTo} />
+                ))}
               </div>
-            ) : null}
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border)] bg-[var(--card-soft)]/70 text-left text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-                  <th className="px-4 py-3">Select</th>
-                  <th className="px-4 py-3">Document</th>
-                  <th className="px-4 py-3">Entity</th>
-                  <th className="px-4 py-3">Purpose</th>
-                  <th className="px-4 py-3">Generated By</th>
-                  <th className="px-4 py-3">Generated</th>
-                  <th className="px-4 py-3">Validity</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border)]/35">
-                {paginatedDocuments.map((document) => {
-                  const entity = resolveEntity(document.source, document.entityId);
-                  return (
-                    <tr key={document.id} className="transition-colors hover:bg-[var(--card-soft)]/45">
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedDocumentIds.has(document.id)}
-                          onChange={(event) =>
-                            setSelectedDocumentIds((prev) => {
-                              const next = new Set(prev);
-                              if (event.target.checked) next.add(document.id);
-                              else next.delete(document.id);
-                              return next;
-                            })
-                          }
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <p className="font-semibold text-[var(--text)]">{document.code}</p>
-                        <p className="text-xs text-[var(--muted)]">{document.documentType}</p>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={cn("mb-1 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold", sourceTone(document.source))}>{document.source}</span>
-                        <Link href={entity?.href ?? "/reports"} className="block font-semibold text-[var(--primary)]">
-                          {entity?.displayName ?? document.entityId}
-                        </Link>
-                        <p className="text-xs text-[var(--muted)]">{entity?.subtitle ?? "No additional metadata"}</p>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--text)]">{document.purpose}</td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{document.generatedBy}</td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{formatDateTime(document.generatedAt)}</td>
-                      <td className="px-4 py-3 text-[var(--muted)]">{document.validUntil ? formatDate(document.validUntil) : "No expiry"}</td>
-                      <td className="px-4 py-3">
-                        <span className={cn("inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider", documentStatusTone(document.status))}>
-                          {document.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          <ActionButton icon={Eye} label="View" onClick={() => setViewDocument(document)} />
-                          <ActionButton icon={Download} label="PDF" onClick={() => downloadDocument(document)} />
-                          <ActionButton icon={Printer} label="Print" onClick={() => printDocument(document)} />
-                          <ActionButton icon={RefreshCcw} label="Re-gen" disabled={!permissions.generateDocuments} onClick={() => regenerateDocument(document)} />
-                          <ActionButton icon={CheckCircle2} label="Release" disabled={document.status === "Released"} onClick={() => updateGeneratedStatus(document.id, "Released")} />
-                          <ActionButton icon={Archive} label="Archive" disabled={!permissions.archiveDocuments} onClick={() => updateGeneratedStatus(document.id, "Archived")} />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={exportSelectedDocs} disabled={!permissions.bulkActions || selectedDocumentIds.size === 0} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold disabled:opacity-40">
-                Export Selected
-              </button>
-              <button type="button" onClick={bulkArchive} disabled={!permissions.archiveDocuments || selectedDocumentIds.size === 0} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold disabled:opacity-40">
-                Archive Selected
-              </button>
-              <button type="button" onClick={() => setSelectedDocumentIds(new Set())} className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold">
-                Clear Selection
-              </button>
-            </div>
-            <Pagination page={safeDocumentPage} pages={documentPages} onPrevious={() => setDocumentPage((value) => Math.max(1, value - 1))} onNext={() => setDocumentPage((value) => Math.min(documentPages, value + 1))} />
-          </div>
-        </section>
-      ) : null}
-
-      {activeTab === "Analytics" ? (
-        <section className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
-          <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Request Volume By Type</h2>
-            <div className="mt-4 space-y-3">
-              {requestTypeCounts().map((row) => (
-                <div key={row.type}>
-                  <div className="mb-1 flex items-center justify-between text-xs">
-                    <span className="font-medium text-[var(--text)]">{row.type}</span>
-                    <span className="text-[var(--muted)]">{row.count}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-[var(--card-soft)]">
-                    <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${Math.max(6, (row.count / Math.max(1, filteredRequests.length || 1)) * 100)}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </article>
-          <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Staff Productivity</h2>
-            <div className="mt-4 space-y-3">
-              {staffOutput().map((staff) => (
-                <div key={staff.staff} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
-                  <p className="text-sm font-semibold text-[var(--text)]">{staff.staff}</p>
-                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-[var(--muted)]">
-                    <span>Assigned: {staff.assigned}</span>
-                    <span>Generated: {staff.generated}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </article>
-        </section>
-      ) : null}
-
-      <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">Recent Activity</h2>
-          <span className="rounded-full border border-[var(--border)] bg-[var(--card-soft)] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">Audit Log</span>
-        </div>
-        <div className="mt-4 max-h-72 space-y-2 overflow-auto">
-          {activities.filter((activity) => {
-            if (activity.entityType === "request") {
-              return requests.some((request) => request.id === activity.entityId && request.source === activeSource);
-            }
-            return documents.some((document) => document.code === activity.entityId && document.source === activeSource);
-          }).slice(0, 12).map((activity) => (
-            <div key={activity.id} className="rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 py-2 shadow-sm">
-              <p className="text-sm text-[var(--text)]">{activity.message}</p>
-              <p className="mt-1 text-[11px] text-[var(--muted)]">{activity.actor} | {formatDateTime(activity.createdAt)}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
+            </section>
+          
       {viewRequest ? (
         <Modal title={`Request Details | ${viewRequest.id}`} onClose={() => setViewRequest(null)}>
           <DetailGrid
@@ -1172,6 +1493,154 @@ export function DocumentsWorkflowPage() {
         </Modal>
       ) : null}
     </section>
+  );
+}
+
+function RequestDetailsSidebar({ request, entity, onClose, onAction }: { request: DocumentRequest | null; entity: EntitySeed | null | undefined; onClose: () => void; onAction: (action: string) => void }) {
+  if (!request) return (
+    <div className="flex h-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--card)]/50 p-8 text-center">
+      <div className="rounded-full bg-[var(--card-soft)] p-4">
+        <FileText className="h-8 w-8 text-[var(--muted)]" />
+      </div>
+      <p className="mt-4 text-sm font-bold text-[var(--text)]">No Request Selected</p>
+      <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">Select a row from the list to view full details and management options.</p>
+    </div>
+  );
+
+  return (
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-xl animate-in fade-in zoom-in-95 duration-500">
+      {/* Header Area */}
+      <div className="p-6 pb-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-[var(--text)]">Request Details</h2>
+            <div className="mt-2 flex items-center gap-3">
+              <span className="text-sm font-bold text-[var(--text)] opacity-60 font-mono">{request.id}</span>
+              <span className={cn(
+                "rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider",
+                requestStatusTone(request.status)
+              )}>
+                {request.status}
+              </span>
+            </div>
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">
+              Requested on <span className="text-[var(--text)]">{formatDate(request.requestedAt)} {new Date(request.requestedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </p>
+          </div>
+          <button 
+            onClick={onClose} 
+            className="group rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] transition-all hover:bg-[var(--card-soft)] hover:text-[var(--text)] hover:border-[var(--primary)]/30 active:scale-90"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-6 space-y-8 pb-32">
+        {/* Resident Information */}
+        <section>
+          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)] mb-4">Resident Information</h3>
+          <div className="flex items-start gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-soft)]/30 p-4 shadow-sm transition-all hover:bg-[var(--card)] hover:border-[var(--primary)]/20">
+            <Avatar name={entity?.displayName ?? request.entityId} className="h-14 w-14 shrink-0 border-2 border-white shadow-md ring-4 ring-[var(--primary)]/5" />
+            <div className="flex-1 min-w-0">
+              <h4 className="truncate text-base font-bold text-[var(--text)] leading-tight">{entity?.displayName ?? request.entityId}</h4>
+              <p className="mt-1 text-xs text-[var(--muted)] font-medium leading-tight">{entity?.subtitle ?? "Resident Information Details"}</p>
+              <div className="mt-3">
+                <button className="flex items-center gap-1.5 rounded-lg bg-[var(--primary)]/5 px-2.5 py-1.5 text-[10px] font-bold text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors">
+                  VIEW RESIDENT PROFILE
+                  <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Request Information */}
+        <section className="space-y-5">
+          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Request Information</h3>
+          
+          <div className="grid gap-5">
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] opacity-60">Document Type</p>
+              <p className="text-sm font-bold text-[var(--text)]">{request.documentType}</p>
+            </div>
+            
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] opacity-60">Purpose</p>
+              <p className="text-sm font-medium leading-relaxed text-[var(--text)]">{request.purpose}</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] opacity-60">Remarks</p>
+              <p className="text-sm text-[var(--muted)] italic leading-relaxed">{request.remarks || "No additional remarks provided by the resident."}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Assignment */}
+        <section className="space-y-4">
+          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Assignment</h3>
+          <div className="grid gap-4">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Assigned To</p>
+              {request.assignedTo ? (
+                <div className="flex items-center gap-2 rounded-xl bg-[var(--card-soft)] px-3 py-1.5 border border-[var(--border)] shadow-sm">
+                  <Avatar name={request.assignedTo} className="h-5 w-5" />
+                  <span className="text-xs font-bold text-[var(--text)]">{request.assignedTo}</span>
+                </div>
+              ) : (
+                <span className="text-xs font-bold text-[var(--muted)] opacity-50 italic">Unassigned</span>
+              )}
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Date Assigned</p>
+              <p className="text-xs font-bold text-[var(--text)]">{request.assignedAt ? formatDate(request.assignedAt) : "-"}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Timeline */}
+        <section className="space-y-6 pb-6">
+          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Timeline</h3>
+          <div className="relative pl-7 space-y-7 before:absolute before:left-[13.5px] before:top-2 before:h-[calc(100%-15px)] before:w-[2px] before:bg-[var(--border)]/60">
+             {["Requested", "Processing", "Approved", "Generated", "Released"].map((step, idx) => {
+               const isStepCompleted = (step === "Requested") || (request.status === "Approved" && (step === "Processing" || step === "Approved"));
+               return (
+                 <div key={step} className="relative group">
+                    <div className={cn(
+                      "absolute -left-[20.5px] h-4 w-4 rounded-full border-2 border-white shadow-sm transition-all duration-300",
+                      isStepCompleted ? "bg-[var(--primary)] ring-4 ring-[var(--primary)]/10" : "bg-[var(--border)]"
+                    )} />
+                    <div className="flex items-center justify-between">
+                      <span className={cn("text-sm font-bold transition-colors", isStepCompleted ? "text-[var(--text)]" : "text-[var(--muted)]")}>{step}</span>
+                      {step === "Requested" && <span className="text-[10px] font-medium text-[var(--muted)]">{formatDate(request.requestedAt)}</span>}
+                      {step !== "Requested" && <span className="text-lg text-[var(--border)]">—</span>}
+                    </div>
+                 </div>
+               );
+             })}
+          </div>
+        </section>
+      </div>
+
+      {/* Footer Actions */}
+      <div className="absolute bottom-0 left-0 w-full bg-white/80 p-6 pt-0 backdrop-blur-lg border-t border-[var(--border)]">
+        <div className="grid grid-cols-2 gap-3 mt-6">
+          <button 
+            onClick={onClose}
+            className="rounded-xl border border-[var(--border)] py-3 text-xs font-black uppercase tracking-widest text-[var(--muted)] transition-all hover:bg-[var(--card-soft)] hover:text-[var(--text)] active:scale-95"
+          >
+            CLOSE
+          </button>
+          <button 
+            onClick={() => onAction("Generate")}
+            className="rounded-xl bg-[var(--primary)] py-3 text-xs font-black uppercase tracking-widest text-white shadow-[0_10px_25px_-5px_var(--primary)] transition-all hover:brightness-110 active:scale-95"
+          >
+            PROCESS REQUEST
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1242,6 +1711,14 @@ function SummaryCard({
   );
 }
 
+function StatusPill({ status, tone }: { status: string; tone: string }) {
+  return (
+    <span className={cn("inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", tone)}>
+      {status}
+    </span>
+  );
+}
+
 function AlertPill({ tone, text }: { tone: "amber" | "rose"; text: string }) {
   const style =
     tone === "amber"
@@ -1262,24 +1739,39 @@ function FilterSelect({
   onChange: (value: string) => void;
 }) {
   return (
-    <label>
-      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{label}</span>
-      <select value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-sm text-[var(--text)] shadow-sm outline-none focus:border-[var(--primary)]/40">
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] px-1">{label}</span>
+      <div className="relative group/select">
+        <select 
+          value={value} 
+          onChange={(event) => onChange(event.target.value)} 
+          className="h-10 w-full appearance-none rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-3 pr-10 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)]/40 hover:border-[var(--border-hover)]"
+        >
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none transition-colors group-focus-within/select:text-[var(--primary)]" />
+      </div>
     </label>
   );
 }
 
 function DateFilter({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
-    <label>
-      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{label}</span>
-      <input type="date" value={value} onChange={(event) => onChange(event.target.value)} className="mt-1 h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-3 text-sm text-[var(--text)] shadow-sm outline-none focus:border-[var(--primary)]/40" />
+    <label className="flex flex-col gap-1.5">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] px-1">{label}</span>
+      <div className="relative group/date">
+        <input 
+          type="date" 
+          value={value} 
+          onChange={(event) => onChange(event.target.value)} 
+          className="h-10 w-full rounded-2xl border border-[var(--border)] bg-[var(--card-soft)] px-3 pr-10 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)]/40 hover:border-[var(--border-hover)] [color-scheme:light] [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer" 
+        />
+        <Calendar className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none transition-colors group-focus-within/date:text-[var(--primary)]" />
+      </div>
     </label>
   );
 }
@@ -1290,6 +1782,53 @@ function SortButton({ label, onClick }: { label: string; onClick: () => void }) 
       <ArrowUpDown className="h-3.5 w-3.5 text-[var(--primary)]" />
       {label}
     </button>
+  );
+}
+
+function ThButton({
+  label,
+  active,
+  direction,
+  onClick,
+  className,
+}: {
+  label: string;
+  active?: boolean;
+  direction?: "asc" | "desc";
+  onClick?: () => void;
+  className?: string;
+}) {
+  return (
+    <th className={cn("px-4 py-3 text-left", className)}>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={!onClick}
+        className={cn(
+          "inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors",
+          active ? "text-[var(--primary)]" : "text-[var(--muted)]",
+          !onClick && "cursor-default"
+        )}
+      >
+        {label}
+        {onClick && (
+          <ArrowUpDown
+            className={cn(
+              "h-3 w-3 transition-transform",
+              active && direction === "desc" ? "rotate-180" : ""
+            )}
+          />
+        )}
+      </button>
+    </th>
+  );
+}
+
+function StatusChip({ status, tone, className }: { status: string; tone: string; className?: string }) {
+  return (
+    <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider", tone, className)}>
+      {status}
+    </span>
   );
 }
 
