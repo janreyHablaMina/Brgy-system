@@ -1,11 +1,12 @@
 import type {
   ActivityLog,
   DocumentRequest,
+  DocumentSource,
   DocumentType,
+  EntityRecord,
   GeneratedDocument,
   GeneratedStatus,
   RequestStatus,
-  ResidentLite,
 } from "./types";
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -80,7 +81,7 @@ export function getValidityDate(type: DocumentType, generatedAt: string) {
 
 export function requestMatchesSearch(
   request: DocumentRequest,
-  resident: ResidentLite | undefined,
+  entity: EntityRecord | undefined,
   search: string
 ) {
   const q = normalize(search);
@@ -88,10 +89,12 @@ export function requestMatchesSearch(
 
   return [
     request.id,
+    request.source,
     request.documentType,
     request.purpose,
-    resident?.fullName ?? "",
-    resident?.id ?? "",
+    entity?.displayName ?? "",
+    entity?.id ?? "",
+    request.assignedTo ?? "",
   ]
     .map(normalize)
     .some((field) => field.includes(q));
@@ -99,20 +102,28 @@ export function requestMatchesSearch(
 
 export function documentMatchesSearch(
   document: GeneratedDocument,
-  resident: ResidentLite | undefined,
+  entity: EntityRecord | undefined,
   search: string
 ) {
   const q = normalize(search);
   if (!q) return true;
 
-  return [document.code, document.documentType, document.purpose, resident?.fullName ?? "", resident?.id ?? ""]
+  return [
+    document.code,
+    document.source,
+    document.documentType,
+    document.purpose,
+    entity?.displayName ?? "",
+    entity?.id ?? "",
+    document.generatedBy,
+  ]
     .map(normalize)
     .some((field) => field.includes(q));
 }
 
 export function sortRequests(
   rows: DocumentRequest[],
-  residents: Map<string, ResidentLite>,
+  entities: Map<string, EntityRecord>,
   by: "date" | "name" | "type",
   direction: "asc" | "desc"
 ) {
@@ -124,8 +135,8 @@ export function sortRequests(
       valueA = String(new Date(a.requestedAt).getTime());
       valueB = String(new Date(b.requestedAt).getTime());
     } else if (by === "name") {
-      valueA = residents.get(a.residentId)?.fullName ?? "";
-      valueB = residents.get(b.residentId)?.fullName ?? "";
+      valueA = entities.get(entityKey(a.source, a.entityId))?.displayName ?? "";
+      valueB = entities.get(entityKey(b.source, b.entityId))?.displayName ?? "";
     } else {
       valueA = a.documentType;
       valueB = b.documentType;
@@ -139,7 +150,7 @@ export function sortRequests(
 
 export function sortDocuments(
   rows: GeneratedDocument[],
-  residents: Map<string, ResidentLite>,
+  entities: Map<string, EntityRecord>,
   by: "date" | "name" | "type",
   direction: "asc" | "desc"
 ) {
@@ -151,8 +162,8 @@ export function sortDocuments(
       valueA = String(new Date(a.generatedAt).getTime());
       valueB = String(new Date(b.generatedAt).getTime());
     } else if (by === "name") {
-      valueA = residents.get(a.residentId)?.fullName ?? "";
-      valueB = residents.get(b.residentId)?.fullName ?? "";
+      valueA = entities.get(entityKey(a.source, a.entityId))?.displayName ?? "";
+      valueB = entities.get(entityKey(b.source, b.entityId))?.displayName ?? "";
     } else {
       valueA = a.documentType;
       valueB = b.documentType;
@@ -175,6 +186,17 @@ export function documentStatusTone(status: GeneratedStatus) {
   if (status === "Generated") return "border-indigo-300/30 bg-indigo-500/10 text-indigo-600";
   if (status === "Released") return "border-emerald-300/30 bg-emerald-500/10 text-emerald-600";
   return "border-slate-300/30 bg-slate-500/10 text-slate-600 dark:text-slate-300";
+}
+
+export function sourceTone(source: DocumentSource) {
+  if (source === "Residents") return "border-cyan-300/30 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300";
+  if (source === "Establishments") return "border-fuchsia-300/30 bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300";
+  if (source === "Lots / Buildings") return "border-amber-300/30 bg-amber-500/10 text-amber-700 dark:text-amber-300";
+  return "border-rose-300/30 bg-rose-500/10 text-rose-700 dark:text-rose-300";
+}
+
+export function entityKey(source: DocumentSource, entityId: string) {
+  return `${source}::${entityId}`;
 }
 
 function escapeCsvCell(value: string) {
@@ -200,4 +222,3 @@ export function downloadMockPdf(filename: string, lines: string[]) {
   const content = lines.join("\n");
   downloadBlob(filename, content, "application/pdf;charset=utf-8;");
 }
-

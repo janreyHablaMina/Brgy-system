@@ -1,4 +1,5 @@
 export type UserRole = "Admin" | "Staff" | "Viewer";
+export type DocumentSource = "Residents" | "Establishments" | "Lots / Buildings" | "Case Records / VAWC";
 
 export type DocumentType =
   | "Barangay Clearance"
@@ -10,15 +11,18 @@ export type DocumentType =
 export type RequestStatus = "Pending" | "Processing" | "Approved" | "Rejected";
 export type GeneratedStatus = "Generated" | "Released" | "Archived";
 
-export type ResidentLite = {
+export type EntityRecord = {
   id: string;
-  fullName: string;
-  purok: string;
+  source: DocumentSource;
+  displayName: string;
+  subtitle: string;
+  href: string;
 };
 
 export type DocumentRequest = {
   id: string;
-  residentId: string;
+  source: DocumentSource;
+  entityId: string;
   documentType: DocumentType;
   purpose: string;
   requestedAt: string;
@@ -32,7 +36,8 @@ export type GeneratedDocument = {
   id: string;
   code: string;
   requestId: string;
-  residentId: string;
+  source: DocumentSource;
+  entityId: string;
   documentType: DocumentType;
   purpose: string;
   generatedBy: string;
@@ -50,4 +55,3 @@ export type ActivityLog = {
   message: string;
   createdAt: string;
 };
-
