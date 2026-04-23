@@ -35,6 +35,7 @@ import { formatDate } from "@/features/residents/utils";
 import { MOCK_REQUESTS } from "../mock-data";
 import { Request, RequestStatus, RequestPriority, RequestFilters } from "../types";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { Avatar } from "@/components/ui/avatar";
 
 const STATUS_ORDER: RequestStatus[] = ["New", "Pending", "Processing", "Approved", "Rejected", "Converted"];
 
@@ -138,6 +139,18 @@ export function RequestsManagementPage() {
       }
       return r;
     }));
+  };
+
+  const getStatusTone = (status: RequestStatus) => {
+    switch (status) {
+      case "New": return "bg-amber-50 text-amber-600 border-amber-200/50";
+      case "Pending": return "bg-blue-50 text-blue-600 border-blue-200/50";
+      case "Processing": return "bg-indigo-50 text-indigo-600 border-indigo-200/50";
+      case "Approved": return "bg-emerald-50 text-emerald-600 border-emerald-200/50";
+      case "Rejected": return "bg-rose-50 text-rose-600 border-rose-200/50";
+      case "Converted": return "bg-sky-50 text-sky-600 border-sky-200/50";
+      default: return "bg-slate-50 text-slate-600 border-slate-200/50";
+    }
   };
 
   return (
@@ -260,10 +273,10 @@ export function RequestsManagementPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
+          <table className="w-full border-collapse text-left text-sm">
             <thead>
               <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
-                <th className="px-4 py-3 w-10">
+                <th className="px-4 py-3 text-center">
                   <input 
                     type="checkbox" 
                     checked={selectedIds.size === processed.length && processed.length > 0}
@@ -271,14 +284,13 @@ export function RequestsManagementPage() {
                     className="rounded border-[var(--border)] accent-[var(--primary)]"
                   />
                 </th>
-                <SortTh label="Request ID" sortKey="id" current={sortBy} direction={sortDirection} onSort={() => toggleSort("id")} />
-                <SortTh label="Type / Purpose" sortKey="type" current={sortBy} direction={sortDirection} onSort={() => toggleSort("type")} />
+                <SortTh label="Request ID / Type" sortKey="id" current={sortBy} direction={sortDirection} onSort={() => toggleSort("id")} />
                 <SortTh label="Entity / Source" sortKey="entityName" current={sortBy} direction={sortDirection} onSort={() => toggleSort("entityName")} />
+                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Purpose</th>
                 <SortTh label="Submitted" sortKey="submittedAt" current={sortBy} direction={sortDirection} onSort={() => toggleSort("submittedAt")} />
-                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Assigned To</th>
-                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Status</th>
-                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Priority</th>
-                <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Actions</th>
+                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Assigned To</th>
+                <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Status</th>
+                <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]/40">
@@ -286,11 +298,15 @@ export function RequestsManagementPage() {
                 <tr 
                   key={req.id} 
                   className={cn(
-                    "group transition-colors hover:bg-[var(--primary)]/[0.02]",
+                    "group relative transition-all hover:bg-[var(--primary)]/[0.02]",
                     selectedIds.has(req.id) && "bg-[var(--primary)]/[0.04]"
                   )}
                 >
-                  <td className="px-4 py-4">
+                  <td className="relative px-4 py-3.5 text-center">
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-0 top-0 h-full w-0.5 bg-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
+                    />
                     <input 
                       type="checkbox" 
                       checked={selectedIds.has(req.id)}
@@ -298,44 +314,49 @@ export function RequestsManagementPage() {
                       className="rounded border-[var(--border)] accent-[var(--primary)]"
                     />
                   </td>
-                  <td className="px-4 py-4">
-                    <span className="font-mono text-xs font-semibold text-[var(--primary)]">{req.id}</span>
-                  </td>
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-3.5">
                     <div className="flex flex-col">
-                      <span className="font-medium text-[var(--text)]">{req.type}</span>
-                      <span className="text-xs text-[var(--muted)] line-clamp-1">{req.purpose}</span>
+                      <span className="text-[11px] font-medium text-[var(--muted)] uppercase tracking-wider font-mono">{req.id}</span>
+                      <span className="tracking-tight text-[var(--text)] font-semibold">{req.type}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--card-soft)] border border-[var(--border)]">
-                        {req.entityType === "Residents" ? <User className="h-4 w-4 text-blue-500" /> : <Building2 className="h-4 w-4 text-amber-500" />}
-                      </div>
+                      <Avatar name={req.entityName} hideText className="h-9 w-9" />
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-[var(--text)]">{req.entityName}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">{req.entityType}</span>
+                        <span className="tracking-tight text-[var(--text)] font-medium">{req.entityName}</span>
+                        <span className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-widest">{req.entityType === "Residents" ? "Resident" : "Establishment"}</span>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-3.5">
+                    <p className="max-w-[160px] truncate text-xs font-medium text-[var(--muted)]" title={req.purpose}>{req.purpose}</p>
+                  </td>
+                  <td className="px-4 py-3.5">
                     <div className="flex flex-col">
-                      <span className="text-sm text-[var(--text)]">{formatDate(req.submittedAt)}</span>
-                      <span className="text-[10px] text-[var(--muted)]">{new Date(req.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="text-xs font-medium text-[var(--text)] tracking-tight">{formatDate(req.submittedAt)}</span>
+                      <span className="text-[10px] font-medium text-[var(--muted)]">{new Date(req.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-4">
-                    <span className="text-xs font-medium text-[var(--text)]">{req.assignedStaff || "Unassigned"}</span>
+                  <td className="px-4 py-3.5">
+                    {req.assignedStaff ? (
+                      <div className="flex items-center gap-2 rounded-lg bg-[var(--card-soft)]/50 px-2 py-1 border border-[var(--border)]/50 w-fit">
+                        <Avatar name={req.assignedStaff} hideText className="scale-75 origin-left" />
+                        <span className="text-[11px] font-medium text-[var(--text)]">{req.assignedStaff.split(' ')[0]}</span>
+                      </div>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] opacity-50">
+                        <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                        Unassigned
+                      </span>
+                    )}
                   </td>
-                  <td className="px-4 py-4">
-                    <StatusBadge status={req.status} />
+                  <td className="px-4 py-3.5">
+                    <StatusChip status={req.status} tone={getStatusTone(req.status)} />
                   </td>
-                  <td className="px-4 py-4">
-                    <PriorityBadge priority={req.priority} />
-                  </td>
-                  <td className="px-4 py-4 text-right">
+                  <td className="px-4 py-3.5 text-right">
                     <DropdownMenu
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] hover:bg-[var(--card-soft)] hover:text-[var(--primary)] transition"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
                       trigger={<MoreVertical className="h-4 w-4" />}
                       items={[
                         { label: "View Details", icon: Eye, onClick: () => setViewRequest(req) },
@@ -525,18 +546,9 @@ function SortTh({ label, sortKey, current, direction, onSort }: { label: string,
   );
 }
 
-function StatusBadge({ status }: { status: RequestStatus }) {
-  const styles = {
-    New: "bg-amber-100 text-amber-700 border-amber-200",
-    Pending: "bg-violet-100 text-violet-700 border-violet-200",
-    Processing: "bg-indigo-100 text-indigo-700 border-indigo-200",
-    Approved: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    Rejected: "bg-rose-100 text-rose-700 border-rose-200",
-    Converted: "bg-sky-100 text-sky-700 border-sky-200"
-  };
-
+function StatusChip({ status, tone, className }: { status: string; tone: string; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", styles[status])}>
+    <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider", tone, className)}>
       {status}
     </span>
   );
