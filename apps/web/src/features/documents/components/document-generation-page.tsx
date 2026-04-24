@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import { 
@@ -70,23 +70,23 @@ const DOCUMENT_TYPES: DocumentType[] = [
 
 export function DocumentGenerationPage() {
   // Form State
-  const [selectedResidentId, setSelectedResidentId] = useState("");
+  const [selectedResidentId, setSelectedResidentId] = useState("RES-2026-0002");
   const [documentType, setDocumentType] = useState<DocumentType>("Barangay Clearance");
-  const [purpose, setPurpose] = useState("");
+  const [purpose, setPurpose] = useState("Local Employment");
   const [documentNumber, setDocumentNumber] = useState(`CERT-${new Date().getFullYear()}-0024`);
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
   const [expiryDate, setExpiryDate] = useState("");
   
-  const [orNumber, setOrNumber] = useState("");
-  const [amountPaid, setAmountPaid] = useState("");
+  const [orNumber, setOrNumber] = useState("OR-2026-00124");
+  const [amountPaid, setAmountPaid] = useState("50.00");
   
-  const [ctcNumber, setCtcNumber] = useState("");
-  const [ctcDate, setCtcDate] = useState("");
+  const [ctcNumber, setCtcNumber] = useState("CTC-2026-000789");
+  const [ctcDate, setCtcDate] = useState(new Date().toISOString().split("T")[0]);
   const [ctcPlace, setCtcPlace] = useState("Palauig, Zambales");
 
   // UI State
   const [activeTab, setActiveTab] = useState<"general" | "payment" | "settings">("general");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("Juan Dela Cruz");
   const [isResidentDropdownOpen, setIsResidentDropdownOpen] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
     payment: false,
@@ -273,7 +273,7 @@ export function DocumentGenerationPage() {
                                 <span className="text-sm font-semibold text-[var(--text)]">
                                   {resident.firstName} {resident.lastName}
                                 </span>
-                                <span className="text-[10px] text-[var(--muted)] uppercase tracking-wider">{resident.id} • {resident.address}</span>
+                                <span className="text-[10px] text-[var(--muted)] uppercase tracking-wider">{resident.id} â€¢ {resident.address}</span>
                               </button>
                             ))}
                           </div>
@@ -606,107 +606,122 @@ export function DocumentGenerationPage() {
               </button>
             </header>
 
-            <div className="flex items-center justify-center bg-slate-100/50 p-12 dark:bg-slate-900/40">
+            <div className="flex items-start justify-center bg-slate-100/50 p-4 dark:bg-slate-900/40 overflow-auto">
               {/* The Document Paper */}
-              <div className="aspect-[1/1.414] w-full max-w-[700px] origin-top bg-white p-[1.5cm] shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all dark:bg-white text-slate-900">
-                <div className="flex h-full flex-col">
-                  {/* Header */}
-                  <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4 text-center">
-                    <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 italic text-slate-400 text-[8px]">LOGO</div>
-                    <div className="flex-1 px-4">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Republic of the Philippines</p>
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">City of Zamboanga</p>
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Barangay Bunguiao</p>
-                      <p className="mt-1 text-base font-black uppercase tracking-tight text-slate-900">Office of the Punong Barangay</p>
+              <div className="aspect-[1/1.414] w-full origin-top bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] text-slate-900 relative overflow-hidden flex flex-col">
+
+                {/* Top blue bar */}
+                <div className="h-2.5 bg-blue-700 shrink-0" />
+
+                <div className="flex flex-col flex-1 px-8 pt-4 pb-2">
+                  {/* Header: Logos + Jurisdiction */}
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="h-14 w-14 border border-slate-200 bg-slate-50 flex items-center justify-center text-[7px] italic text-slate-400 text-center shrink-0">Barangay<br/>Logo</div>
+                    <div className="flex-1 text-center px-2">
+                      <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-blue-700">Republic of the Philippines</p>
+                      <h1 className="text-base font-black uppercase text-blue-700 leading-tight">City of ParaÃ±aque</h1>
+                      <p className="text-[8px] uppercase text-slate-500 font-semibold tracking-wider">Metro Manila</p>
+                      <h2 className="text-[10px] font-black uppercase text-blue-700 mt-0.5">Office of Tambo Barangay Council</h2>
                     </div>
-                    <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 italic text-slate-400 text-[8px]">LOGO</div>
+                    <div className="h-14 w-14 border border-slate-200 bg-slate-50 flex items-center justify-center text-[7px] italic text-slate-400 text-center shrink-0">City<br/>Logo</div>
                   </div>
 
-                  {/* Document Title */}
-                  <div className="mt-10 text-center">
-                    <h2 className="text-3xl font-black uppercase tracking-[0.2em] text-slate-900 font-serif">
-                      {documentType.toUpperCase()}
-                    </h2>
-                    <p className="mt-2 text-xs font-bold tracking-widest uppercase text-slate-500">To Whom It May Concern:</p>
+                  {/* No. / Date */}
+                  <div className="flex flex-col items-end text-[8px] mb-2 gap-0.5">
+                    <div className="flex items-end gap-1"><span className="font-bold text-slate-600">No:</span><span className="border-b border-blue-700 min-w-[130px] text-center font-bold text-blue-700 font-mono">{documentNumber}</span></div>
+                    <div className="flex items-end gap-1"><span className="font-bold text-slate-600">Date:</span><span className="border-b border-blue-700 min-w-[130px] text-center font-bold text-blue-700 uppercase">{new Date(issueDate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}).toUpperCase()}</span></div>
                   </div>
 
-                  {/* Body Content */}
-                  <div className="mt-12 flex-1 text-center leading-relaxed text-slate-800">
-                    {selectedResident ? (
-                      <div className="space-y-6 text-base font-serif px-8">
-                        <p>
-                          This is to certify that <span className="font-bold">MR. {fullName.toUpperCase()}</span>, {age} years old, <span className="font-bold">{selectedResident.gender.toLowerCase()}</span>, and a resident of 
-                        </p>
-                        <p className="font-bold uppercase tracking-tight">
-                          {selectedResident.address.toUpperCase()}
-                        </p>
-                        <p>
-                          is a bonafide resident of this barangay.
-                        </p>
-                        {displayOptions.showPurpose && (
-                          <p>
-                            This certification is issued upon his request for {purpose || "whatever legal purpose it may serve"}.
-                          </p>
-                        )}
-                        {displayOptions.showIssueDate && (
-                          <p className="mt-10 italic">
-                            Issued this {new Date(issueDate).toLocaleDateString('en-PH', { day: 'numeric', month: 'long', year: 'numeric' })} at Barangay Bunguiao, Zamboanga City, Philippines.
-                          </p>
-                        )}
-                        {remarks && (
-                           <p className="mt-10 text-xs text-slate-500 font-sans italic border-t border-slate-100 pt-4">
-                             Note: {remarks}
-                           </p>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex h-64 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400">
-                        <User className="mb-2 h-8 w-8 opacity-20" />
-                        <p className="text-sm font-medium italic">Please select a resident to preview document</p>
-                      </div>
-                    )}
+                  {/* Title */}
+                  <div className="text-center mb-2">
+                    <h2 className="text-xl font-black uppercase tracking-widest underline underline-offset-4 decoration-2">{documentType.toUpperCase()}</h2>
                   </div>
 
-                  {/* Signature Section */}
-                  <div className="mt-16 flex items-center justify-center gap-12">
-                    <div className="w-56 text-center">
-                      <div className="h-10 flex items-end justify-center">
-                         <div className="w-40 border-b border-slate-900 font-serif italic text-slate-400 opacity-20 text-[8px]">SIGNATURE</div>
-                      </div>
-                      <p className="mt-2 text-sm font-black uppercase tracking-tight">{signatories.punongBarangay.toUpperCase()}</p>
-                      <p className="text-[9px] font-bold uppercase text-slate-500 tracking-widest">Punong Barangay</p>
-                    </div>
-
-                    {signatories.secretary && (
-                      <div className="w-56 text-center">
-                        <div className="h-10 flex items-end justify-center">
-                           <div className="w-40 border-b border-slate-900 font-serif italic text-slate-400 opacity-20 text-[8px]">SIGNATURE</div>
-                        </div>
-                        <p className="mt-2 text-sm font-black uppercase tracking-tight">{signatories.secretary.toUpperCase()}</p>
-                        <p className="text-[9px] font-bold uppercase text-slate-500 tracking-widest">Barangay Secretary</p>
-                      </div>
-                    )}
+                  {/* Intro */}
+                  <div className="mb-2">
+                    <p className="text-[8px] italic text-blue-700 font-semibold">To whom it may concern:</p>
+                    <p className="text-[7.5px] text-blue-700 leading-relaxed mt-0.5 indent-4">This is to certify that the person whose name, signature and thumbmarks appear below has requested a <span className="font-bold uppercase">{documentType}</span> from this barangay and the results is/are stated below.</p>
                   </div>
 
-                  {/* Footer Section */}
-                  <div className="mt-auto flex items-end justify-between pt-6">
-                    <div className="flex flex-col items-center gap-1 opacity-60">
-                      {displayOptions.showQrCode && (
-                        <>
-                          <div className="h-16 w-16 border border-slate-200 bg-slate-50 flex items-center justify-center rounded">
-                            <QrCode className="h-10 w-10 text-slate-300" />
-                          </div>
-                          <span className="text-[7px] uppercase tracking-tighter text-slate-400 font-bold font-mono">{documentNumber}</span>
-                          <span className="text-[6px] uppercase tracking-tighter text-slate-400">Scan to verify</span>
-                        </>
-                      )}
+                  {/* Field Grid */}
+                  <div className="space-y-1.5 text-[7.5px] mb-3">
+                    <div className="flex gap-2">
+                      <div className="flex items-end gap-1 flex-1"><span className="font-black underline text-slate-700 whitespace-nowrap">NAME:</span><span className="flex-1 border-b border-slate-800 font-bold text-slate-900 uppercase px-1">{fullName || "\u00A0"}</span></div>
+                      <div className="flex items-end gap-1 w-28"><span className="font-black underline text-slate-700 whitespace-nowrap">ALIAS/ES:</span><span className="flex-1 border-b border-slate-800 px-1">&nbsp;</span></div>
+                      <div className="flex items-end gap-1 w-32"><span className="font-black underline text-slate-700 whitespace-nowrap">BIRTHPLACE:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold">&nbsp;</span></div>
                     </div>
-                    <div className="flex-1 px-8 text-[10px] font-medium text-slate-400 text-center italic">
-                       "Bungiao: The Vanguard of Peace and Progress"
+                    <div className="flex gap-2">
+                      <div className="flex items-end gap-1 flex-1"><span className="font-black underline text-slate-700 whitespace-nowrap">BIRTHDATE:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold text-slate-900">{selectedResident ? new Date(selectedResident.birthdate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : "\u00A0"}</span></div>
+                      <div className="flex items-end gap-1 w-20"><span className="font-black underline text-slate-700">AGE:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold text-slate-900 text-center">{age || "\u00A0"}</span></div>
                     </div>
-                    <div className="h-20 w-32 border-2 border-slate-200 rounded-lg flex items-center justify-center opacity-30 italic text-slate-400 text-[8px]">BARANGAY SEAL</div>
+                    <div className="flex gap-2">
+                      <div className="flex items-end gap-1 flex-[2]"><span className="font-black underline text-slate-700 whitespace-nowrap">CIVIL STATUS:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold uppercase">{selectedResident?.civilStatus || "\u00A0"}</span></div>
+                      <div className="flex items-end gap-1 w-24"><span className="font-black underline text-slate-700">GENDER:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold uppercase text-center">{selectedResident?.gender.charAt(0) || "\u00A0"}</span></div>
+                      <div className="flex items-end gap-1 flex-[2]"><span className="font-black underline text-slate-700 whitespace-nowrap">CITIZENSHIP:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold">FILIPINO</span></div>
+                    </div>
+                    <div className="flex items-end gap-1"><span className="font-black underline text-slate-700">ADDRESS:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold uppercase">{selectedResident?.address || "\u00A0"}</span></div>
+                    <div className="flex items-end gap-1"><span className="font-black underline text-slate-700">REMARKS:</span><span className="flex-1 border-b border-slate-800 px-1">{remarks || "N/A"}</span></div>
+                  </div>
+
+                  {/* Photo + Thumbmarks */}
+                  <div className="flex gap-6 mb-3">
+                    <div className="flex flex-col items-center gap-1 shrink-0">
+                      <div className="h-20 w-20 border border-slate-800 bg-slate-50 flex items-center justify-center text-[7px] uppercase font-bold text-slate-400">NO PHOTO</div>
+                      <div className="w-20 border-b border-slate-800 mt-3" />
+                      <p className="text-[6px] font-black uppercase tracking-widest text-slate-500">SIGNATURE</p>
+                    </div>
+                    <div className="flex-1 flex flex-col">
+                      <div className="grid grid-cols-2 border border-slate-800 flex-1">
+                        <div className="border-r border-slate-800" />
+                        <div />
+                      </div>
+                      <div className="grid grid-cols-2 border-x border-slate-800">
+                        <div className="border-r border-slate-800 py-0.5 text-center text-[7px] font-black text-blue-700">Left</div>
+                        <div className="py-0.5 text-center text-[7px] font-black text-blue-700">Right</div>
+                      </div>
+                      <div className="border border-t-0 border-slate-800 py-0.5 text-center text-[7px] font-black uppercase tracking-widest text-blue-700">THUMBMARKS</div>
+                    </div>
+                  </div>
+
+                  {/* Valid Until + QR + OR info */}
+                  <div className="flex gap-4 mb-3">
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <div className="flex gap-1 items-center text-[7.5px]"><span className="font-black text-slate-700">VALID UNTIL:</span><span className="font-bold text-blue-700">{expiryDate ? new Date(expiryDate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}).toUpperCase() : "JULY 24, 2026"}</span></div>
+                      <div className="flex flex-col items-center gap-0.5 mt-1">
+                        <p className="text-[6px] font-black uppercase text-slate-500 tracking-widest">SCAN TO VERIFY</p>
+                        <div className="h-14 w-14 border border-slate-300 p-0.5 bg-white"><QrCode className="w-full h-full text-slate-800" /></div>
+                      </div>
+                    </div>
+                    <div className="flex-1 space-y-1 text-[7.5px] pt-5">
+                      <div className="flex items-end gap-1"><span className="font-black text-slate-700 whitespace-nowrap">O.R. NO:</span><span className="flex-1 border-b border-slate-300" /><span className="font-mono font-bold">{orNumber || "as"}</span></div>
+                      <div className="flex items-end gap-1"><span className="font-black text-slate-700 whitespace-nowrap">AMOUNT NUMBER:</span><span className="flex-1 border-b border-slate-300" /><span className="font-mono font-bold">{amountPaid || "s"}</span></div>
+                      <div className="flex items-end gap-1"><span className="font-black text-slate-700 whitespace-nowrap">RESIDENT NO:</span><span className="flex-1 border-b border-slate-300" /><span className="font-mono font-bold">{selectedResidentId || "RES-1381000006-0051"}</span></div>
+                    </div>
+                  </div>
+
+                  {/* Signatures */}
+                  <div className="flex justify-between mb-1">
+                    <div className="text-center w-44">
+                      <p className="text-[6.5px] font-black uppercase text-blue-700 tracking-widest mb-6">PROCCESSED BY:</p>
+                      <div className="border-b border-slate-800 pb-0.5"><p className="text-[7.5px] font-black uppercase">{(signatories.other || "RESURRECCION, NIÃ‘O MALVIN MARTIN").toUpperCase()}</p></div>
+                      <p className="text-[7px] italic text-blue-700">Clerk/Staff</p>
+                    </div>
+                    <div className="text-center w-44">
+                      <p className="text-[6.5px] font-black uppercase text-blue-700 tracking-widest mb-6">APPROVED BY:</p>
+                      <div className="border-b border-slate-800 pb-0.5"><p className="text-[7.5px] font-black uppercase">{(signatories.punongBarangay || "HON. JENNIFER S. QUIZON").toUpperCase()}</p></div>
+                      <p className="text-[7px] italic text-blue-700">Punong Barangay</p>
+                    </div>
+                  </div>
+
+                  {/* Footer text */}
+                  <div className="mt-auto text-center border-t border-slate-100 pt-1">
+                    <p className="text-[6.5px] font-black uppercase tracking-wider text-blue-700">Barangay Hall, Seaside Coastal, Tambo, ParaÃ±aque City, Philippines, 1701</p>
+                    <p className="text-[6px] text-slate-400">825-30503 | 8733-7943 | (0977) 7232933 | (0960) 2547401</p>
                   </div>
                 </div>
+
+                {/* Bottom blue bar */}
+                <div className="h-2.5 bg-blue-700 shrink-0" />
               </div>
             </div>
           </div>
