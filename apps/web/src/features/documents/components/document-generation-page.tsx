@@ -1,13 +1,13 @@
 ﻿"use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { 
   Search, 
   ChevronDown, 
   FileText, 
   User, 
   Settings, 
-  Info,
   Download,
   Printer,
   Save,
@@ -156,11 +156,20 @@ export function DocumentGenerationPage() {
   };
 
   const fullName = selectedResident ? `${selectedResident.firstName} ${selectedResident.middleName ? selectedResident.middleName + " " : ""}${selectedResident.lastName}` : "";
+  const issuedOnLabel = issueDate
+    ? new Date(issueDate).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })
+    : "N/A";
+  const ctcDateLabel = ctcDate ? new Date(ctcDate).toLocaleDateString("en-US") : "N/A";
+  const expiryLabel = expiryDate ? new Date(expiryDate).toLocaleDateString("en-US") : "N/A";
+  const verificationCode = `${documentNumber.replace(/[^A-Za-z0-9]/g, "").slice(-8).toUpperCase()}-${(selectedResidentId || "0000").slice(-4)}`;
+  const handlePrintPdf = () => {
+    window.print();
+  };
 
   return (
     <div className="min-h-screen space-y-6 bg-[var(--background)] p-6 pb-24">
       {/* Page Header */}
-      <header className="px-1">
+      <header className="px-1 no-print">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[var(--text)]">Generate Document</h1>
@@ -171,11 +180,11 @@ export function DocumentGenerationPage() {
               <Save className="h-4 w-4 text-[var(--muted)]" />
               Save Draft
             </button>
-            <button className="flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)]">
+            <button onClick={handlePrintPdf} className="flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)]">
               <Eye className="h-4 w-4 text-[var(--muted)]" />
               Preview
             </button>
-            <button className="flex h-10 items-center gap-2 rounded-xl bg-[var(--primary)] px-6 text-sm font-bold text-white transition hover:brightness-110 shadow-lg shadow-[var(--primary)]/20">
+            <button onClick={handlePrintPdf} className="flex h-10 items-center gap-2 rounded-xl bg-[var(--primary)] px-6 text-sm font-bold text-white transition hover:brightness-110 shadow-lg shadow-[var(--primary)]/20">
               <Printer className="h-4 w-4" />
               Generate & Print
             </button>
@@ -185,7 +194,7 @@ export function DocumentGenerationPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left Column: Input Panel (The Card) */}
-        <div className="lg:col-span-5 xl:col-span-4">
+        <div className="lg:col-span-5 xl:col-span-4 no-print">
           <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-all">
             <header className="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
               <FileText className="h-5 w-5 text-[var(--primary)]" />
@@ -273,7 +282,7 @@ export function DocumentGenerationPage() {
                                 <span className="text-sm font-semibold text-[var(--text)]">
                                   {resident.firstName} {resident.lastName}
                                 </span>
-                                <span className="text-[10px] text-[var(--muted)] uppercase tracking-wider">{resident.id} â€¢ {resident.address}</span>
+                                <span className="text-[10px] text-[var(--muted)] uppercase tracking-wider">{resident.id} | {resident.address}</span>
                               </button>
                             ))}
                           </div>
@@ -572,12 +581,12 @@ export function DocumentGenerationPage() {
                     <Save className="h-3.5 w-3.5 text-[var(--muted)]" />
                     Save Draft
                   </button>
-                  <button className="flex h-10 items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-xs font-bold text-[var(--text)] hover:bg-[var(--card-soft)] transition">
+                  <button onClick={handlePrintPdf} className="flex h-10 items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-xs font-bold text-[var(--text)] hover:bg-[var(--card-soft)] transition">
                     <Download className="h-3.5 w-3.5 text-[var(--muted)]" />
                     Export PDF
                   </button>
                   <button className="h-10 rounded-xl border border-rose-100 bg-rose-50/30 text-xs font-bold text-rose-600 hover:bg-rose-50 transition">Cancel</button>
-                  <button className="flex h-10 items-center justify-center gap-2 rounded-xl bg-[var(--primary)] text-xs font-bold text-white hover:brightness-110 transition shadow-lg shadow-[var(--primary)]/20">
+                  <button onClick={handlePrintPdf} className="flex h-10 items-center justify-center gap-2 rounded-xl bg-[var(--primary)] text-xs font-bold text-white hover:brightness-110 transition shadow-lg shadow-[var(--primary)]/20">
                     <Printer className="h-3.5 w-3.5" />
                     Generate & Print
                   </button>
@@ -590,8 +599,8 @@ export function DocumentGenerationPage() {
         {/* Right Column: Live Document Preview */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
           {/* Preview Header Card */}
-          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-            <header className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
+          <div className="print-area overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+            <header className="print-preview-header flex items-center justify-between border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
               <div className="flex items-center gap-3">
                 <FileText className="h-5 w-5 text-[var(--primary)]" />
                 <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text)]">Document Preview</h2>
@@ -600,173 +609,240 @@ export function DocumentGenerationPage() {
                   Live Preview
                 </span>
               </div>
-              <button className="flex items-center gap-2 rounded-lg bg-[var(--card-soft)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition">
+              <button onClick={handlePrintPdf} className="flex items-center gap-2 rounded-lg bg-[var(--card-soft)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition">
                 <Download className="h-3.5 w-3.5" />
                 Download PDF
               </button>
             </header>
 
-            <div className="flex items-start justify-center bg-slate-100/50 p-4 dark:bg-slate-900/40 overflow-auto">
-              {/* The Document Paper */}
-              <div className="aspect-[1/1.414] w-full origin-top bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] text-slate-900 relative overflow-hidden flex flex-col">
-
-                {/* Top blue bar */}
-                <div className="h-2.5 bg-blue-700 shrink-0" />
-
-                <div className="flex flex-col flex-1 px-8 pt-4 pb-2">
-                  {/* Header: Logos + Jurisdiction */}
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="h-14 w-14 border border-slate-200 bg-slate-50 flex items-center justify-center text-[7px] italic text-slate-400 text-center shrink-0">Barangay<br/>Logo</div>
-                    <div className="flex-1 text-center px-2">
-                      <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-blue-700">Republic of the Philippines</p>
-                      <h1 className="text-base font-black uppercase text-blue-700 leading-tight">City of ParaÃ±aque</h1>
-                      <p className="text-[8px] uppercase text-slate-500 font-semibold tracking-wider">Metro Manila</p>
-                      <h2 className="text-[10px] font-black uppercase text-blue-700 mt-0.5">Office of Tambo Barangay Council</h2>
-                    </div>
-                    <div className="h-14 w-14 border border-slate-200 bg-slate-50 flex items-center justify-center text-[7px] italic text-slate-400 text-center shrink-0">City<br/>Logo</div>
-                  </div>
-
-                  {/* No. / Date */}
-                  <div className="flex flex-col items-end text-[8px] mb-2 gap-0.5">
-                    <div className="flex items-end gap-1"><span className="font-bold text-slate-600">No:</span><span className="border-b border-blue-700 min-w-[130px] text-center font-bold text-blue-700 font-mono">{documentNumber}</span></div>
-                    <div className="flex items-end gap-1"><span className="font-bold text-slate-600">Date:</span><span className="border-b border-blue-700 min-w-[130px] text-center font-bold text-blue-700 uppercase">{new Date(issueDate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}).toUpperCase()}</span></div>
-                  </div>
-
-                  {/* Title */}
-                  <div className="text-center mb-2">
-                    <h2 className="text-xl font-black uppercase tracking-widest underline underline-offset-4 decoration-2">{documentType.toUpperCase()}</h2>
-                  </div>
-
-                  {/* Intro */}
-                  <div className="mb-2">
-                    <p className="text-[8px] italic text-blue-700 font-semibold">To whom it may concern:</p>
-                    <p className="text-[7.5px] text-blue-700 leading-relaxed mt-0.5 indent-4">This is to certify that the person whose name, signature and thumbmarks appear below has requested a <span className="font-bold uppercase">{documentType}</span> from this barangay and the results is/are stated below.</p>
-                  </div>
-
-                  {/* Field Grid */}
-                  <div className="space-y-1.5 text-[7.5px] mb-3">
-                    <div className="flex gap-2">
-                      <div className="flex items-end gap-1 flex-1"><span className="font-black underline text-slate-700 whitespace-nowrap">NAME:</span><span className="flex-1 border-b border-slate-800 font-bold text-slate-900 uppercase px-1">{fullName || "\u00A0"}</span></div>
-                      <div className="flex items-end gap-1 w-28"><span className="font-black underline text-slate-700 whitespace-nowrap">ALIAS/ES:</span><span className="flex-1 border-b border-slate-800 px-1">&nbsp;</span></div>
-                      <div className="flex items-end gap-1 w-32"><span className="font-black underline text-slate-700 whitespace-nowrap">BIRTHPLACE:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold">&nbsp;</span></div>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="flex items-end gap-1 flex-1"><span className="font-black underline text-slate-700 whitespace-nowrap">BIRTHDATE:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold text-slate-900">{selectedResident ? new Date(selectedResident.birthdate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : "\u00A0"}</span></div>
-                      <div className="flex items-end gap-1 w-20"><span className="font-black underline text-slate-700">AGE:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold text-slate-900 text-center">{age || "\u00A0"}</span></div>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="flex items-end gap-1 flex-[2]"><span className="font-black underline text-slate-700 whitespace-nowrap">CIVIL STATUS:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold uppercase">{selectedResident?.civilStatus || "\u00A0"}</span></div>
-                      <div className="flex items-end gap-1 w-24"><span className="font-black underline text-slate-700">GENDER:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold uppercase text-center">{selectedResident?.gender.charAt(0) || "\u00A0"}</span></div>
-                      <div className="flex items-end gap-1 flex-[2]"><span className="font-black underline text-slate-700 whitespace-nowrap">CITIZENSHIP:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold">FILIPINO</span></div>
-                    </div>
-                    <div className="flex items-end gap-1"><span className="font-black underline text-slate-700">ADDRESS:</span><span className="flex-1 border-b border-slate-800 px-1 font-bold uppercase">{selectedResident?.address || "\u00A0"}</span></div>
-                    <div className="flex items-end gap-1"><span className="font-black underline text-slate-700">REMARKS:</span><span className="flex-1 border-b border-slate-800 px-1">{remarks || "N/A"}</span></div>
-                  </div>
-
-                  {/* Photo + Thumbmarks */}
-                  <div className="flex gap-6 mb-3">
-                    <div className="flex flex-col items-center gap-1 shrink-0">
-                      <div className="h-20 w-20 border border-slate-800 bg-slate-50 flex items-center justify-center text-[7px] uppercase font-bold text-slate-400">NO PHOTO</div>
-                      <div className="w-20 border-b border-slate-800 mt-3" />
-                      <p className="text-[6px] font-black uppercase tracking-widest text-slate-500">SIGNATURE</p>
-                    </div>
-                    <div className="flex-1 flex flex-col">
-                      <div className="grid grid-cols-2 border border-slate-800 flex-1">
-                        <div className="border-r border-slate-800" />
-                        <div />
-                      </div>
-                      <div className="grid grid-cols-2 border-x border-slate-800">
-                        <div className="border-r border-slate-800 py-0.5 text-center text-[7px] font-black text-blue-700">Left</div>
-                        <div className="py-0.5 text-center text-[7px] font-black text-blue-700">Right</div>
-                      </div>
-                      <div className="border border-t-0 border-slate-800 py-0.5 text-center text-[7px] font-black uppercase tracking-widest text-blue-700">THUMBMARKS</div>
-                    </div>
-                  </div>
-
-                  {/* Valid Until + QR + OR info */}
-                  <div className="flex gap-4 mb-3">
-                    <div className="flex flex-col gap-1 shrink-0">
-                      <div className="flex gap-1 items-center text-[7.5px]"><span className="font-black text-slate-700">VALID UNTIL:</span><span className="font-bold text-blue-700">{expiryDate ? new Date(expiryDate).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}).toUpperCase() : "JULY 24, 2026"}</span></div>
-                      <div className="flex flex-col items-center gap-0.5 mt-1">
-                        <p className="text-[6px] font-black uppercase text-slate-500 tracking-widest">SCAN TO VERIFY</p>
-                        <div className="h-14 w-14 border border-slate-300 p-0.5 bg-white"><QrCode className="w-full h-full text-slate-800" /></div>
-                      </div>
-                    </div>
-                    <div className="flex-1 space-y-1 text-[7.5px] pt-5">
-                      <div className="flex items-end gap-1"><span className="font-black text-slate-700 whitespace-nowrap">O.R. NO:</span><span className="flex-1 border-b border-slate-300" /><span className="font-mono font-bold">{orNumber || "as"}</span></div>
-                      <div className="flex items-end gap-1"><span className="font-black text-slate-700 whitespace-nowrap">AMOUNT NUMBER:</span><span className="flex-1 border-b border-slate-300" /><span className="font-mono font-bold">{amountPaid || "s"}</span></div>
-                      <div className="flex items-end gap-1"><span className="font-black text-slate-700 whitespace-nowrap">RESIDENT NO:</span><span className="flex-1 border-b border-slate-300" /><span className="font-mono font-bold">{selectedResidentId || "RES-1381000006-0051"}</span></div>
-                    </div>
-                  </div>
-
-                  {/* Signatures */}
-                  <div className="flex justify-between mb-1">
-                    <div className="text-center w-44">
-                      <p className="text-[6.5px] font-black uppercase text-blue-700 tracking-widest mb-6">PROCCESSED BY:</p>
-                      <div className="border-b border-slate-800 pb-0.5"><p className="text-[7.5px] font-black uppercase">{(signatories.other || "RESURRECCION, NIÃ‘O MALVIN MARTIN").toUpperCase()}</p></div>
-                      <p className="text-[7px] italic text-blue-700">Clerk/Staff</p>
-                    </div>
-                    <div className="text-center w-44">
-                      <p className="text-[6.5px] font-black uppercase text-blue-700 tracking-widest mb-6">APPROVED BY:</p>
-                      <div className="border-b border-slate-800 pb-0.5"><p className="text-[7.5px] font-black uppercase">{(signatories.punongBarangay || "HON. JENNIFER S. QUIZON").toUpperCase()}</p></div>
-                      <p className="text-[7px] italic text-blue-700">Punong Barangay</p>
-                    </div>
-                  </div>
-
-                  {/* Footer text */}
-                  <div className="mt-auto text-center border-t border-slate-100 pt-1">
-                    <p className="text-[6.5px] font-black uppercase tracking-wider text-blue-700">Barangay Hall, Seaside Coastal, Tambo, ParaÃ±aque City, Philippines, 1701</p>
-                    <p className="text-[6px] text-slate-400">825-30503 | 8733-7943 | (0977) 7232933 | (0960) 2547401</p>
+            <div className="print-preview-wrap flex items-start justify-center overflow-y-auto overflow-x-hidden bg-slate-100/70 p-6">
+              <div
+                className="print-paper relative aspect-[1/1.414] w-full max-w-[980px] overflow-hidden border border-slate-300 bg-white px-16 pb-12 pt-16 text-[12px] leading-relaxed text-slate-900 shadow-[0_14px_34px_rgba(0,0,0,0.16)]"
+                style={{ fontFamily: "\"Cambria\", \"Times New Roman\", Georgia, serif" }}
+              >
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.08]">
+                  <div className="relative h-[820px] w-[820px]">
+                    <Image src="/brgy-seal.png" alt="Barangay Seal Watermark" fill className="object-contain" />
                   </div>
                 </div>
 
-                {/* Bottom blue bar */}
-                <div className="h-2.5 bg-blue-700 shrink-0" />
+                <div className="relative z-10 flex h-full flex-col">
+                  <div className="mb-7 flex items-start justify-between">
+                    <div className="h-20 w-20 shrink-0 rounded-full border border-slate-400 p-1.5">
+                      <div className="relative h-full w-full overflow-hidden rounded-full">
+                        <Image src="/brgy-seal.png" alt="Barangay Seal" fill className="object-cover" />
+                      </div>
+                    </div>
+
+                    <div className="text-center leading-tight">
+                      <p className="text-[13px]">Republic of the Philippines</p>
+                      <p className="text-[13px]">Province of Zambales</p>
+                      <p className="text-[13px]">Municipality of Palauig</p>
+                      <p className="mt-1 text-[19px] font-bold uppercase tracking-[0.16em]">BARANGAY SALAZA</p>
+                      <p className="text-[12px] uppercase tracking-[0.1em]">Office of the Punong Barangay</p>
+                    </div>
+
+                    <div className="h-20 w-20 shrink-0 rounded-full border border-slate-400 p-1.5">
+                      <div className="relative h-full w-full overflow-hidden rounded-full">
+                        <Image src="/brgyAssist.png" alt="Barangay System Logo" fill className="object-cover" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 mb-3 py-1 text-center">
+                    <p className="text-[30px] font-bold uppercase tracking-[0.12em]">Barangay Clearance</p>
+                  </div>
+
+                  <div className="mb-12" aria-hidden="true">
+                    <svg viewBox="0 0 1200 90" className="h-10 w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <line x1="0" y1="45" x2="530" y2="45" stroke="#111111" strokeWidth="2" />
+                      <line x1="670" y1="45" x2="1200" y2="45" stroke="#111111" strokeWidth="2" />
+
+                      <polygon points="532,45 546,31 560,45 546,59" fill="#111111" />
+                      <polygon points="640,45 654,31 668,45 654,59" fill="#111111" />
+
+                      <path d="M560 45 C574 22, 595 22, 600 45 C595 68, 574 68, 560 45 Z" stroke="#111111" strokeWidth="2" />
+                      <path d="M640 45 C626 22, 605 22, 600 45 C605 68, 626 68, 640 45 Z" stroke="#111111" strokeWidth="2" />
+
+                      <polygon points="600,18 627,45 600,72 573,45" stroke="#111111" strokeWidth="3" fill="white" />
+                      <polygon points="600,29 616,45 600,61 584,45" stroke="#111111" strokeWidth="2" fill="white" />
+                    </svg>
+                  </div>
+
+                  <div className="mb-4 grid grid-cols-2 gap-4 text-[12px]">
+                    <p>
+                      <span className="font-semibold">Clearance No.:</span>{" "}
+                      <span className="border-b border-black px-1.5">{displayOptions.showDocumentNumber ? documentNumber : "N/A"}</span>
+                    </p>
+                    <p className="text-right">
+                      <span className="font-semibold">Date Issued:</span>{" "}
+                      <span className="border-b border-black px-1.5">{displayOptions.showIssueDate ? issuedOnLabel : "N/A"}</span>
+                    </p>
+                  </div>
+
+                  <p className="mb-4 text-[14px] font-semibold uppercase">TO WHOM IT MAY CONCERN:</p>
+
+                  <div className="space-y-3 text-[13px] leading-relaxed">
+                    <p className="indent-10 text-justify">
+                      This is to certify that <span className="font-bold underline underline-offset-2">{fullName || "Resident Full Name"}</span>,{" "}
+                      <span className="underline underline-offset-2">{age || "___"}</span> years old,{" "}
+                      <span className="underline underline-offset-2">{selectedResident?.civilStatus || "___"}</span>, Filipino, and a resident of{" "}
+                      <span className="font-semibold underline underline-offset-2">{selectedResident?.address || "Purok, Barangay, Municipality, Province"}</span>, is known to be a person of good moral character and a law-abiding citizen in this barangay.
+                    </p>
+                    <p className="indent-10 text-justify">
+                      This is to further certify that as per records of this office, he/she has no pending case and no derogatory record filed in this barangay to date.
+                    </p>
+                    <p className="indent-10 text-justify">
+                      This certification is issued upon the request of the above-named person for{" "}
+                      <span className="font-bold uppercase underline underline-offset-2">
+                        {displayOptions.showPurpose && purpose ? purpose : "WHATEVER LEGAL PURPOSE IT MAY SERVE"}
+                      </span>.
+                    </p>
+                    <p className="indent-10 text-justify">
+                      Issued this{" "}
+                      <span className="font-semibold underline underline-offset-2">
+                        {issuedOnLabel}
+                      </span>{" "}
+                      at Barangay Salaza, Palauig, Zambales.
+                    </p>
+                  </div>
+
+                  {!!remarks.trim() && (
+                    <p className="mt-4 text-[11px]">
+                      <span className="font-semibold uppercase">Remarks:</span> {remarks}
+                    </p>
+                  )}
+
+                  <div className="mt-7 rounded-sm px-3 py-2 text-[11.5px] leading-6">
+                    <div className="grid grid-cols-2 gap-8">
+                      <div className="space-y-1">
+                        <p className="flex gap-2">
+                          <span className="min-w-[84px] font-semibold">O.R. No.:</span>
+                          <span>{displayOptions.showOrInformation ? (orNumber || "N/A") : "N/A"}</span>
+                        </p>
+                        <p className="flex gap-2">
+                          <span className="min-w-[84px] font-semibold">CTC No.:</span>
+                          <span>{displayOptions.showCtcInformation ? (ctcNumber || "N/A") : "N/A"}</span>
+                        </p>
+                        <p className="flex gap-2">
+                          <span className="min-w-[84px] font-semibold">Issued on:</span>
+                          <span>{displayOptions.showCtcInformation ? ctcDateLabel : "N/A"}</span>
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="flex gap-2">
+                          <span className="min-w-[84px] font-semibold">Amount Paid:</span>
+                          <span>{displayOptions.showOrInformation ? (amountPaid ? `PHP ${amountPaid}` : "N/A") : "N/A"}</span>
+                        </p>
+                        <p className="flex gap-2">
+                          <span className="min-w-[84px] font-semibold">Issued at:</span>
+                          <span>{displayOptions.showCtcInformation ? (ctcPlace || "N/A") : "N/A"}</span>
+                        </p>
+                        <p className="flex gap-2">
+                          <span className="min-w-[84px] font-semibold">Valid until:</span>
+                          <span>{displayOptions.showExpiryDate ? expiryLabel : "N/A"}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-auto pt-10">
+                    <div>
+                      <div className="mb-2 text-center text-[11px]">Certified by:</div>
+                      <div className="grid grid-cols-3 gap-8">
+                        <div className="text-center">
+                          <div className="mx-auto mb-2 w-52 border-b border-black" />
+                          <p className="text-[12px] font-bold uppercase">{signatories.secretary || "Barangay Secretary"}</p>
+                          <p className="text-[10px] uppercase">Barangay Secretary</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="mx-auto mb-2 w-52 border-b border-black" />
+                          <p className="text-[12px] font-bold uppercase">{signatories.punongBarangay || "Punong Barangay"}</p>
+                          <p className="text-[10px] uppercase">Punong Barangay</p>
+                        </div>
+                        <div className="text-center">
+                          <div className="mx-auto mb-2 w-52 border-b border-black" />
+                          <p className="text-[12px] font-bold uppercase">{fullName || "Applicant Name"}</p>
+                          <p className="text-[10px] uppercase">Signature of Applicant</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 flex items-end justify-between border-t border-dashed border-slate-500 pt-4">
+                      <div>
+                        <p className="text-[10px] italic text-slate-700">Not valid without official dry seal.</p>
+                        <p className="mt-1 text-[10px]"><span className="font-semibold">Verification Code:</span> {verificationCode}</p>
+                        <p className="mt-1 text-[10px]">Barangay Hall, Salaza, Palauig, Zambales</p>
+                      </div>
+                      <div className="flex items-end gap-3">
+                        <div className="flex h-20 w-16 items-center justify-center border border-dashed border-slate-500 text-[10px] uppercase text-slate-500">
+                          2x2
+                        </div>
+                        {displayOptions.showQrCode && (
+                          <div className="flex h-24 w-24 flex-col items-center justify-center border border-slate-500 text-slate-700">
+                            <QrCode className="h-10 w-10" />
+                            <span className="mt-1 text-[9px] uppercase">Verify</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Document Summary Section */}
-          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-            <header className="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-3">
-              <Settings className="h-4 w-4 text-[var(--muted)]" />
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Document Summary</h2>
-            </header>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[11px]">
-                <thead>
-                  <tr className="border-b border-[var(--border)]/50 bg-[var(--card-soft)]/30">
-                    <th className="px-6 py-3 font-bold uppercase text-[var(--muted)]">Type</th>
-                    <th className="px-6 py-3 font-bold uppercase text-[var(--muted)]">Resident</th>
-                    <th className="px-6 py-3 font-bold uppercase text-[var(--muted)]">Document No.</th>
-                    <th className="px-6 py-3 font-bold uppercase text-[var(--muted)]">Status</th>
-                    <th className="px-6 py-3 font-bold uppercase text-[var(--muted)]">Created By</th>
-                    <th className="px-6 py-3 font-bold uppercase text-[var(--muted)]">Created On</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="text-[var(--text)]">
-                    <td className="px-6 py-4 font-semibold">{documentType}</td>
-                    <td className="px-6 py-4">{fullName || "Not Selected"}</td>
-                    <td className="px-6 py-4 font-mono">{documentNumber}</td>
-                    <td className="px-6 py-4">
-                      <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 border border-emerald-100">Ready to Print</span>
-                    </td>
-                    <td className="px-6 py-4">Juan Dela Cruz</td>
-                    <td className="px-6 py-4">{new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex items-center gap-2 bg-blue-50/50 p-4 border-t border-[var(--border)]">
-              <Info className="h-4 w-4 text-blue-500" />
-              <p className="text-[10px] font-medium text-blue-600">Document will be saved to Generated Documents after printing.</p>
-            </div>
-          </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 8mm;
+          }
+
+          body * {
+            visibility: hidden !important;
+          }
+
+          .print-area,
+          .print-area * {
+            visibility: visible !important;
+          }
+
+          .print-area {
+            position: absolute !important;
+            inset: 0 auto auto 0 !important;
+            width: 100% !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            background: white !important;
+          }
+
+          .print-preview-header {
+            display: none !important;
+          }
+
+          .print-preview-wrap {
+            overflow: visible !important;
+            padding: 0 !important;
+            background: white !important;
+          }
+
+          .print-paper {
+            aspect-ratio: auto !important;
+            width: 100% !important;
+            max-width: none !important;
+            min-height: 0 !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            overflow: visible !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
