@@ -358,10 +358,19 @@ export function PropertiesManagementPage() {
                   </td>
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
-                      <Avatar name={p.ownerName} className="h-9 w-9 text-[10px] bg-[var(--primary)]/10 text-[var(--primary)]" />
+                      <Avatar
+                        src={p.ownerAvatar}
+                        name={p.ownerName}
+                        className="h-9 w-9"
+                        hideText
+                      />
                       <div className="flex flex-col">
-                        <span className="tracking-tight font-semibold text-[var(--text)]">{p.ownerName}</span>
-                        <span className="text-[10px] font-medium text-[var(--muted)]">property-registry.v1</span>
+                        <span className="tracking-tight text-[var(--text)]">
+                          {p.ownerName}
+                        </span>
+                        <span className="text-[10px] font-medium text-[var(--muted)]">
+                          resident-profile.v1
+                        </span>
                       </div>
                     </div>
                   </td>

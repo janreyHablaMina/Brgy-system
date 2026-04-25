@@ -4,6 +4,7 @@ export type Property = {
   id: string; // PROP-2026-0001
   ownerId?: string; // Linked resident ID
   ownerName: string; // Display name or fallback
+  ownerAvatar?: string;
   classification: PropertyClassification;
   address: string;
   purokZone: string;
@@ -13,8 +14,9 @@ export type Property = {
 };
 
 export type PropertyFormInput = {
-  ownerId: string;
+  ownerId?: string;
   ownerName: string;
+  ownerAvatar?: string;
   classification: PropertyClassification;
   address: string;
   purokZone: string;
