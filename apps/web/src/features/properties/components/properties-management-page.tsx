@@ -271,29 +271,30 @@ export function PropertiesManagementPage() {
       </header>
 
       <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
-        <div className="relative z-20 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4 backdrop-blur-sm">
-          <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
-            <LayoutDashboard className="h-3.5 w-3.5 text-[var(--primary)]" />
-            <span>Total Records</span>
-            <span className="text-[var(--primary)] ml-1 font-extrabold">
-              {processedProperties.length}
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <DropdownMenu
-              className="flex h-9 items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/30 hover:bg-[var(--card-soft)]"
-              trigger={
-                <>
-                  <Download className="h-4 w-4 text-[var(--primary)]" />
-                  Export Registry
-                  <ChevronDown className="h-3.5 w-3.5 opacity-40 ml-1" />
-                </>
-              }
-              items={[
-                { label: "Download as CSV", onClick: () => {}, icon: FileText, className: "text-blue-600" },
-                { label: "Download as Excel", onClick: () => {}, icon: FileSpreadsheet, className: "text-emerald-600" },
-              ]}
-            />
+        <div className="grid gap-3 border-b border-[var(--border)] p-4 md:grid-cols-2 lg:grid-cols-4">
+          <label className="lg:col-span-2">
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)] px-1">Search</span>
+            <div className="relative mt-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)]" />
+              <input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search by name, owner, or address..."
+                className="h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] pl-9 pr-3 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)]/40"
+              />
+            </div>
+          </label>
+          <SelectFilter
+            label="Classification"
+            value={filters.classification}
+            options={CLASSIFICATION_OPTIONS}
+            onChange={(val) => setFilters((f) => ({ ...f, classification: val as any }))}
+          />
+          <div className="flex flex-col justify-end">
+             <button className="flex h-10 items-center justify-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] text-[11px] font-bold uppercase tracking-widest text-[var(--muted)] hover:bg-[var(--card)] hover:text-[var(--text)] transition-all">
+                Advanced Filter
+                <ChevronDown className="h-3.5 w-3.5" />
+             </button>
           </div>
         </div>
 
