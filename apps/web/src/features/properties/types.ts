@@ -14,12 +14,24 @@ export type Property = {
 };
 
 export type PropertyFormInput = {
+  // Building Info
+  classification: PropertyClassification;
+  sizeSqm: string;
+  houseNumber: string;
+  street: string;
+  purok: string;
+  landmarkNorth: string;
+  landmarkSouth: string;
+  landmarkEast: string;
+  landmarkWest: string;
+  
+  // Owner Info
   ownerId?: string;
   ownerName: string;
   ownerAvatar?: string;
-  classification: PropertyClassification;
-  address: string;
-  purokZone: string;
+  ownerContactNo: string;
+  ownerEmail: string;
+  ownerAddress: string;
 };
 
 export type PropertyFilters = {

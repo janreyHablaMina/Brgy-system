@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   Building2,
   ChevronDown,
@@ -59,11 +60,19 @@ const EMPTY_FILTERS: PropertyFilters = {
 };
 
 const EMPTY_FORM: PropertyFormInput = {
-  ownerId: "",
-  ownerName: "",
   classification: "Lot Only",
-  address: "",
-  purokZone: "",
+  sizeSqm: "",
+  houseNumber: "",
+  street: "",
+  purok: "",
+  landmarkNorth: "",
+  landmarkSouth: "",
+  landmarkEast: "",
+  landmarkWest: "",
+  ownerName: "",
+  ownerContactNo: "",
+  ownerEmail: "",
+  ownerAddress: "",
 };
 
 export function PropertiesManagementPage() {
@@ -82,10 +91,7 @@ export function PropertiesManagementPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const [viewProperty, setViewProperty] = useState<Property | null>(null);
-  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formInput, setFormInput] = useState<PropertyFormInput>(EMPTY_FORM);
-  const [formErrors, setFormErrors] = useState<Partial<Record<keyof PropertyFormInput, string>>>({});
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -167,50 +173,9 @@ export function PropertiesManagementPage() {
     });
   }
 
-  function openCreateModal() {
-    setEditingProperty(null);
-    setFormInput(EMPTY_FORM);
-    setFormErrors({});
-    setIsFormOpen(true);
-  }
-
   function openEditModal(property: Property) {
-    setEditingProperty(property);
-    setFormInput({
-      ownerId: property.ownerId ?? "",
-      ownerName: property.ownerName,
-      classification: property.classification,
-      address: property.address,
-      purokZone: property.purokZone,
-    });
-    setFormErrors({});
-    setIsFormOpen(true);
-  }
-
-  function handleSaveProperty() {
-    const errors = validatePropertyInput(formInput);
-    setFormErrors(errors);
-    if (Object.keys(errors).length > 0) return;
-
-    const now = getTimestamp();
-    const payload = {
-      ...formInput,
-      lastUpdated: now,
-    };
-
-    if (editingProperty) {
-      setProperties((prev) =>
-        prev.map((p) => (p.id === editingProperty.id ? { ...p, ...payload } : p))
-      );
-    } else {
-      const newProperty: Property = {
-        id: generatePropertyId(properties),
-        ...payload,
-        dateRegistered: now,
-      };
-      setProperties((prev) => [newProperty, ...prev]);
-    }
-    setIsFormOpen(false);
+    // TODO: Transition to Edit Page or keep modal
+    console.log("Edit property", property.id);
   }
 
   function handleDelete(id: string) {
@@ -252,13 +217,13 @@ export function PropertiesManagementPage() {
                 { label: "Export as Excel", icon: FileSpreadsheet, onClick: () => {} },
               ]}
             />
-            <button
-              onClick={openCreateModal}
+            <Link
+              href="/properties/new"
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white transition hover:brightness-110 shadow-sm"
             >
               <Plus className="h-4 w-4" />
               Add Property
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -468,67 +433,6 @@ export function PropertiesManagementPage() {
           </div>
         </footer>
       </section>
-
-      {isFormOpen && (
-        <ModalLayout title={editingProperty ? "Edit Property" : "Add Property"} onClose={() => setIsFormOpen(false)}>
-           <div className="grid gap-6">
-              <section className="space-y-4">
-                <div className="flex items-center gap-2">
-                   <div className="h-5 w-1 rounded-full bg-[var(--primary)]" />
-                   <h4 className="text-sm font-bold uppercase tracking-widest text-[var(--text)]">Ownership Information</h4>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] px-1">Select Resident Owner</span>
-                    <select
-                      value={formInput.ownerId}
-                      onChange={(e) => {
-                        const res = MOCK_RESIDENTS.find(r => r.id === e.target.value);
-                        setFormInput(prev => ({ ...prev, ownerId: e.target.value, ownerName: res?.name ?? "" }));
-                      }}
-                      className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-4 text-sm outline-none focus:border-[var(--primary)]"
-                    >
-                      <option value="">-- Search Registry --</option>
-                      {MOCK_RESIDENTS.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                    </select>
-                  </div>
-                  <InputField label="Owner Name (External)" value={formInput.ownerName} onChange={(v) => setFormInput(p => ({ ...p, ownerName: v }))} error={formErrors.ownerName} />
-                  <SelectField label="Classification" value={formInput.classification} options={["Lot Only", "Building Only"]} onChange={(v) => setFormInput(p => ({ ...p, classification: v as any }))} />
-                </div>
-              </section>
-
-              <section className="space-y-4 pt-4 border-t border-[var(--border)]/50">
-                <div className="flex items-center gap-2">
-                   <div className="h-5 w-1 rounded-full bg-[var(--primary)]" />
-                   <h4 className="text-sm font-bold uppercase tracking-widest text-[var(--text)]">Property Location</h4>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <InputField label="Purok / Zone" value={formInput.purokZone} onChange={(v) => setFormInput(p => ({ ...p, purokZone: v }))} error={formErrors.purokZone} />
-                  <InputField label="Full Address" value={formInput.address} onChange={(v) => setFormInput(p => ({ ...p, address: v }))} error={formErrors.address} className="md:col-span-2" />
-                </div>
-              </section>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
-                <button onClick={() => setIsFormOpen(false)} className="px-6 py-2.5 rounded-xl border border-[var(--border)] text-xs font-bold uppercase tracking-widest text-[var(--muted)] hover:bg-[var(--card-soft)]">Cancel</button>
-                <button onClick={handleSaveProperty} className="px-6 py-2.5 rounded-xl bg-[var(--primary)] text-xs font-bold uppercase tracking-widest text-white hover:brightness-110 shadow-lg shadow-[var(--primary)]/20">Save Property Record</button>
-              </div>
-           </div>
-        </ModalLayout>
-      )}
-
-      {viewProperty && (
-        <ModalLayout title="Property Summary" onClose={() => setViewProperty(null)}>
-           <div className="grid gap-4 md:grid-cols-2">
-              <DetailBox label="Registry Code" value={viewProperty.id} />
-              <DetailBox label="Owner Name" value={viewProperty.ownerName} />
-              <DetailBox label="Property Type" value={viewProperty.classification} />
-              <DetailBox label="Purok/Zone" value={viewProperty.purokZone} />
-              <DetailBox label="Registered Date" value={formatDate(viewProperty.dateRegistered)} />
-              <DetailBox label="Last Updated" value={formatDate(viewProperty.lastUpdated)} />
-              <DetailBox label="Full Address" value={viewProperty.address} className="md:col-span-2" />
-           </div>
-        </ModalLayout>
-      )}
     </section>
   );
 }
@@ -543,7 +447,7 @@ function MetricCard({ label, value, icon: Icon, tone }: { label: string; value: 
           : "border-indigo-300/30 text-indigo-600 bg-indigo-500/5";
 
   return (
-    <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3">
+    <article className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 transition-all hover:border-[var(--primary)]/30">
       <div className="flex items-center justify-between">
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{label}</p>
         <div className={cn("rounded-lg border p-2", toneStyle)}>
@@ -586,52 +490,5 @@ function ThButton({ label, active, direction, onClick }: { label: string; active
         <ArrowUpDown className={cn("h-3 w-3 transition-transform", active && direction === "desc" ? "rotate-180" : "")} />
       </button>
     </th>
-  );
-}
-
-function ModalLayout({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-[1px]">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-xl border border-[var(--border)] bg-[var(--card)] p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-        <div className="mb-6 flex items-center justify-between border-b border-[var(--border)]/50 pb-4">
-          <h3 className="text-xl font-bold tracking-tight text-[var(--text)]">{title}</h3>
-          <button onClick={onClose} className="rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--card-soft)] transition-all">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function InputField({ label, value, onChange, type = "text", error, className }: { label: string; value: string; onChange: (v: string) => void; type?: string; error?: string; className?: string }) {
-  return (
-    <label className={cn("flex flex-col gap-1.5", className)}>
-      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] px-1">{label}</span>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className={cn("h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-4 text-sm outline-none transition focus:border-[var(--primary)]", error && "border-rose-400 bg-rose-50/30")} />
-      {error && <span className="text-[10px] font-semibold text-rose-500 px-1">{error}</span>}
-    </label>
-  );
-}
-
-function SelectField({ label, value, options, onChange, error }: { label: string; value: string; options: string[]; onChange: (v: string) => void; error?: string }) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] px-1">{label}</span>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className={cn("h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--card-soft)] px-4 text-sm outline-none appearance-none transition focus:border-[var(--primary)]", error && "border-rose-400 bg-rose-50/30")}>
-        {options.map(o => <option key={o} value={o}>{o}</option>)}
-      </select>
-      {error && <span className="text-[10px] font-semibold text-rose-500 px-1">{error}</span>}
-    </label>
-  );
-}
-
-function DetailBox({ label, value, className }: { label: string; value: string; className?: string }) {
-  return (
-    <div className={cn("rounded-xl border border-[var(--border)] bg-[var(--card-soft)]/50 p-4", className)}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--muted)]">{label}</p>
-      <p className="mt-1 font-semibold text-[var(--text)]">{value || "N/A"}</p>
-    </div>
   );
 }
