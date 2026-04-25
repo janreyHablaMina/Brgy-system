@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  BarChart3,
-  Calendar,
   ChevronDown,
   ChevronUp,
   ChevronLeft,
@@ -15,13 +13,9 @@ import {
   Settings,
   Users,
   X,
-  Gavel,
-  Award,
   UserCog,
   ShieldCheck,
   History,
-  Headphones,
-  ShoppingBag,
   Store,
   ClipboardList,
   Home,
@@ -57,14 +51,7 @@ const navigation: NavGroup[] = [
         label: "Dashboard",
         icon: LayoutDashboard,
         href: "/dashboard",
-        children: [
-          { label: "Overview", href: "/dashboard" },
-          { label: "Reports", href: "/dashboard/reports" },
-        ],
       },
-      { label: "eCommerce", icon: ShoppingBag, href: "/ecommerce" },
-      { label: "Analytics", icon: BarChart3, href: "/analytics" },
-      { label: "Calendar", icon: Calendar, href: "/calendar" },
     ],
   },
   {
@@ -73,11 +60,16 @@ const navigation: NavGroup[] = [
       { label: "Residents", icon: Users, href: "/residents" },
       { label: "Establishments", icon: Store, href: "/establishments" },
       { label: "Properties", icon: Home, href: "/properties" },
-      { label: "Documents", icon: FileText, href: "/documents" },
+      { 
+        label: "Documents", 
+        icon: FileText, 
+        href: "/documents",
+        children: [
+          { label: "Registry", href: "/documents" },
+          { label: "Generate New", href: "/documents/generate" },
+        ]
+      },
       { label: "Requests", icon: ClipboardList, href: "/requests", badge: "14", badgeColor: "blue" },
-      { label: "Blotter / Cases", icon: Gavel, href: "/blotter", badge: "3", badgeColor: "blue" },
-      { label: "Certificates", icon: Award, href: "/certificates" },
-      { label: "Reports", icon: BarChart3, href: "/reports" },
     ],
   },
   {
@@ -253,23 +245,6 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
           ))}
         </div>
 
-        {/* Sidebar Help Card */}
-        {!collapsed && (
-          <div className="px-6 py-4">
-            <div className="relative overflow-hidden rounded-xl bg-[#24303F] p-4 group transition-all hover:bg-[#2D3A4B]">
-              <div className="absolute -right-4 -top-4 h-16 w-16 bg-[var(--primary)]/10 rounded-full blur-xl group-hover:bg-[var(--primary)]/20 transition-all" />
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#333A48] text-white shadow-sm border border-white/5">
-                  <Headphones className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white tracking-tight">Need Help?</p>
-                  <p className="text-[10px] font-medium text-[#8A99AF]">Contact Support</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Sidebar Footer: Collapse Toggle */}
         <div className="mt-auto p-6 border-t border-white/5">

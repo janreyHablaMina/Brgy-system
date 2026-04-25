@@ -114,17 +114,16 @@ export const SEED_PROPERTIES: Property[] = [
 export function validatePropertyInput(input: PropertyFormInput) {
   const errors: Partial<Record<keyof PropertyFormInput, string>> = {};
 
-  if (!input.ownerName.trim() && !input.ownerId) {
-    errors.ownerName = "Owner is required.";
-  }
+  // Building Info Validation
+  if (!input.classification) errors.classification = "Classification is required.";
+  if (!input.sizeSqm.trim()) errors.sizeSqm = "Size is required.";
+  if (!input.street.trim()) errors.street = "Street is required.";
+  if (!input.purok.trim()) errors.purok = "Purok is required.";
 
-  if (!input.address.trim()) {
-    errors.address = "Address is required.";
-  }
-
-  if (!input.purokZone.trim()) {
-    errors.purokZone = "Purok/Zone is required.";
-  }
+  // Owner Info Validation
+  if (!input.ownerName.trim()) errors.ownerName = "Owner name is required.";
+  if (!input.ownerContactNo.trim()) errors.ownerContactNo = "Contact number is required.";
+  if (!input.ownerAddress.trim()) errors.ownerAddress = "Owner address is required.";
 
   return errors;
 }
