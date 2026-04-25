@@ -56,7 +56,8 @@ export function matchesPropertyFilters(property: Property, filters: PropertyFilt
 
   if (filters.registeredTo) {
     const target = new Date(property.dateRegistered).getTime();
-    const to = new Date(filters.registeredTo).getTime();
+    // Add one day and subtract 1ms to get the end of the selected date
+    const to = new Date(filters.registeredTo).getTime() + (24 * 60 * 60 * 1000) - 1;
     if (target > to) return false;
   }
 
