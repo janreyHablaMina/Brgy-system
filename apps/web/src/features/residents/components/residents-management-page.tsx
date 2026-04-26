@@ -306,7 +306,6 @@ type ModalMode = "create" | "edit";
 export function ResidentsManagementPage() {
   const [role, setRole] = useState<UserRole>("Admin");
   const [residents, setResidents] = useState<Resident[]>([]);
-  const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [searchInput, setSearchInput] = useState("");
@@ -400,7 +399,6 @@ export function ResidentsManagementPage() {
       }
 
       setResidents(nextResidents);
-      setLoading(false);
     }, 600);
 
     return () => clearTimeout(timer);
@@ -763,15 +761,6 @@ export function ResidentsManagementPage() {
     closeFormModal();
   }
 
-  if (loading) {
-    return (
-      <section className="space-y-4">
-        <div className="h-24 animate-pulse rounded-2xl border border-[var(--border)] bg-[var(--card)]" />
-        <div className="h-96 animate-pulse rounded-2xl border border-[var(--border)] bg-[var(--card)]" />
-      </section>
-    );
-  }
-
   if (fetchError) {
     return (
       <section className="rounded-2xl border border-rose-300 bg-rose-50 p-6 text-rose-700">
@@ -782,10 +771,8 @@ export function ResidentsManagementPage() {
           className="mt-3 rounded-lg bg-rose-600 px-3 py-2 text-xs font-semibold text-white"
           onClick={() => {
             setFetchError(null);
-            setLoading(true);
             setTimeout(() => {
               setResidents(SEED_RESIDENTS);
-              setLoading(false);
             }, 500);
           }}
         >
