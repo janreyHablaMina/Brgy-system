@@ -20,6 +20,7 @@ import {
   ClipboardList,
   Home,
   Vote,
+  Scale,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -60,6 +61,7 @@ const navigation: NavGroup[] = [
     items: [
       { label: "Residents", icon: Users, href: "/residents" },
       { label: "Voters", icon: Vote, href: "/voters" },
+      { label: "Case / Blotter", icon: Scale, href: "/case-blotter" },
       { label: "Establishments", icon: Store, href: "/establishments" },
       { label: "Properties", icon: Home, href: "/properties" },
       { 
