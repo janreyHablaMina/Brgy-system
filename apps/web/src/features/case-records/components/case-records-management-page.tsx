@@ -47,7 +47,7 @@ const TYPE_OPTIONS: Array<"All" | CaseType> = ["All", "Dispute", "Disturbance", 
 
 const MOCK_CASES: BlotterCase[] = [
   {
-    id: "BLT-2026-001",
+    id: "CAS-2026-001",
     complainant: "Maria Lopez Santos",
     respondent: "Rogelio Ramos",
     caseType: "Disturbance",
@@ -62,7 +62,7 @@ const MOCK_CASES: BlotterCase[] = [
     history: ["Initial report recorded - Apr 22, 2026", "Mediation schedule drafted - Apr 24, 2026"],
   },
   {
-    id: "BLT-2026-002",
+    id: "CAS-2026-002",
     complainant: "Juan Reyes Dela Cruz",
     respondent: "N/A",
     caseType: "Theft",
@@ -77,7 +77,7 @@ const MOCK_CASES: BlotterCase[] = [
     history: ["Case elevated for investigation - Apr 25, 2026"],
   },
   {
-    id: "BLT-2026-003",
+    id: "CAS-2026-003",
     complainant: "Pedro Cruz Luna",
     respondent: "Marvin Tolentino",
     caseType: "Property",
@@ -92,7 +92,7 @@ const MOCK_CASES: BlotterCase[] = [
     history: ["Mediation completed - Mar 12, 2026", "Signed settlement received - Mar 15, 2026"],
   },
   {
-    id: "BLT-2026-004",
+    id: "CAS-2026-004",
     complainant: "Ana Garcia Reyes",
     respondent: "Lito Navarro",
     caseType: "Dispute",
@@ -108,7 +108,7 @@ const MOCK_CASES: BlotterCase[] = [
   },
 ];
 
-export function CaseBlotterManagementPage() {
+export function CaseRecordsManagementPage() {
   const [cases] = useState<BlotterCase[]>(MOCK_CASES);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | CaseStatus>("All");
@@ -190,10 +190,10 @@ export function CaseBlotterManagementPage() {
     ];
     const stamp = new Date().toISOString().slice(0, 10);
     if (format === "csv") {
-      downloadCsv(`case-blotter-${stamp}.csv`, rows);
+      downloadCsv(`case-records-${stamp}.csv`, rows);
       return;
     }
-    downloadExcelCompatible(`case-blotter-${stamp}.xls`, rows);
+    downloadExcelCompatible(`case-records-${stamp}.xls`, rows);
   }
 
   return (
@@ -201,8 +201,8 @@ export function CaseBlotterManagementPage() {
       <header className="px-1">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold text-[var(--text)]">Case / Blotter Management</h1>
-            <p className="mt-1 text-xs text-[var(--muted)]">Track barangay incidents, case progress, and mediation outcomes.</p>
+            <h1 className="text-2xl font-semibold text-[var(--text)]">Case Records</h1>
+            <p className="mt-1 text-xs text-[var(--muted)]">Manage formal case files, investigation progress, and resolution outcomes.</p>
           </div>
           <DropdownMenu
             className="inline-flex h-10 items-center rounded-xl border border-[var(--border)] px-4 text-sm font-semibold text-[var(--text)]"
@@ -539,3 +539,4 @@ function Detail({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+

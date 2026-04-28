@@ -61,7 +61,8 @@ const navigation: NavGroup[] = [
     items: [
       { label: "Residents", icon: Users, href: "/residents" },
       { label: "Voters", icon: Vote, href: "/voters" },
-      { label: "Case / Blotter", icon: Scale, href: "/case-blotter" },
+      { label: "Case Records", icon: Scale, href: "/case-records" },
+      { label: "Blotter Records", icon: ClipboardList, href: "/blotter-records" },
       { label: "Establishments", icon: Store, href: "/establishments" },
       { label: "Properties", icon: Home, href: "/properties" },
       { 
