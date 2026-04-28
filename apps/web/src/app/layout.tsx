@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -34,13 +35,16 @@ export default function RootLayout({
       className={`${dmSans.variable} ${outfit.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
       <head>
-        <script
+        <Script
           id="theme-handler"
           src="/theme-init.js"
-          async
+          strategy="beforeInteractive"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--text)] transition-colors duration-300">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-[var(--background)] text-[var(--text)] transition-colors duration-300"
+      >
         {children}
       </body>
     </html>

@@ -1,32 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { MoonStar, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { applyTheme, THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") {
-      return "light";
-    }
-
-    const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === "light" || stored === "dark") {
-      return stored;
-    }
-
-    return document.documentElement.classList.contains("dark") ? "dark" : "light";
-  });
-
-  useEffect(() => {
-    applyTheme(theme);
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-  }, [theme]);
-
   function handleToggle() {
-    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
+    const nextTheme: Theme = document.documentElement.classList.contains("dark") ? "light" : "dark";
+    applyTheme(nextTheme);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    } catch {
+      // Ignore localStorage errors in restricted contexts.
+    }
+    window.dispatchEvent(new Event("themechange"));
   }
 
   return (
@@ -38,22 +24,12 @@ export function ThemeToggle() {
     >
       {/* Solar Eclipse Icons */}
       <Sun 
-        className={cn(
-          "absolute left-1/2 top-1/2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4",
-          theme === "light" 
-            ? "-translate-x-1/2 -translate-y-1/2 opacity-100" 
-            : "translate-x-4 -translate-y-1/2 opacity-0"
-        )} 
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-100 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4 dark:translate-x-4 dark:-translate-y-1/2 dark:opacity-0"
         style={{ color: 'var(--primary)' }}
         strokeWidth={2.5} 
       />
       <MoonStar 
-        className={cn(
-          "absolute left-1/2 top-1/2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4",
-          theme === "dark" 
-            ? "-translate-x-1/2 -translate-y-1/2 opacity-100" 
-            : "-translate-x-8 -translate-y-1/2 opacity-0"
-        )} 
+        className="absolute left-1/2 top-1/2 -translate-x-8 -translate-y-1/2 opacity-0 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] h-4 w-4 dark:-translate-x-1/2 dark:-translate-y-1/2 dark:opacity-100"
         style={{ color: 'var(--primary)' }}
         strokeWidth={2.5} 
       />
