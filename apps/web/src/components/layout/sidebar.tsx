@@ -32,6 +32,7 @@ import {
   Boxes,
   CloudLightning,
   VenusAndMars,
+  IdCard,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -97,6 +98,7 @@ const navigation: NavGroup[] = [
       { label: "Inventory & Assets", icon: Boxes, href: "/inventory-assets" },
       { label: "DRRM", icon: CloudLightning, href: "/drrm" },
       { label: "GAD Management", icon: VenusAndMars, href: "/gad-management" },
+      { label: "Personnel Management", icon: IdCard, href: "/personnel-management" },
     ],
   },
   {
