@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  Mail,
   LayoutDashboard,
   Settings,
   Users,
@@ -79,6 +80,7 @@ const navigation: NavGroup[] = [
       },
       { label: "Requests", icon: ClipboardList, href: "/requests", badge: "14", badgeColor: "blue" },
       { label: "Reports", icon: BarChart3, href: "/reports" },
+      { label: "Email", icon: Mail, href: "/email" },
     ],
   },
   {
