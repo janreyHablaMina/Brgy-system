@@ -25,6 +25,7 @@ import {
   Scale,
   BarChart3,
   FolderOpen,
+  Globe2,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -83,6 +84,7 @@ const navigation: NavGroup[] = [
       { label: "Reports", icon: BarChart3, href: "/reports" },
       { label: "Email", icon: Mail, href: "/email" },
       { label: "File Manager", icon: FolderOpen, href: "/file-manager" },
+      { label: "Portal Management", icon: Globe2, href: "/portal-management" },
     ],
   },
   {
