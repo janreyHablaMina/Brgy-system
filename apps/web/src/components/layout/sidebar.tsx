@@ -28,6 +28,7 @@ import {
   Globe2,
   LifeBuoy,
   Shield,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -89,6 +90,7 @@ const navigation: NavGroup[] = [
       { label: "Portal Management", icon: Globe2, href: "/portal-management" },
       { label: "Help Desk", icon: LifeBuoy, href: "/help-desk" },
       { label: "Tanod Management", icon: Shield, href: "/tanod-management" },
+      { label: "Finance Management", icon: Wallet, href: "/finance-management" },
     ],
   },
   {
