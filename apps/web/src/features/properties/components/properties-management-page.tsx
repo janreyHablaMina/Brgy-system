@@ -254,7 +254,7 @@ export function PropertiesManagementPage() {
               label="Classification"
               value={filters.classification}
               options={CLASSIFICATION_OPTIONS}
-              onChange={(val) => setFilters((f) => ({ ...f, classification: val as any }))}
+              onChange={(val) => setFilters((f) => ({ ...f, classification: val as PropertyFilters["classification"] }))}
             />
           </div>
           <div className="lg:col-span-4 grid grid-cols-2 gap-3">

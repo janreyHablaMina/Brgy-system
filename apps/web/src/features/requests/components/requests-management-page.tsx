@@ -36,6 +36,7 @@ import { MOCK_REQUESTS } from "../mock-data";
 import { Request, RequestStatus, RequestPriority, RequestFilters } from "../types";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Avatar } from "@/components/ui/avatar";
+import type { LucideIcon } from "lucide-react";
 
 const STATUS_ORDER: RequestStatus[] = ["New", "Pending", "Processing", "Approved", "Rejected", "Converted"];
 
@@ -58,7 +59,7 @@ export function RequestsManagementPage() {
   const [viewRequest, setViewRequest] = useState<Request | null>(null);
 
   const processed = useMemo(() => {
-    let result = requests.filter(req => {
+    const result = requests.filter(req => {
       const matchTab = activeTab === "All" || req.status === activeTab;
       const matchSearch = !filters.search || 
         req.id.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -128,7 +129,7 @@ export function RequestsManagementPage() {
           timeline: [
             ...r.timeline,
             {
-              id: `evt-${Date.now()}`,
+              id: `evt-${r.id}-${r.timeline.length + 1}`,
               status: newStatus,
               label: `Status updated to ${newStatus}`,
               timestamp: new Date().toISOString(),
@@ -248,7 +249,7 @@ export function RequestsManagementPage() {
               label="Source" 
               value={filters.source} 
               options={["All", "Residents", "Establishments"]} 
-              onChange={(v) => setFilters(prev => ({ ...prev, source: v as any }))} 
+              onChange={(v) => setFilters(prev => ({ ...prev, source: v as RequestFilters["source"] }))} 
             />
 
             <DateFilter label="From Date" value={filters.dateFrom} onChange={(v) => setFilters(prev => ({ ...prev, dateFrom: v }))} />
@@ -447,7 +448,7 @@ function SummaryCard({
   tone,
   viewAllText,
 }: {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   value: number;
   tone: "amber" | "blue" | "emerald" | "rose" | "indigo" | "violet" | "sky";
@@ -766,7 +767,7 @@ function DateFilter({ label, value, onChange }: { label: string; value: string; 
   );
 }
 
-function DetailItem({ label, value, icon: Icon, fullWidth }: { label: string, value: string, icon: any, fullWidth?: boolean }) {
+function DetailItem({ label, value, icon: Icon, fullWidth }: { label: string, value: string, icon: LucideIcon, fullWidth?: boolean }) {
   return (
     <div className={cn("space-y-1.5", fullWidth && "sm:col-span-2")}>
       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">{label}</p>

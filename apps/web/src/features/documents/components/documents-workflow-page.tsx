@@ -486,7 +486,12 @@ export function DocumentsWorkflowPage() {
     if (!request || request.status === "Rejected") return;
     const now = new Date().toISOString();
     const code = createDocumentCode(documents);
-    const generatedId = `DOC-ROW-${Date.now()}`;
+    const generatedId = `DOC-ROW-${Math.max(
+      0,
+      ...documents
+        .map((entry) => Number.parseInt(entry.id.replace("DOC-ROW-", ""), 10))
+        .filter(Number.isFinite)
+    ) + 1}`;
     const next: GeneratedDocument = {
       id: generatedId,
       code,
@@ -537,9 +542,15 @@ export function DocumentsWorkflowPage() {
     updateGeneratedStatus(sourceDocument.id, "Archived");
     const now = new Date().toISOString();
     const code = createDocumentCode(documents);
+    const regeneratedId = `DOC-ROW-${Math.max(
+      0,
+      ...documents
+        .map((entry) => Number.parseInt(entry.id.replace("DOC-ROW-", ""), 10))
+        .filter(Number.isFinite)
+    ) + 1}`;
     const regenerated: GeneratedDocument = {
       ...sourceDocument,
-      id: `DOC-ROW-${Date.now()}`,
+      id: regeneratedId,
       code,
       generatedAt: now,
       generatedBy: currentActor,
@@ -846,14 +857,22 @@ export function DocumentsWorkflowPage() {
                     label="Status" 
                     value={activeTab === "Requests" ? requestStatusFilter : documentStatusFilter} 
                     options={activeTab === "Requests" ? REQUEST_STATUS_OPTIONS : GENERATED_STATUS_OPTIONS} 
-                    onChange={(v) => activeTab === "Requests" ? setRequestStatusFilter(v as any) : setDocumentStatusFilter(v as any)} 
+                    onChange={(v) =>
+                      activeTab === "Requests"
+                        ? setRequestStatusFilter(v as "All" | RequestStatus)
+                        : setDocumentStatusFilter(v as "All" | GeneratedStatus)
+                    }
                   />
                   
                   <FilterSelect 
                     label="Document Type" 
                     value={activeTab === "Requests" ? requestTypeFilter : documentTypeFilter} 
                     options={["All", ...DOCUMENT_TYPES]} 
-                    onChange={(v) => activeTab === "Requests" ? setRequestTypeFilter(v as any) : setDocumentTypeFilter(v as any)} 
+                    onChange={(v) =>
+                      activeTab === "Requests"
+                        ? setRequestTypeFilter(v as "All" | DocumentType)
+                        : setDocumentTypeFilter(v as "All" | DocumentType)
+                    }
                   />
 
                   <DateFilter label="From Date" value={activeTab === "Requests" ? requestFrom : documentFrom} onChange={(v) => activeTab === "Requests" ? setRequestFrom(v) : setDocumentFrom(v)} />
