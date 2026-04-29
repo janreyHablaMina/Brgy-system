@@ -30,6 +30,7 @@ import {
   Shield,
   Wallet,
   Boxes,
+  CloudLightning,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -93,6 +94,7 @@ const navigation: NavGroup[] = [
       { label: "Tanod Management", icon: Shield, href: "/tanod-management" },
       { label: "Finance Management", icon: Wallet, href: "/finance-management" },
       { label: "Inventory & Assets", icon: Boxes, href: "/inventory-assets" },
+      { label: "DRRM", icon: CloudLightning, href: "/drrm" },
     ],
   },
   {
