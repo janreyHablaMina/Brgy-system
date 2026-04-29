@@ -24,6 +24,7 @@ import {
   Vote,
   Scale,
   BarChart3,
+  FolderOpen,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -81,6 +82,7 @@ const navigation: NavGroup[] = [
       { label: "Requests", icon: ClipboardList, href: "/requests", badge: "14", badgeColor: "blue" },
       { label: "Reports", icon: BarChart3, href: "/reports" },
       { label: "Email", icon: Mail, href: "/email" },
+      { label: "File Manager", icon: FolderOpen, href: "/file-manager" },
     ],
   },
   {

@@ -1,0 +1,63 @@
+import type { FileItem, FolderItem } from "./types";
+
+export const MOCK_FOLDERS: FolderItem[] = [
+  { id: "FLD-001", kind: "folder", name: "Reports", fileCount: 14, createdAt: "2026-01-08", folderPath: ["Home"], accessLevel: "Admin" },
+  { id: "FLD-002", kind: "folder", name: "Residents", fileCount: 32, createdAt: "2026-01-11", folderPath: ["Home"], accessLevel: "Admin" },
+  { id: "FLD-003", kind: "folder", name: "Finance", fileCount: 18, createdAt: "2026-01-15", folderPath: ["Home"], accessLevel: "Admin" },
+  { id: "FLD-004", kind: "folder", name: "Cases", fileCount: 25, createdAt: "2026-02-03", folderPath: ["Home"], accessLevel: "User" },
+];
+
+export const MOCK_FILES: FileItem[] = [
+  {
+    id: "FIL-001",
+    kind: "file",
+    name: "barangay-annual-report-2025.pdf",
+    fileType: "PDF",
+    sizeMb: 8.4,
+    uploadedAt: "2026-04-20",
+    uploadedBy: "Admin Ramos",
+    category: "Reports",
+    folderPath: ["Home", "Reports", "2026"],
+    shared: true,
+    accessLevel: "Admin",
+  },
+  {
+    id: "FIL-002",
+    kind: "file",
+    name: "resident-master-list-q1.xlsx",
+    fileType: "Document",
+    sizeMb: 2.1,
+    uploadedAt: "2026-04-25",
+    uploadedBy: "Clerk Santos",
+    category: "Residents",
+    folderPath: ["Home", "Residents"],
+    shared: false,
+    accessLevel: "User",
+  },
+  {
+    id: "FIL-003",
+    kind: "file",
+    name: "revenue-collection-april.pdf",
+    fileType: "PDF",
+    sizeMb: 1.6,
+    uploadedAt: "2026-04-28",
+    uploadedBy: "Treasurer Cruz",
+    category: "Finance",
+    folderPath: ["Home", "Finance"],
+    shared: true,
+    accessLevel: "Admin",
+  },
+  {
+    id: "FIL-004",
+    kind: "file",
+    name: "vawc-case-chart.png",
+    fileType: "Image",
+    sizeMb: 0.9,
+    uploadedAt: "2026-04-29",
+    uploadedBy: "VAWC Officer Luna",
+    category: "Cases",
+    folderPath: ["Home", "Cases"],
+    shared: false,
+    accessLevel: "User",
+  },
+];
