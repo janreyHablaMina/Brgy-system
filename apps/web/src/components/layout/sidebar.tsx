@@ -15,6 +15,7 @@ import {
   X,
   UserCog,
   ShieldCheck,
+  ShieldAlert,
   History,
   Store,
   ClipboardList,
@@ -63,6 +64,7 @@ const navigation: NavGroup[] = [
       { label: "Voters", icon: Vote, href: "/voters" },
       { label: "Case Records", icon: Scale, href: "/case-records" },
       { label: "Blotter Records", icon: ClipboardList, href: "/blotter-records" },
+      { label: "VAWC Desk", icon: ShieldAlert, href: "/vawc" },
       { label: "Establishments", icon: Store, href: "/establishments" },
       { label: "Properties", icon: Home, href: "/properties" },
       { 
