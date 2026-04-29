@@ -22,6 +22,7 @@ import {
   Home,
   Vote,
   Scale,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -77,6 +78,7 @@ const navigation: NavGroup[] = [
         ]
       },
       { label: "Requests", icon: ClipboardList, href: "/requests", badge: "14", badgeColor: "blue" },
+      { label: "Reports", icon: BarChart3, href: "/reports" },
     ],
   },
   {
