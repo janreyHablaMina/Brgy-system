@@ -27,6 +27,7 @@ import {
   FolderOpen,
   Globe2,
   LifeBuoy,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,7 @@ const navigation: NavGroup[] = [
       { label: "File Manager", icon: FolderOpen, href: "/file-manager" },
       { label: "Portal Management", icon: Globe2, href: "/portal-management" },
       { label: "Help Desk", icon: LifeBuoy, href: "/help-desk" },
+      { label: "Tanod Management", icon: Shield, href: "/tanod-management" },
     ],
   },
   {
