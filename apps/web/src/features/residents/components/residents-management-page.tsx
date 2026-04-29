@@ -11,13 +11,10 @@ import {
   Eye,
   FileSpreadsheet,
   FileText,
-  Filter,
   MoreHorizontal,
   Pencil,
   Plus,
-  RotateCcw,
   Search,
-  SlidersHorizontal,
   Trash2,
   User,
   Users,
@@ -306,7 +303,7 @@ const EMPTY_FORM: ResidentFormInput = {
 type ModalMode = "create" | "edit";
 
 export function ResidentsManagementPage() {
-  const [role, setRole] = useState<UserRole>("Admin");
+  const [role] = useState<UserRole>("Admin");
   const [residents, setResidents] = useState<Resident[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -532,27 +529,6 @@ export function ResidentsManagementPage() {
       ids.forEach((id) => next.delete(id));
       return next;
     });
-  }
-
-  function handleBulkDelete() {
-    if (role !== "Admin" || selectedCount === 0) {
-      return;
-    }
-
-    softDeleteByIds(Array.from(selectedIds));
-  }
-
-  function handleBulkStatusUpdate() {
-    if (selectedCount === 0) {
-      return;
-    }
-
-    const now = getTimestamp();
-    setResidents((previous) =>
-      previous.map((resident) =>
-        selectedIds.has(resident.id) ? { ...resident, status: bulkStatus, lastUpdated: now } : resident
-      )
-    );
   }
 
   function exportResidents(scope: "all" | "filtered" | "selected", format: "csv" | "excel") {
@@ -1594,24 +1570,6 @@ function MetricCard({
   );
 }
 
-function StatusBadge({ status }: { status: ResidentStatus }) {
-  const styles =
-    status === "Active"
-      ? "bg-emerald-500/10 text-emerald-600 shadow-[0_2px_12px_rgba(16,185,129,0.12)] border-emerald-500/20"
-      : status === "Inactive"
-        ? "bg-amber-500/10 text-amber-600 shadow-[0_2px_12px_rgba(245,158,11,0.12)] border-amber-500/20"
-        : "bg-rose-500/10 text-rose-600 shadow-[0_2px_12px_rgba(239,68,68,0.12)] border-rose-500/20";
-
-  return (
-    <span className={cn(
-      "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all",
-      styles
-    )}>
-      {status}
-    </span>
-  );
-}
-
 function SelectFilter({
   label,
   value,
@@ -1852,3 +1810,4 @@ function HistoryCard({ title, items }: { title: string; items: string[] }) {
     </div>
   );
 }
+

@@ -14,12 +14,9 @@ import {
   Plus,
   Search,
   Trash2,
-  X,
   ArrowUpDown,
   Home,
   MapPin,
-  Calendar,
-  LayoutDashboard,
   CheckCircle2,
   type LucideIcon,
 } from "lucide-react";
@@ -30,49 +27,23 @@ import {
   Property,
   PropertyClassification,
   PropertyFilters,
-  PropertyFormInput,
   PropertySortBy,
   SortDirection,
 } from "../types";
 import {
   formatDate,
-  generatePropertyId,
   getTimestamp,
   matchesPropertyFilters,
   matchesPropertySearch,
   SEED_PROPERTIES,
-  validatePropertyInput,
 } from "../utils";
 
 const CLASSIFICATION_OPTIONS: Array<"All" | PropertyClassification> = ["All", "Lot Only", "Building Only"];
-
-const MOCK_RESIDENTS = [
-  { id: "RES-2026-0001", name: "Maria Lopez Santos" },
-  { id: "RES-2026-0002", name: "Juan Reyes Dela Cruz" },
-  { id: "RES-2026-0003", name: "Ana Garcia Reyes" },
-  { id: "RES-2026-0004", name: "Pedro Cruz Luna" },
-];
 
 const EMPTY_FILTERS: PropertyFilters = {
   classification: "All",
   registeredFrom: "",
   registeredTo: "",
-};
-
-const EMPTY_FORM: PropertyFormInput = {
-  classification: "Lot Only",
-  sizeSqm: "",
-  houseNumber: "",
-  street: "",
-  purok: "",
-  landmarkNorth: "",
-  landmarkSouth: "",
-  landmarkEast: "",
-  landmarkWest: "",
-  ownerName: "",
-  ownerContactNo: "",
-  ownerEmail: "",
-  ownerAddress: "",
 };
 
 export function PropertiesManagementPage() {
@@ -90,8 +61,6 @@ export function PropertiesManagementPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const [viewProperty, setViewProperty] = useState<Property | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -368,7 +337,7 @@ export function PropertiesManagementPage() {
                       className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-all hover:bg-[var(--card)] hover:text-[var(--primary)]"
                       trigger={<MoreHorizontal className="h-4 w-4" />}
                       items={[
-                        { label: "View Details", onClick: () => setViewProperty(p), icon: Eye },
+                        { label: "View Details", onClick: () => console.log("View property", p.id), icon: Eye },
                         { label: "Edit Record", onClick: () => openEditModal(p), icon: Pencil },
                         { label: "Divider", component: <div className="my-1 h-px bg-[var(--border)]/50" /> },
                         { label: "Delete Property", onClick: () => handleDelete(p.id), icon: Trash2, className: "text-rose-600" },

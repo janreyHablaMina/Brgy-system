@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import React, { useMemo, useState, Fragment } from "react";
 import {
   Archive,
   ArrowUpDown,
-  BellRing,
   Building2,
   CheckCircle2,
   ChevronDown,
@@ -15,29 +13,23 @@ import {
   Download,
   Eye,
   FileCheck2,
-  FileCog,
-  FileDown,
   FileText,
-  Filter,
   Layers3,
   MoreHorizontal,
   Pencil,
   Plus,
   Printer,
-  RefreshCcw,
   RotateCcw,
   Search,
   ShieldAlert,
   Trash2,
   UserRound,
   Calendar,
-  X,
   XCircle,
 } from "lucide-react";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { Sheet } from "@/components/ui/sheet";
 import type {
   ActivityLog,
   DocumentRequest,
@@ -66,7 +58,6 @@ import {
   requestStatusTone,
   sortDocuments,
   sortRequests,
-  sourceTone,
 } from "../utils";
 
 const DOCUMENT_TYPES: DocumentType[] = [
@@ -261,7 +252,7 @@ const ACTIVITY_SEED: ActivityLog[] = [
 
 export function DocumentsWorkflowPage() {
   const [snapshotTime] = useState(() => Date.now());
-  const [role, setRole] = useState<UserRole>("Admin");
+  const [role] = useState<UserRole>("Admin");
   const [activeSource, setActiveSource] = useState<DocumentSource>("Residents");
   const [activeTab, setActiveTab] = useState<(typeof VIEW_TABS)[number]>("Requests");
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
@@ -273,8 +264,6 @@ export function DocumentsWorkflowPage() {
   const [selectedRequestIds, setSelectedRequestIds] = useState<Set<string>>(new Set());
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<Set<string>>(new Set());
   const [bulkAssignTo, setBulkAssignTo] = useState("");
-  const [showRequestFilters, setShowRequestFilters] = useState(false);
-  const [showDocumentFilters, setShowDocumentFilters] = useState(false);
 
   const [viewRequest, setViewRequest] = useState<DocumentRequest | null>(null);
   const [viewDocument, setViewDocument] = useState<GeneratedDocument | null>(null);
@@ -631,11 +620,6 @@ export function DocumentsWorkflowPage() {
     selectedRequestIds.forEach((id) => updateRequestStatus(id, "Rejected", "Bulk review rejected"));
   }
 
-  function bulkProcess() {
-    if (!permissions.bulkActions || selectedRequestIds.size === 0) return;
-    selectedRequestIds.forEach((id) => updateRequestStatus(id, "Processing"));
-  }
-
   function bulkAssign() {
     if (!permissions.bulkActions || selectedRequestIds.size === 0 || !bulkAssignTo) return;
     selectedRequestIds.forEach((id) => assignRequest(id, bulkAssignTo));
@@ -715,9 +699,6 @@ export function DocumentsWorkflowPage() {
       assigned: requests.filter((request) => request.source === activeSource && request.assignedTo === staff).length,
     }));
   }
-
-  const pendingAlerts = summary.pending + summary.processing;
-  const rejectedAlerts = summary.rejected;
 
   return (
     <section className="space-y-6">
@@ -1575,154 +1556,6 @@ export function DocumentsWorkflowPage() {
   );
 }
 
-function RequestDetailsSidebar({ request, entity, onClose, onAction }: { request: DocumentRequest | null; entity: EntitySeed | null | undefined; onClose: () => void; onAction: (action: string) => void }) {
-  if (!request) return (
-    <div className="flex h-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--card)]/50 p-8 text-center">
-      <div className="rounded-full bg-[var(--card-soft)] p-4">
-        <FileText className="h-8 w-8 text-[var(--muted)]" />
-      </div>
-      <p className="mt-4 text-sm font-bold text-[var(--text)]">No Request Selected</p>
-      <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">Select a row from the list to view full details and management options.</p>
-    </div>
-  );
-
-  return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-xl animate-in fade-in zoom-in-95 duration-500">
-      {/* Header Area */}
-      <div className="p-6 pb-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-xl font-black tracking-tight text-[var(--text)]">Request Details</h2>
-            <div className="mt-2 flex items-center gap-3">
-              <span className="text-sm font-bold text-[var(--text)] opacity-60 font-mono">{request.id}</span>
-              <span className={cn(
-                "rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider",
-                requestStatusTone(request.status)
-              )}>
-                {request.status}
-              </span>
-            </div>
-            <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">
-              Requested on <span className="text-[var(--text)]">{formatDate(request.requestedAt)} {new Date(request.requestedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            </p>
-          </div>
-          <button 
-            onClick={onClose} 
-            className="group rounded-xl border border-[var(--border)] p-2 text-[var(--muted)] transition-all hover:bg-[var(--card-soft)] hover:text-[var(--text)] hover:border-[var(--primary)]/30 active:scale-90"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-6 space-y-8 pb-32">
-        {/* Resident Information */}
-        <section>
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)] mb-4">Resident Information</h3>
-          <div className="flex items-start gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card-soft)]/30 p-4 shadow-sm transition-all hover:bg-[var(--card)] hover:border-[var(--primary)]/20">
-            <Avatar name={entity?.displayName ?? request.entityId} className="h-14 w-14 shrink-0 border-2 border-white shadow-md ring-4 ring-[var(--primary)]/5" />
-            <div className="flex-1 min-w-0">
-              <h4 className="truncate text-base font-bold text-[var(--text)] leading-tight">{entity?.displayName ?? request.entityId}</h4>
-              <p className="mt-1 text-xs text-[var(--muted)] font-medium leading-tight">{entity?.subtitle ?? "Resident Information Details"}</p>
-              <div className="mt-3">
-                <button className="flex items-center gap-1.5 rounded-lg bg-[var(--primary)]/5 px-2.5 py-1.5 text-[10px] font-bold text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors">
-                  VIEW RESIDENT PROFILE
-                  <ChevronRight className="h-3 w-3" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Request Information */}
-        <section className="space-y-5">
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Request Information</h3>
-          
-          <div className="grid gap-5">
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] opacity-60">Document Type</p>
-              <p className="text-sm font-bold text-[var(--text)]">{request.documentType}</p>
-            </div>
-            
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] opacity-60">Purpose</p>
-              <p className="text-sm font-medium leading-relaxed text-[var(--text)]">{request.purpose}</p>
-            </div>
-
-            <div className="space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[var(--muted)] opacity-60">Remarks</p>
-              <p className="text-sm text-[var(--muted)] italic leading-relaxed">{request.remarks || "No additional remarks provided by the resident."}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Assignment */}
-        <section className="space-y-4">
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Assignment</h3>
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Assigned To</p>
-              {request.assignedTo ? (
-                <div className="flex items-center gap-2 rounded-xl bg-[var(--card-soft)] px-3 py-1.5 border border-[var(--border)] shadow-sm">
-                  <Avatar name={request.assignedTo} className="h-5 w-5" />
-                  <span className="text-xs font-bold text-[var(--text)]">{request.assignedTo}</span>
-                </div>
-              ) : (
-                <span className="text-xs font-bold text-[var(--muted)] opacity-50 italic">Unassigned</span>
-              )}
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">Date Assigned</p>
-              <p className="text-xs font-bold text-[var(--text)]">{request.assignedAt ? formatDate(request.assignedAt) : "-"}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Timeline */}
-        <section className="space-y-6 pb-6">
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">Timeline</h3>
-          <div className="relative pl-7 space-y-7 before:absolute before:left-[13.5px] before:top-2 before:h-[calc(100%-15px)] before:w-[2px] before:bg-[var(--border)]/60">
-             {["Requested", "Processing", "Approved", "Generated", "Released"].map((step, idx) => {
-               const isStepCompleted = (step === "Requested") || (request.status === "Approved" && (step === "Processing" || step === "Approved"));
-               return (
-                 <div key={step} className="relative group">
-                    <div className={cn(
-                      "absolute -left-[20.5px] h-4 w-4 rounded-full border-2 border-white shadow-sm transition-all duration-300",
-                      isStepCompleted ? "bg-[var(--primary)] ring-4 ring-[var(--primary)]/10" : "bg-[var(--border)]"
-                    )} />
-                    <div className="flex items-center justify-between">
-                      <span className={cn("text-sm font-bold transition-colors", isStepCompleted ? "text-[var(--text)]" : "text-[var(--muted)]")}>{step}</span>
-                      {step === "Requested" && <span className="text-[10px] font-medium text-[var(--muted)]">{formatDate(request.requestedAt)}</span>}
-                      {step !== "Requested" && <span className="text-lg text-[var(--border)]">—</span>}
-                    </div>
-                 </div>
-               );
-             })}
-          </div>
-        </section>
-      </div>
-
-      {/* Footer Actions */}
-      <div className="absolute bottom-0 left-0 w-full bg-white/80 p-6 pt-0 backdrop-blur-lg border-t border-[var(--border)]">
-        <div className="grid grid-cols-2 gap-3 mt-6">
-          <button 
-            onClick={onClose}
-            className="rounded-xl border border-[var(--border)] py-3 text-xs font-black uppercase tracking-widest text-[var(--muted)] transition-all hover:bg-[var(--card-soft)] hover:text-[var(--text)] active:scale-95"
-          >
-            CLOSE
-          </button>
-          <button 
-            onClick={() => onAction("Generate")}
-            className="rounded-xl bg-[var(--primary)] py-3 text-xs font-black uppercase tracking-widest text-white shadow-[0_10px_25px_-5px_var(--primary)] transition-all hover:brightness-110 active:scale-95"
-          >
-            PROCESS REQUEST
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SummaryCard({
   icon: Icon,
   label,
@@ -1790,22 +1623,6 @@ function SummaryCard({
   );
 }
 
-function StatusPill({ status, tone }: { status: string; tone: string }) {
-  return (
-    <span className={cn("inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", tone)}>
-      {status}
-    </span>
-  );
-}
-
-function AlertPill({ tone, text }: { tone: "amber" | "rose"; text: string }) {
-  const style =
-    tone === "amber"
-      ? "border-amber-300/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
-      : "border-rose-300/30 bg-rose-500/10 text-rose-700 dark:text-rose-300";
-  return <span className={cn("rounded-full border px-2.5 py-1 text-[11px] font-semibold", style)}>{text}</span>;
-}
-
 function FilterSelect({
   label,
   value,
@@ -1852,15 +1669,6 @@ function DateFilter({ label, value, onChange }: { label: string; value: string; 
         <Calendar className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none transition-colors group-focus-within/date:text-[var(--primary)]" />
       </div>
     </label>
-  );
-}
-
-function SortButton({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} className="inline-flex h-10 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] shadow-sm hover:border-[var(--primary)]/40">
-      <ArrowUpDown className="h-3.5 w-3.5 text-[var(--primary)]" />
-      {label}
-    </button>
   );
 }
 
@@ -1911,44 +1719,6 @@ function StatusChip({ status, tone, className }: { status: string; tone: string;
   );
 }
 
-function ActionButton({
-  icon: Icon,
-  label,
-  onClick,
-  disabled,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="inline-flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2 py-1 text-[11px] font-semibold text-[var(--text)] shadow-sm transition hover:border-[var(--primary)]/40 hover:bg-[var(--card-soft)] disabled:cursor-not-allowed disabled:opacity-40"
-    >
-      <Icon className="h-3.5 w-3.5" />
-      {label}
-    </button>
-  );
-}
-
-function WorkflowMini({ index }: { index: number }) {
-  return (
-    <div className="w-36 rounded-lg border border-[var(--border)] bg-[var(--card-soft)] p-2 shadow-sm">
-      <div className="mb-1 flex justify-between text-[9px] text-[var(--muted)]">
-        <span>{WORKFLOW_STEPS[index]}</span>
-      </div>
-      <div className="grid grid-cols-5 gap-1">
-        {WORKFLOW_STEPS.map((step, stepIndex) => (
-          <div key={step} className={cn("h-1.5 rounded-full", stepIndex <= index ? "bg-[var(--primary)]" : "bg-[var(--card-soft)]")} />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function RequestTimeline({ request, generated }: { request: DocumentRequest; generated?: GeneratedDocument }) {
   const stage =
@@ -1970,30 +1740,6 @@ function RequestTimeline({ request, generated }: { request: DocumentRequest; gen
           <span className={cn("font-medium", index <= stage ? "text-[var(--text)]" : "text-[var(--muted)]")}>{label}</span>
         </div>
       ))}
-    </div>
-  );
-}
-
-function Pagination({
-  page,
-  pages,
-  onPrevious,
-  onNext,
-}: {
-  page: number;
-  pages: number;
-  onPrevious: () => void;
-  onNext: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-2 text-xs">
-      <button type="button" onClick={onPrevious} disabled={page === 1} className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 font-semibold text-[var(--text)] shadow-sm disabled:opacity-40">
-        Previous
-      </button>
-      <span className="text-[var(--muted)]">Page {page} of {pages}</span>
-      <button type="button" onClick={onNext} disabled={page === pages} className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 font-semibold text-[var(--text)] shadow-sm disabled:opacity-40">
-        Next
-      </button>
     </div>
   );
 }
@@ -2034,3 +1780,5 @@ function DetailGrid({ items }: { items: Array<{ label: string; value: string }> 
     </div>
   );
 }
+
+

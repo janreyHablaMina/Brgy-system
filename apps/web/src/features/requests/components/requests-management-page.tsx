@@ -4,8 +4,6 @@ import { useMemo, useState } from "react";
 import {
   Search,
   Plus,
-  Filter,
-  MoreHorizontal,
   Eye,
   CheckCircle2,
   XCircle,
@@ -14,7 +12,6 @@ import {
   ChevronDown,
   UserPlus,
   FileCheck,
-  Building2,
   User,
   LayoutGrid,
   List,
@@ -33,7 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/features/residents/utils";
 import { MOCK_REQUESTS } from "../mock-data";
-import { Request, RequestStatus, RequestPriority, RequestFilters } from "../types";
+import { Request, RequestStatus, RequestFilters } from "../types";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Avatar } from "@/components/ui/avatar";
 import type { LucideIcon } from "lucide-react";
@@ -285,10 +282,10 @@ export function RequestsManagementPage() {
                     className="rounded border-[var(--border)] accent-[var(--primary)]"
                   />
                 </th>
-                <SortTh label="Request ID / Type" sortKey="id" current={sortBy} direction={sortDirection} onSort={() => toggleSort("id")} />
-                <SortTh label="Entity / Source" sortKey="entityName" current={sortBy} direction={sortDirection} onSort={() => toggleSort("entityName")} />
+                <SortTh label="Request ID / Type" sortKey="id" current={sortBy} onSort={() => toggleSort("id")} />
+                <SortTh label="Entity / Source" sortKey="entityName" current={sortBy} onSort={() => toggleSort("entityName")} />
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Purpose</th>
-                <SortTh label="Submitted" sortKey="submittedAt" current={sortBy} direction={sortDirection} onSort={() => toggleSort("submittedAt")} />
+                <SortTh label="Submitted" sortKey="submittedAt" current={sortBy} onSort={() => toggleSort("submittedAt")} />
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Assigned To</th>
                 <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Status</th>
                 <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
@@ -535,7 +532,7 @@ function TabButton({ label, active, onClick, count }: { label: string, active: b
   );
 }
 
-function SortTh({ label, sortKey, current, direction, onSort }: { label: string, sortKey: string, current: string, direction: string, onSort: () => void }) {
+function SortTh({ label, sortKey, current, onSort }: { label: string, sortKey: string, current: string, onSort: () => void }) {
   const active = current === sortKey;
   return (
     <th className="px-4 py-3">
@@ -552,22 +549,6 @@ function StatusChip({ status, tone, className }: { status: string; tone: string;
     <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider", tone, className)}>
       {status}
     </span>
-  );
-}
-
-function PriorityBadge({ priority }: { priority: RequestPriority }) {
-  const styles = {
-    Low: "text-blue-500",
-    Normal: "text-slate-500",
-    High: "text-amber-600",
-    Urgent: "text-rose-600"
-  };
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <div className={cn("h-1.5 w-1.5 rounded-full bg-current", styles[priority])} />
-      <span className={cn("text-[11px] font-semibold", styles[priority])}>{priority}</span>
-    </div>
   );
 }
 
