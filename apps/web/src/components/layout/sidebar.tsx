@@ -106,7 +106,7 @@ const navigation: NavGroup[] = [
     items: [
       { label: "Users", icon: UserCog, href: "/system/users" },
       { label: "Roles & Permissions", icon: ShieldCheck, href: "/system/roles" },
-      { label: "Settings", icon: Settings, href: "/system/settings" },
+      { label: "Settings", icon: Settings, href: "/settings" },
       { label: "Audit Logs", icon: History, href: "/system/logs" },
     ],
   },
