@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useId } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Camera, ChevronLeft, ChevronRight, Save, Upload, X } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight, MapPin, Save, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CivilStatus, ResidentFormInput, ResidentGender } from "../types";
 import { validateResidentInput } from "../utils";
@@ -85,6 +86,8 @@ const EMPTY_FORM: ResidentFormInput = {
   thumbmarkFileName: "",
   tags: { senior: false, pwd: false, voter: false },
   householdInfo: "",
+  latitude: "",
+  longitude: "",
 };
 
 const STEPS = [
@@ -104,6 +107,7 @@ export function ResidentOnboardingPage() {
   const [form, setForm] = useState<ResidentFormInput>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof ResidentFormInput, string>>>({});
   const [profilePhotoPreview, setProfilePhotoPreview] = useState<string | null>(null);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const progress = useMemo(() => Math.round(((step + 1) / STEPS.length) * 100), [step]);
 
@@ -269,6 +273,21 @@ export function ResidentOnboardingPage() {
             <InputField label="House No" value={form.houseNo} onChange={(v) => setValue("houseNo", v)} placeholder="24" />
             <InputField label="Type of Resident" value={form.typeOfResident} onChange={(v) => setValue("typeOfResident", v)} placeholder="Permanent" />
             <InputField label="Current Address *" value={form.address} onChange={(v) => setValue("address", v)} error={errors.address} placeholder="House 24, Rizal St., Brgy. Salaza" />
+            <div className="md:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3">
+              <p className="text-xs font-semibold text-[var(--muted)]">Location</p>
+              <div className="mt-2 grid gap-3 md:grid-cols-2">
+                <InputField label="Latitude" value={form.latitude} onChange={(v) => setValue("latitude", v)} placeholder="14.5995" />
+                <InputField label="Longitude" value={form.longitude} onChange={(v) => setValue("longitude", v)} placeholder="120.9842" />
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsMapModalOpen(true)}
+                className="mt-3 inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--primary)]/40"
+              >
+                <MapPin className="h-3.5 w-3.5" />
+                Set Location on Map
+              </button>
+            </div>
           </div>
         ) : null}
 
@@ -384,6 +403,19 @@ export function ResidentOnboardingPage() {
         ) : null}
       </div>
 
+      {isMapModalOpen ? (
+        <MapPickerModal
+          initialLat={form.latitude}
+          initialLng={form.longitude}
+          onClose={() => setIsMapModalOpen(false)}
+          onSave={(lat, lng) => {
+            setValue("latitude", lat);
+            setValue("longitude", lng);
+            setIsMapModalOpen(false);
+          }}
+        />
+      ) : null}
+
       <div className="mt-3 flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-sm">
         <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0} className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 text-xs font-semibold disabled:opacity-40">
           <ChevronLeft className="h-4 w-4" /> Back
@@ -399,6 +431,125 @@ export function ResidentOnboardingPage() {
         )}
       </div>
     </section>
+  );
+}
+
+function MapPickerModal({
+  initialLat,
+  initialLng,
+  onClose,
+  onSave,
+}: {
+  initialLat: string;
+  initialLng: string;
+  onClose: () => void;
+  onSave: (lat: string, lng: string) => void;
+}) {
+  const mapId = useId().replace(/:/g, "");
+  const [picked, setPicked] = useState<{ lat: number; lng: number } | null>(
+    initialLat && initialLng ? { lat: Number(initialLat), lng: Number(initialLng) } : null
+  );
+
+  useEffect(() => {
+    let disposed = false;
+    const cssId = "leaflet-css-cdn";
+    const jsId = "leaflet-js-cdn";
+
+    if (!document.getElementById(cssId)) {
+      const link = document.createElement("link");
+      link.id = cssId;
+      link.rel = "stylesheet";
+      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      document.head.appendChild(link);
+    }
+
+    function initMap() {
+      if (disposed) return;
+      const L = (window as { L?: unknown }).L as
+        | {
+            map: (id: string) => {
+              setView: (coords: [number, number], zoom: number) => unknown;
+              on: (event: string, cb: (e: { latlng: { lat: number; lng: number } }) => void) => void;
+              remove: () => void;
+            };
+            tileLayer: (url: string, opts: Record<string, unknown>) => { addTo: (map: unknown) => void };
+            marker: (coords: [number, number]) => {
+              addTo: (map: unknown) => { setLatLng: (next: [number, number]) => void };
+            };
+          }
+        | undefined;
+      if (!L) return;
+
+      const map = L.map(mapId).setView(
+        picked ? [picked.lat, picked.lng] : [14.5995, 120.9842],
+        picked ? 16 : 12
+      );
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      let marker = picked ? L.marker([picked.lat, picked.lng]).addTo(map) : null;
+
+      map.on("click", (e) => {
+        const next: [number, number] = [e.latlng.lat, e.latlng.lng];
+        setPicked({ lat: next[0], lng: next[1] });
+        if (!marker) {
+          marker = L.marker(next).addTo(map);
+        } else {
+          marker.setLatLng(next);
+        }
+      });
+
+      return () => map.remove();
+    }
+
+    let teardown: (() => void) | undefined;
+    const existingScript = document.getElementById(jsId) as HTMLScriptElement | null;
+    if ((window as { L?: unknown }).L) {
+      teardown = initMap();
+    } else if (existingScript) {
+      existingScript.addEventListener("load", () => {
+        teardown = initMap();
+      });
+    } else {
+      const script = document.createElement("script");
+      script.id = jsId;
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.async = true;
+      script.onload = () => {
+        teardown = initMap();
+      };
+      document.body.appendChild(script);
+    }
+
+    return () => {
+      disposed = true;
+      if (teardown) teardown();
+    };
+  }, [mapId, picked]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-3xl rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+        <div className="mb-3 flex items-center justify-between border-b border-[var(--border)] pb-3">
+          <h3 className="text-lg font-semibold text-[var(--text)]">Set Resident Location</h3>
+          <button onClick={onClose} className="rounded-lg border border-[var(--border)] px-2 py-1 text-xs text-[var(--text)]">Close</button>
+        </div>
+        <div id={mapId} className="h-[360px] w-full overflow-hidden rounded-xl border border-[var(--border)]" />
+        <p className="mt-2 text-xs text-[var(--muted)]">
+          Click on map to place a pin. {picked ? `Lat: ${picked.lat.toFixed(6)} | Lng: ${picked.lng.toFixed(6)}` : "No location selected yet."}
+        </p>
+        <div className="mt-3 flex justify-end">
+          <button
+            onClick={() => picked && onSave(picked.lat.toFixed(6), picked.lng.toFixed(6))}
+            disabled={!picked}
+            className="inline-flex h-9 items-center rounded-lg bg-[var(--primary)] px-3 text-xs font-semibold text-white disabled:opacity-40"
+          >
+            Save Location
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -34,6 +34,7 @@ import {
   VenusAndMars,
   IdCard,
   BookOpenText,
+  MapPinned,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -101,6 +102,7 @@ const navigation: NavGroup[] = [
       { label: "GAD Management", icon: VenusAndMars, href: "/gad-management" },
       { label: "Personnel Management", icon: IdCard, href: "/personnel-management" },
       { label: "Help Center", icon: BookOpenText, href: "/help-center" },
+      { label: "Barangay Map", icon: MapPinned, href: "/barangay-map" },
     ],
   },
   {

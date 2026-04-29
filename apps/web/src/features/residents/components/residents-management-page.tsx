@@ -299,6 +299,8 @@ const EMPTY_FORM: ResidentFormInput = {
   thumbmarkFileName: "",
   tags: { senior: false, pwd: false, voter: false },
   householdInfo: "",
+  latitude: "",
+  longitude: "",
 };
 
 type ModalMode = "create" | "edit";

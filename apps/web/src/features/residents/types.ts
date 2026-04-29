@@ -102,6 +102,8 @@ export type ResidentFormInput = {
   thumbmarkFileName: string;
   tags: ResidentTags;
   householdInfo: string;
+  latitude: string;
+  longitude: string;
 };
 
 export type ResidentFilters = {
