@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit, JetBrains_Mono } from "next/font/google";
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/config";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -18,8 +19,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lingkod | Barangay Management System",
-  description: "Multi-tenant barangay management dashboard",
+  title: `${APP_NAME} | Barangay Management System`,
+  description: APP_DESCRIPTION,
 };
 
 export default function RootLayout({

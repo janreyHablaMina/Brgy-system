@@ -1,6 +1,7 @@
 import {
   ActivityFeed,
   Announcements,
+  LiveClockBadge,
   NeedsAttention,
   RecentRequests,
   StaffActivity,
@@ -8,6 +9,7 @@ import {
   TodaySnapshot,
   UpcomingSchedule,
 } from "@/features/dashboard/components";
+import { DEFAULT_USER_NAME } from "@/lib/config";
 
 export default function DashboardPage() {
   return (
@@ -17,9 +19,7 @@ export default function DashboardPage() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-base font-normal text-[var(--muted)]">
-              Good morning,{" "}
-              <span className="font-medium text-[var(--primary)]">Pauline Seitz!</span>{" "}
-              {"\u{1F44B}"}
+              Good morning, <span className="font-medium text-[var(--primary)]">{DEFAULT_USER_NAME}</span>
             </p>
             <h1 className="mt-0.5 text-2xl font-semibold tracking-tight text-[var(--text)]">
               Barangay Operations
@@ -29,20 +29,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="shrink-0 flex items-center gap-3">
-            <div className="flex flex-col items-end">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75"></span>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]"></span>
-                </span>
-                <span className="font-display text-lg font-bold leading-none tracking-tight text-[var(--text)]">
-                  10:16 AM
-                </span>
-              </div>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">
-                Tuesday, April 21, 2026
-              </p>
-            </div>
+            <LiveClockBadge />
           </div>
         </div>
       </section>

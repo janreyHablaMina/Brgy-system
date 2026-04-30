@@ -17,6 +17,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ROUTES } from "@/config/routes";
+import { APP_NAME, DEFAULT_USER_NAME } from "@/lib/config";
 import { getPageTitle } from "@/lib/page-title";
 
 type HeaderProps = {
@@ -56,7 +58,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                 className="h-11 w-auto object-contain"
               />
               <span className="font-display text-xl font-semibold tracking-tight text-slate-800 dark:text-white">
-                BrgyAssist
+                {APP_NAME}
               </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -112,22 +114,22 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                   <div className="absolute -inset-2 rounded-full bg-[var(--primary)]/0 blur-md transition-all duration-500 group-hover:bg-[var(--primary)]/5" />
                   <Avatar 
                     src="/avatar.png" 
-                    name="Pauline Seitz" 
+                    name={DEFAULT_USER_NAME}
                     hideText 
                     className="relative z-10"
                   />
                   <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#111827] bg-[var(--accent)] z-20 shadow-sm" />
                 </div>
                 <div className="text-left hidden xl:block z-10">
-                  <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-none mb-1 tracking-tight group-hover:text-[var(--primary)] transition-colors">Pauline Seitz</p>
+                  <p className="text-[14px] font-bold text-slate-800 dark:text-slate-200 leading-none mb-1 tracking-tight group-hover:text-[var(--primary)] transition-colors">{DEFAULT_USER_NAME}</p>
                   <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Administrator</p>
                 </div>
                 <ChevronDown className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600 transition-all duration-300 group-hover:text-slate-500 z-10 ml-0.5" strokeWidth={2.5} />
               </div>
             }
             items={[
-              { label: "My Profile", icon: UserCircle2, href: "/settings" },
-              { label: "Account Settings", icon: Settings, href: "/settings" },
+              { label: "My Profile", icon: UserCircle2, href: ROUTES.settings },
+              { label: "Account Settings", icon: Settings, href: ROUTES.settings },
               { label: "System Theme", component: <div className="px-2 py-1"><ColorPicker /></div> },
               { label: "Divider", component: <div className="my-1 mx-2 h-px bg-[var(--border)]" /> },
               { label: "Get Help", icon: HelpCircle, href: "/help" },

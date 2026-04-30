@@ -1,5 +1,6 @@
 export { ActivityFeed } from "./activity-feed";
 export { Announcements } from "./announcements";
+export { LiveClockBadge } from "./live-clock-badge";
 export { NeedsAttention } from "./needs-attention";
 export { RecentRequests } from "./recent-requests";
 export { StaffActivity } from "./staff-activity";

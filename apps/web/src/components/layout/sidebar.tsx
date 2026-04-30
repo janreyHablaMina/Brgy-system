@@ -8,85 +8,12 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
-  FileText,
-  LayoutDashboard,
-  Settings,
-  Users,
   X,
-  UserCog,
-  ShieldCheck,
-  History,
-  Store,
-  ClipboardList,
-  Home,
-  Vote,
-  Scale,
-  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
-
-type NavSubItem = {
-  label: string;
-  href: string;
-};
-
-type NavItem = {
-  label: string;
-  href?: string;
-  icon: LucideIcon;
-  children?: NavSubItem[];
-  badge?: string | number;
-  badgeColor?: string;
-};
-
-type NavGroup = {
-  title: string;
-  items: NavItem[];
-};
-
-const navigation: NavGroup[] = [
-  {
-    title: "MAIN",
-    items: [
-      {
-        label: "Dashboard",
-        icon: LayoutDashboard,
-        href: "/dashboard",
-      },
-    ],
-  },
-  {
-    title: "MANAGEMENT",
-    items: [
-      { label: "Residents", icon: Users, href: "/residents" },
-      { label: "Voters", icon: Vote, href: "/voters" },
-      { label: "Case Records", icon: Scale, href: "/case-records" },
-      { label: "Blotter Records", icon: ClipboardList, href: "/blotter-records" },
-      { label: "Establishments", icon: Store, href: "/establishments" },
-      { label: "Properties", icon: Home, href: "/properties" },
-      { 
-        label: "Documents", 
-        icon: FileText, 
-        href: "/documents",
-        children: [
-          { label: "Registry", href: "/documents" },
-          { label: "Generate New", href: "/documents/generate" },
-        ]
-      },
-      { label: "Requests", icon: ClipboardList, href: "/requests", badge: "14", badgeColor: "blue" },
-    ],
-  },
-  {
-    title: "SYSTEM",
-    items: [
-      { label: "Users", icon: UserCog, href: "/system/users" },
-      { label: "Roles & Permissions", icon: ShieldCheck, href: "/system/roles" },
-      { label: "Settings", icon: Settings, href: "/system/settings" },
-      { label: "Audit Logs", icon: History, href: "/system/logs" },
-    ],
-  },
-];
+import { navigation } from "@/config/navigation";
+import { getDefaultTenantContext } from "@/lib/tenant";
 
 type SidebarProps = {
   collapsed: boolean;
@@ -98,6 +25,7 @@ type SidebarProps = {
 export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile }: SidebarProps) {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const tenant = getDefaultTenantContext();
   const activeMenus = useMemo(
     () =>
       navigation
@@ -155,7 +83,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
           
           {!collapsed && (
             <div className="mt-4 text-center animate-in fade-in slide-in-from-top-2 duration-700">
-              <h1 className="text-[17px] font-bold text-white tracking-wide uppercase">Brgy. Salaza</h1>
+              <h1 className="text-[17px] font-bold text-white tracking-wide uppercase">{tenant.displayName}</h1>
               <div 
                 className="h-0.5 w-12 mx-auto mt-2 rounded-full" 
                 style={{ 
