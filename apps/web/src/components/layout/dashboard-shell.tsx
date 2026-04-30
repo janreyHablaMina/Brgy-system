@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Header } from "@/components/layout/header";
-import { Sidebar } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header/index";
+import { Sidebar } from "@/components/layout/sidebar/index";
 import { TenantProvider } from "@/core/tenant/tenant-provider";
 import { cn } from "@/lib/utils";
 
@@ -20,13 +20,20 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <Sidebar
           collapsed={collapsed}
           mobileOpen={mobileOpen}
-          onToggleCollapse={() => setCollapsed((value) => !value)}
+          onToggleCollapse={() => setCollapsed((v) => !v)}
           onCloseMobile={() => setMobileOpen(false)}
         />
 
-        <div className={cn("min-h-screen transition-all duration-300", collapsed ? "md:pl-24" : "md:pl-72")}>
+        <div
+          className={cn(
+            "flex min-h-screen flex-col transition-all duration-300 ease-in-out",
+            collapsed ? "md:pl-[72px]" : "md:pl-[260px]"
+          )}
+        >
           <Header onOpenSidebar={() => setMobileOpen(true)} />
-          <main className="space-y-8 px-4 pb-10 pt-7 md:px-8 md:pb-12 md:pt-8">{children}</main>
+          <main className="flex-1 space-y-6 px-4 pb-10 pt-6 md:px-6 md:pb-12 md:pt-7">
+            {children}
+          </main>
         </div>
       </div>
     </TenantProvider>

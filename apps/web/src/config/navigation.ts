@@ -1,15 +1,22 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  Bell,
+  BookOpenText,
   ClipboardList,
+  FileChartColumnIncreasing,
   FileText,
+  FolderOpen,
+  Globe2,
   History,
   Home,
   LayoutDashboard,
+  Mail,
+  MapPinned,
+  Megaphone,
   Scale,
   Settings,
-  ShieldCheck,
+  Shield,
   Store,
-  UserCog,
   Users,
   Vote,
 } from "lucide-react";
@@ -26,21 +33,21 @@ export type NavItem = {
   icon: LucideIcon;
   children?: NavSubItem[];
   badge?: string | number;
-  badgeColor?: string;
+  badgeColor?: "blue" | "accent";
 };
 
 export type NavGroup = {
-  title: string;
+  title: "Main" | "Management" | "Communication" | "Settings";
   items: NavItem[];
 };
 
 export const navigation: NavGroup[] = [
   {
-    title: "MAIN",
+    title: "Main",
     items: [{ label: "Dashboard", icon: LayoutDashboard, href: ROUTES.dashboard }],
   },
   {
-    title: "MANAGEMENT",
+    title: "Management",
     items: [
       { label: "Residents", icon: Users, href: ROUTES.residents },
       { label: "Voters", icon: Vote, href: ROUTES.voters },
@@ -58,15 +65,27 @@ export const navigation: NavGroup[] = [
         ],
       },
       { label: "Requests", icon: ClipboardList, href: ROUTES.requests, badge: "14", badgeColor: "blue" },
+      { label: "Reports", icon: FileChartColumnIncreasing, href: ROUTES.reports },
+      { label: "File Manager", icon: FolderOpen, href: "/file-manager" as AppRoute },
+      { label: "Tanod Management", icon: Shield, href: "/tanod-management" as AppRoute },
+      { label: "Barangay Map", icon: MapPinned, href: "/barangay-map" as AppRoute },
     ],
   },
   {
-    title: "SYSTEM",
+    title: "Communication",
     items: [
-      { label: "Users", icon: UserCog, href: ROUTES.systemUsers },
-      { label: "Roles & Permissions", icon: ShieldCheck, href: ROUTES.systemRoles },
-      { label: "Settings", icon: Settings, href: ROUTES.systemSettings },
+      { label: "SMS", icon: Mail, href: "/email" as AppRoute, badge: "New", badgeColor: "accent" },
+      { label: "Announcements", icon: Megaphone, href: "/help-desk" as AppRoute },
+      { label: "Help Center", icon: BookOpenText, href: "/help-center" as AppRoute },
+      { label: "Portal Management", icon: Globe2, href: "/portal-management" as AppRoute },
+    ],
+  },
+  {
+    title: "Settings",
+    items: [
+      { label: "Settings", icon: Settings, href: ROUTES.settings },
       { label: "Audit Logs", icon: History, href: ROUTES.systemLogs },
+      { label: "Notifications", icon: Bell, href: ROUTES.settings },
     ],
   },
 ];
