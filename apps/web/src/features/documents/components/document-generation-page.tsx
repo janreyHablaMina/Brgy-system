@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import { 
-  Search, 
   ChevronDown, 
   FileText, 
   User, 
@@ -12,18 +11,16 @@ import {
   Printer,
   Save,
   X,
-  CheckCircle2,
   Calendar,
   QrCode,
   Eye,
   Check,
   CreditCard,
   Settings2,
-  FileEdit,
-  ClipboardList
+  FileEdit
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DOCUMENT_TEMPLATES, DocumentType } from "../utils/document-templates";
+import { DocumentType } from "../utils/document-templates";
 
 // Mock Data
 const MOCK_RESIDENTS = [
@@ -73,7 +70,7 @@ export function DocumentGenerationPage() {
   const [selectedResidentId, setSelectedResidentId] = useState("RES-2026-0002");
   const [documentType, setDocumentType] = useState<DocumentType>("Barangay Clearance");
   const [purpose, setPurpose] = useState("Local Employment");
-  const [documentNumber, setDocumentNumber] = useState(`CERT-${new Date().getFullYear()}-0024`);
+  const [documentNumber] = useState(`CERT-${new Date().getFullYear()}-0024`);
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split("T")[0]);
   const [expiryDate, setExpiryDate] = useState("");
   
@@ -88,11 +85,6 @@ export function DocumentGenerationPage() {
   const [activeTab, setActiveTab] = useState<"general" | "payment" | "settings">("general");
   const [searchQuery, setSearchQuery] = useState("Juan Dela Cruz");
   const [isResidentDropdownOpen, setIsResidentDropdownOpen] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
-    payment: false,
-    additional: false,
-    additional_opts: false,
-  });
 
   // Display Options State
   const [displayOptions, setDisplayOptions] = useState({
@@ -141,10 +133,6 @@ export function DocumentGenerationPage() {
   }, [selectedResident]);
 
   // Handlers
-  const toggleSection = (section: string) => {
-    setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
-
   const handleResidentSelect = (resident: typeof MOCK_RESIDENTS[0]) => {
     setSelectedResidentId(resident.id);
     setSearchQuery(`${resident.firstName} ${resident.lastName}`);

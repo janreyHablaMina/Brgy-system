@@ -28,7 +28,7 @@ export function BuildingInfoForm({ form, setValue, onNext, errors }: BuildingInf
              required
              value={form.classification} 
              options={["Lot Only", "Building Only"]}
-             onChange={(v) => setValue("classification", v as any)}
+             onChange={(v) => setValue("classification", v as PropertyFormInput["classification"])}
              error={errors?.classification}
            />
            <InputField 
