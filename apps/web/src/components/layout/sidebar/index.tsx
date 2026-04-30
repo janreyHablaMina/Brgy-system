@@ -35,7 +35,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
           "bg-gradient-to-b from-[#04122f] via-[#071b45] to-[#05112e]",
           "border-r border-white/8 shadow-2xl",
           "transition-all duration-300 ease-in-out",
-          collapsed ? "w-[72px]" : "w-[260px]",
+          collapsed ? "w-[72px]" : "w-[250px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
           "md:translate-x-0"
         )}
@@ -55,7 +55,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
         {/* Nav */}
         <div
           className={cn(
-            "flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-thumb-white/10",
+            "flex-1 overflow-y-auto py-4",
             collapsed ? "px-2" : "px-3"
           )}
         >

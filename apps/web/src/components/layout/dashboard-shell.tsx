@@ -27,7 +27,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <div
           className={cn(
             "flex min-h-screen flex-col transition-all duration-300 ease-in-out",
-            collapsed ? "md:pl-[72px]" : "md:pl-[260px]"
+            collapsed ? "md:pl-[72px]" : "md:pl-[250px]"
           )}
         >
           <Header onOpenSidebar={() => setMobileOpen(true)} />
