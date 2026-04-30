@@ -23,7 +23,7 @@ export function SidebarFooter({
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="relative shrink-0">
             <Image
-              src={userAvatarUrl ?? "/brgy-seal.png"}
+              src={userAvatarUrl ?? "/avatar.png"}
               alt="User avatar"
               width={36}
               height={36}
@@ -34,7 +34,7 @@ export function SidebarFooter({
 
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold text-white leading-tight">
-              {DEFAULT_USER_NAME}
+              Janrey
             </p>
             <p className="truncate text-[11px] text-blue-200/60 leading-tight">{userRole}</p>
           </div>
@@ -46,7 +46,7 @@ export function SidebarFooter({
         <div className="flex justify-center py-3">
           <div className="relative">
             <Image
-              src={userAvatarUrl ?? "/brgy-seal.png"}
+              src={userAvatarUrl ?? "/avatar.png"}
               alt="User avatar"
               width={32}
               height={32}

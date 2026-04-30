@@ -2,7 +2,6 @@
 
 import { Menu } from "lucide-react";
 import { useTenant } from "@/core/tenant/tenant-provider";
-import { DEFAULT_USER_NAME } from "@/lib/config";
 import { HeaderSearch } from "./header-search";
 import { HeaderActions } from "./header-actions";
 
@@ -39,7 +38,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         {/* Greeting — visible on md+ */}
         <div className="hidden min-w-0 md:block">
           <p className="truncate text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            {greeting}, {DEFAULT_USER_NAME}! <span aria-hidden>👋</span>
+            {greeting}, Janrey! <span aria-hidden>👋</span>
           </p>
           <p className="truncate text-[13px] text-slate-400 dark:text-slate-500">
             Here&apos;s what&apos;s happening in {tenant.displayName} today.
