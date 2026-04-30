@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Outfit, JetBrains_Mono } from "next/font/google";
-<<<<<<< HEAD
-import { APP_DESCRIPTION, APP_NAME } from "@/lib/config";
-=======
 import Script from "next/script";
->>>>>>> 98d6969a75bd0bf1bac480f0d540b96610dc4d72
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/config";
 import "./globals.css";
 
 const dmSans = DM_Sans({

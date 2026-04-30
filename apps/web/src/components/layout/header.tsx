@@ -18,7 +18,8 @@ import { ColorPicker } from "@/components/ui/color-picker";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ROUTES } from "@/config/routes";
-import { APP_NAME, DEFAULT_USER_NAME } from "@/lib/config";
+import { useTenant } from "@/core/tenant/tenant-provider";
+import { DEFAULT_USER_NAME } from "@/lib/config";
 import { getPageTitle } from "@/lib/page-title";
 
 type HeaderProps = {
@@ -28,17 +29,14 @@ type HeaderProps = {
 export function Header({ onOpenSidebar }: HeaderProps) {
   const pathname = usePathname();
   const title = getPageTitle(pathname);
+  const { tenant } = useTenant();
 
-  // Dynamic Greeting Logic
   const hour = new Date().getHours();
-  const greeting = 
-    hour < 12 ? "Good morning" :
-    hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-[#111827] px-4 py-2.5 transition-all duration-300 md:px-10 border-b border-slate-200/50 dark:border-slate-800/40">
       <div className="mx-auto flex h-14 items-center justify-between gap-6">
-        {/* Left Side: Mobile Menu & Dynamic Greeting */}
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -51,14 +49,14 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           <div className="hidden lg:block">
             <div className="flex items-center gap-2.5 transition-all hover:opacity-80">
               <Image
-                src="/brgyAssist.png"
+                src={tenant.logoUrl ?? "/brgyAssist.png"}
                 alt="BrgyAssist Logo"
                 width={44}
                 height={44}
                 className="h-11 w-auto object-contain"
               />
               <span className="font-display text-xl font-semibold tracking-tight text-slate-800 dark:text-white">
-                {APP_NAME}
+                {tenant.displayName}
               </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -67,7 +65,6 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           </div>
         </div>
 
-        {/* Center: Omni-Search / Command Palette */}
         <div className="hidden max-w-2xl flex-1 lg:flex justify-center">
           <div className="group relative flex w-full max-w-md items-center">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
@@ -81,7 +78,6 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           </div>
         </div>
 
-        {/* Right Side: Unified Utility Command Bar & Profile */}
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="flex items-center h-10 px-1">
             <button className="group relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--primary)] text-slate-400 dark:text-slate-500 mx-0.5">
@@ -97,7 +93,6 @@ export function Header({ onOpenSidebar }: HeaderProps) {
               </span>
             </button>
 
-            {/* Theme Intelligence (Now adjacent to communication tools) */}
             <div className="mx-1">
               <ThemeToggle />
             </div>
@@ -110,14 +105,8 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             trigger={
               <div className="flex items-center gap-3 pl-1 pr-1 py-1 group cursor-pointer transition-all duration-300">
                 <div className="relative">
-                  {/* Ambient Glow */}
                   <div className="absolute -inset-2 rounded-full bg-[var(--primary)]/0 blur-md transition-all duration-500 group-hover:bg-[var(--primary)]/5" />
-                  <Avatar 
-                    src="/avatar.png" 
-                    name={DEFAULT_USER_NAME}
-                    hideText 
-                    className="relative z-10"
-                  />
+                  <Avatar src="/avatar.png" name={DEFAULT_USER_NAME} hideText className="relative z-10" />
                   <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#111827] bg-[var(--accent)] z-20 shadow-sm" />
                 </div>
                 <div className="text-left hidden xl:block z-10">

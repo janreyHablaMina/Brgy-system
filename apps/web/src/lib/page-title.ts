@@ -1,5 +1,5 @@
-import { PAGE_TITLES } from "@/config/page-titles";
+import { getRouteTitle } from "@/core/navigation/route-registry";
 
 export function getPageTitle(pathname: string) {
-  return PAGE_TITLES[pathname] ?? "Dashboard";
+  return getRouteTitle(pathname);
 }
