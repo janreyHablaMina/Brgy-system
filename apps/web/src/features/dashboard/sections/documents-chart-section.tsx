@@ -8,8 +8,8 @@ type DocumentsChartSectionProps = {
   series: DashboardOverviewData["documentSeries"];
 };
 
-const CHART_H = 140;
-const CHART_PADDING = { top: 16, bottom: 28, left: 8, right: 8 };
+const CHART_H = 360;
+const CHART_PADDING = { top: 16, bottom: 34, left: 8, right: 8 };
 
 export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
   const [hovered, setHovered] = useState<number | null>(null);
@@ -21,7 +21,7 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
 
   const chartH = CHART_H;
   const innerH = chartH - CHART_PADDING.top - CHART_PADDING.bottom;
-  const innerW = 100; // percentage-based viewBox
+  const innerW = 700;
 
   // Convert data to SVG points
   const points = series.map((d, i) => {
@@ -43,13 +43,14 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
   return (
     <WidgetCard
       title="Documents Issued This Week"
+      
       action={
-        <span className="text-xs font-semibold text-[var(--muted)]">This Week ▾</span>
+        <span className="text-xs font-semibold text-[var(--muted)]">This Week v</span>
       }
     >
-      <div className="relative" style={{ height: chartH + 24 }}>
+      <div className="relative" style={{ height: chartH }}>
         <svg
-          viewBox={`-24 0 ${innerW + 32} ${chartH}`}
+          viewBox={`-46 0 ${innerW + 64} ${chartH}`}
           className="w-full overflow-visible"
           style={{ height: chartH }}
         >
@@ -70,7 +71,7 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
                 <text
                   x={-4}
                   y={y + 4}
-                  fontSize={8}
+                  fontSize={10}
                   fill="var(--muted)"
                   textAnchor="end"
                 >
@@ -94,7 +95,7 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
             d={linePath}
             fill="none"
             stroke="var(--primary)"
-            strokeWidth={2.5}
+            strokeWidth={3}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -105,7 +106,7 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
               <circle
                 cx={p.x}
                 cy={p.y}
-                r={hovered === i ? 5 : 3.5}
+                r={hovered === i ? 5.5 : 4}
                 fill={hovered === i ? "var(--primary)" : "#fff"}
                 stroke="var(--primary)"
                 strokeWidth={2}
@@ -116,22 +117,22 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
               {hovered === i && (
                 <g>
                   <rect
-                    x={p.x - 20}
-                    y={p.y - 30}
-                    width={40}
-                    height={22}
+                    x={p.x - 24}
+                    y={p.y - 34}
+                    width={48}
+                    height={24}
                     rx={5}
                     fill="var(--primary)"
                   />
                   <text
                     x={p.x}
-                    y={p.y - 15}
-                    fontSize={8.5}
+                    y={p.y - 18}
+                    fontSize={9}
                     fill="#fff"
                     textAnchor="middle"
                     fontWeight="700"
                   >
-                    {p.day} · {p.value}
+                    {p.day} - {p.value}
                   </text>
                 </g>
               )}
@@ -144,7 +145,7 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
               key={i}
               x={p.x}
               y={chartH - 4}
-              fontSize={8.5}
+              fontSize={10}
               fill="var(--muted)"
               textAnchor="middle"
             >
@@ -156,3 +157,4 @@ export function DocumentsChartSection({ series }: DocumentsChartSectionProps) {
     </WidgetCard>
   );
 }
+

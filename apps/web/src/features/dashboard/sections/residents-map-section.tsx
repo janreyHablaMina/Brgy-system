@@ -10,6 +10,7 @@ export function ResidentsMapSection({ cluster }: ResidentsMapSectionProps) {
   return (
     <WidgetCard
       title="Residents Map"
+      
       action={
         <Link
           href="/barangay-map"
@@ -20,7 +21,7 @@ export function ResidentsMapSection({ cluster }: ResidentsMapSectionProps) {
       }
     >
       {/* Map placeholder with grid lines and cluster bubbles */}
-      <div className="relative h-48 overflow-hidden rounded-xl border border-[var(--border)] bg-[radial-gradient(circle_at_40%_50%,#d8e8f8_0%,#e8f0f9_50%,#eef3fb_100%)] dark:bg-[radial-gradient(circle_at_40%_50%,#1e2d40_0%,#1a2535_60%,#151e2e_100%)]">
+      <div className="relative h-[360px] overflow-hidden rounded-xl border border-[var(--border)] bg-[radial-gradient(circle_at_40%_50%,#d8e8f8_0%,#e8f0f9_50%,#eef3fb_100%)] dark:bg-[radial-gradient(circle_at_40%_50%,#1e2d40_0%,#1a2535_60%,#151e2e_100%)]">
         {/* Grid lines */}
         <svg className="absolute inset-0 h-full w-full opacity-20" xmlns="http://www.w3.org/2000/svg">
           <defs>

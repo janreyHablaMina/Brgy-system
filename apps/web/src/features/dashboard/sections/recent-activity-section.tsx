@@ -30,6 +30,8 @@ const toneConfig = {
 };
 
 export function RecentActivitySection({ items }: RecentActivitySectionProps) {
+  const visibleItems = items.slice(0, 4);
+
   return (
     <WidgetCard
       title="Recent Activity"
@@ -40,7 +42,7 @@ export function RecentActivitySection({ items }: RecentActivitySectionProps) {
       }
     >
       <div className="space-y-2.5">
-        {items.map((item) => {
+        {visibleItems.map((item) => {
           const cfg = toneConfig[item.tone];
           const Icon = item.icon;
 
