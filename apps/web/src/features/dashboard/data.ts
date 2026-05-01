@@ -100,10 +100,10 @@ export function getDashboardOverviewData(tenantId: string, tenantName: string): 
     ],
 
     staffPerformance: [
-      { id: "s1", name: "Ana Reyes", role: "Encoder", processed: 120, completion: 90, barColor: "#3B82F6" },
-      { id: "s2", name: "Pedro Santos", role: "Staff", processed: 98, completion: 78, barColor: "#8B5CF6" },
-      { id: "s3", name: "Maria Cruz", role: "Staff", processed: 87, completion: 70, barColor: "#F59E0B" },
-      { id: "s4", name: "Juan Dela Cruz", role: "Admin", processed: 150, completion: 95, barColor: "#22C55E" },
+      { id: "s1", name: "Ana Reyes", role: "Encoder", processed: 120, completion: 90, barColor: "#22C55E" },
+      { id: "s2", name: "Pedro Santos", role: "Staff", processed: 98, completion: 78, barColor: "#3B82F6" },
+      { id: "s3", name: "Maria Cruz", role: "Staff", processed: 87, completion: 70, barColor: "#8B5CF6" },
+      { id: "s4", name: "Juan Dela Cruz", role: "Admin", processed: 150, completion: 95, barColor: "#F59E0B" },
     ],
 
     systemStatus: [
