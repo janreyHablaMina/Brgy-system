@@ -1591,7 +1591,7 @@ function SummaryCard({
 
   return (
     <article className={cn(
-      "relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition-all hover:border-[var(--primary)]/20",
+      "relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-none transition-all hover:border-[var(--primary)]/20",
       "before:absolute before:left-0 before:top-0 before:h-full before:w-1",
       tone === "amber" ? "before:bg-amber-400" :
       tone === "blue" ? "before:bg-blue-400" :
@@ -1780,5 +1780,6 @@ function DetailGrid({ items }: { items: Array<{ label: string; value: string }> 
     </div>
   );
 }
+
 
 

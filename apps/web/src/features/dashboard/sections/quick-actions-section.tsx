@@ -14,7 +14,7 @@ export function QuickActionsSection({ items }: QuickActionsSectionProps) {
           const Icon = item.icon;
 
           const content = (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3 text-center transition hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/5 hover:shadow-sm group">
+            <div className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-3 text-center shadow-none transition hover:border-[var(--primary)]/40 hover:bg-[var(--primary)]/5 hover:shadow-none">
               <div
                 className="flex h-10 w-10 items-center justify-center rounded-xl transition group-hover:scale-110"
                 style={{ backgroundColor: item.iconBg }}

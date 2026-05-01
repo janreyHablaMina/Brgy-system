@@ -69,9 +69,9 @@ export function getDashboardOverviewData(tenantId: string, tenantName: string): 
 
     summary: [
       { label: "Total Residents", value: "2,450", delta: "+12 this month", tone: "success", icon: Users },
-      { label: "Documents Issued", value: "350", delta: "+18 this week", tone: "success", icon: FileCheck },
+      { label: "Documents Issued", value: "350", delta: "+18 this week", tone: "warning", icon: FileCheck },
       { label: "Pending Requests", value: "12", delta: "High Priority", tone: "danger", icon: ClipboardList },
-      { label: "Today's Collections", value: "₱8,450", delta: "+15% vs yesterday", tone: "success", icon: CreditCard },
+      { label: "Today's Collections", value: "₱8,450", delta: "+15% vs yesterday", tone: "neutral", icon: CreditCard },
     ],
 
     documentSeries: [
@@ -87,7 +87,7 @@ export function getDashboardOverviewData(tenantId: string, tenantName: string): 
     mapCluster: { green: 12, amber: 8, blue: 5, red: 15 },
 
     recentActivity: [
-      { id: "a1", label: "Document approved", detail: "Barangay Clearance for Pedro Santos", at: "2 mins ago", tone: "success", icon: FileCheck },
+      { id: "a1", label: "Document approved", detail: "Barangay Clearance for Pedro Santos", at: "2 mins ago", tone: "warning", icon: FileCheck },
       { id: "a2", label: "New resident added", detail: "Maria Garcia", at: "15 mins ago", tone: "info", icon: UserPlus },
       { id: "a3", label: "Payment recorded", detail: "Official Receipt #OR-2026-00123", at: "30 mins ago", tone: "warning", icon: CreditCard },
       { id: "a4", label: "Blotter filed", detail: "Blotter #BLT-2026-00045", at: "1 hour ago", tone: "accent", icon: Shield },
@@ -114,3 +114,4 @@ export function getDashboardOverviewData(tenantId: string, tenantName: string): 
     ],
   };
 }
+

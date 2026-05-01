@@ -56,7 +56,7 @@ body {
 }
 
 .surface-card {
-  @apply rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm;
+  @apply rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none;
 }
 
 /* Slim 3px Accent Scrollbar */
@@ -105,3 +105,4 @@ body {
 .dark * {
   scrollbar-color: #334155 transparent;
 }
+

@@ -108,7 +108,7 @@ export function AddPropertyPage() {
         </div>
       </div>
 
-      <main className="rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm overflow-hidden">
+      <main className="rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none overflow-hidden">
         {/* Tabs Navigation */}
         <div className="flex border-b border-[var(--border)] bg-[var(--card-soft)]/30">
            <TabButton 
@@ -149,3 +149,4 @@ export function AddPropertyPage() {
     </div>
   );
 }
+

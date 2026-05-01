@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WidgetCard } from "@/components/ui/widget-card";
 import type { DashboardAttentionItem } from "@/features/dashboard/types";
@@ -9,22 +10,22 @@ type NeedsAttentionSectionProps = {
 
 const toneConfig = {
   warning: {
-    bg: "bg-amber-50 dark:bg-amber-500/10",
+    bg: "bg-amber-50/40 dark:bg-amber-500/6",
     icon: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
-    border: "border-amber-200/60 dark:border-amber-500/20",
-    cta: "border-amber-300 dark:border-amber-500/40 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10",
+    border: "border-[var(--border)]/55",
+    cta: "text-amber-700 dark:text-amber-400 hover:opacity-80",
   },
   danger: {
-    bg: "bg-rose-50 dark:bg-rose-500/10",
+    bg: "bg-rose-50/40 dark:bg-rose-500/6",
     icon: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
-    border: "border-rose-200/60 dark:border-rose-500/20",
-    cta: "border-rose-300 dark:border-rose-500/40 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10",
+    border: "border-[var(--border)]/55",
+    cta: "text-rose-700 dark:text-rose-400 hover:opacity-80",
   },
   accent: {
-    bg: "bg-amber-50/60 dark:bg-amber-500/10",
+    bg: "bg-amber-50/35 dark:bg-amber-500/6",
     icon: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
-    border: "border-amber-200/60 dark:border-amber-500/20",
-    cta: "border-amber-300 dark:border-amber-500/40 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10",
+    border: "border-[var(--border)]/55",
+    cta: "text-amber-700 dark:text-amber-400 hover:opacity-80",
   },
 };
 
@@ -47,7 +48,7 @@ export function NeedsAttentionSection({ items }: NeedsAttentionSectionProps) {
             <div
               key={item.id}
               className={cn(
-                "flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5",
+                "flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 shadow-none",
                 cfg.bg,
                 cfg.border
               )}
@@ -64,11 +65,12 @@ export function NeedsAttentionSection({ items }: NeedsAttentionSectionProps) {
 
               <button
                 className={cn(
-                  "shrink-0 rounded-lg border px-3 py-1 text-xs font-semibold transition",
+                  "group/cta inline-flex shrink-0 items-center gap-1 text-xs font-semibold transition",
                   cfg.cta
                 )}
               >
-                {item.cta}
+                <span>{item.cta}</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/cta:translate-x-0.5" />
               </button>
             </div>
           );

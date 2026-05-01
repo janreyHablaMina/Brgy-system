@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
@@ -183,7 +183,7 @@ export function DocumentGenerationPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left Column: Input Panel (The Card) */}
         <div className="lg:col-span-5 xl:col-span-4 no-print">
-          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-all">
+          <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none transition-all">
             <header className="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
               <FileText className="h-5 w-5 text-[var(--primary)]" />
               <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text)]">Document Information</h2>
@@ -587,7 +587,7 @@ export function DocumentGenerationPage() {
         {/* Right Column: Live Document Preview */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
           {/* Preview Header Card */}
-          <div className="print-area overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+          <div className="print-area overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none">
             <header className="print-preview-header flex items-center justify-between border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
               <div className="flex items-center gap-3">
                 <FileText className="h-5 w-5 text-[var(--primary)]" />
@@ -898,3 +898,4 @@ function OptionCheckbox({
     </button>
   );
 }
+

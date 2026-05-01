@@ -26,10 +26,10 @@ export function SystemStatusSection({ items }: SystemStatusSectionProps) {
   return (
     <WidgetCard
       title="System Status"
-      className="rounded-xl border-slate-200 bg-white p-0"
-      headerClassName="px-5 pt-5 pb-4"
+      className="h-full rounded-xl border-slate-200 bg-white p-0"
+      headerClassName="px-3.5 pt-3 pb-2"
     >
-      <div className="space-y-1 px-4 pb-4">
+      <div className="flex h-full flex-col justify-between px-3.5 pb-2">
         {items.map((item) => {
           const cfg = toneConfig[item.tone];
           const ServiceIcon = item.icon;

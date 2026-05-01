@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { History } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,7 +44,7 @@ const activities = [
 
 export function ActivityFeed() {
   return (
-    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+    <article className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none">
       <header className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-[var(--muted)]" />
@@ -99,4 +99,5 @@ export function ActivityFeed() {
     </article>
   );
 }
+
 

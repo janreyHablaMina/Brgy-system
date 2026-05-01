@@ -21,7 +21,7 @@ export function WidgetCard({
   return (
     <article
       className={cn(
-        "rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm",
+        "rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none",
         noPadding ? "" : "p-4",
         className
       )}

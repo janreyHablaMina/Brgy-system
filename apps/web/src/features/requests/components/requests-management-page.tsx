@@ -217,7 +217,7 @@ export function RequestsManagementPage() {
       </div>
 
       {/* Main Table Container */}
-      <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm transition-all">
+      <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none transition-all">
         {/* Professional Filter Bar */}
         <div className="border-b border-[var(--border)] bg-[var(--card)] p-5">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 items-end">
@@ -476,7 +476,7 @@ function SummaryCard({
 
   return (
     <article className={cn(
-      "relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition-all hover:border-[var(--primary)]/20",
+      "relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-none transition-all hover:border-[var(--primary)]/20",
       "before:absolute before:left-0 before:top-0 before:h-full before:w-1",
       tone === "amber" ? "before:bg-amber-400" :
       tone === "blue" ? "before:bg-blue-400" :
@@ -759,3 +759,4 @@ function DetailItem({ label, value, icon: Icon, fullWidth }: { label: string, va
     </div>
   );
 }
+

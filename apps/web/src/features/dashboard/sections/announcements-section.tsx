@@ -10,13 +10,15 @@ export function AnnouncementsSection({ items }: AnnouncementsSectionProps) {
   return (
     <WidgetCard
       title="Announcements"
+      noPadding
+      headerClassName="px-3.5 pt-3 pb-2"
       action={
         <button className="text-xs font-semibold text-[var(--primary)] hover:underline">
           View all
         </button>
       }
     >
-      <div className="space-y-2.5">
+      <div className="space-y-2 px-3.5 pb-2">
         {items.map((item) => {
           const Icon = item.icon;
 

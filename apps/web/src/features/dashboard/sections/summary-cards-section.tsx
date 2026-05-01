@@ -6,10 +6,26 @@ type SummaryCardsSectionProps = {
 };
 
 const toneConfig = {
-  success: { delta: "text-emerald-600 dark:text-emerald-400", icon: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500" },
-  warning: { delta: "text-amber-600 dark:text-amber-400", icon: "bg-amber-50 dark:bg-amber-500/10 text-amber-500" },
-  danger: { delta: "text-rose-600 dark:text-rose-400", icon: "bg-rose-50 dark:bg-rose-500/10 text-rose-500" },
-  neutral: { delta: "text-slate-500 dark:text-slate-400", icon: "bg-slate-100 dark:bg-slate-700 text-slate-500" },
+  success: {
+    delta: "text-emerald-600 dark:text-emerald-400",
+    icon: "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500",
+    leftAccent: "bg-emerald-500",
+  },
+  warning: {
+    delta: "text-amber-600 dark:text-amber-400",
+    icon: "bg-amber-50 dark:bg-amber-500/10 text-amber-500",
+    leftAccent: "bg-amber-500",
+  },
+  danger: {
+    delta: "text-rose-600 dark:text-rose-400",
+    icon: "bg-rose-50 dark:bg-rose-500/10 text-rose-500",
+    leftAccent: "bg-rose-500",
+  },
+  neutral: {
+    delta: "text-slate-500 dark:text-slate-400",
+    icon: "bg-slate-100 dark:bg-slate-700 text-slate-500",
+    leftAccent: "bg-sky-500",
+  },
 };
 
 export function SummaryCardsSection({ items }: SummaryCardsSectionProps) {
@@ -22,8 +38,9 @@ export function SummaryCardsSection({ items }: SummaryCardsSectionProps) {
         return (
           <article
             key={item.label}
-            className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm transition hover:shadow-md"
+            className="relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-none transition"
           >
+            <span className={cn("absolute inset-y-0 left-0 w-1.5", cfg.leftAccent)} />
             {/* Icon */}
             <div className={cn("mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl", cfg.icon)}>
               <Icon className="h-5 w-5" />
@@ -34,7 +51,14 @@ export function SummaryCardsSection({ items }: SummaryCardsSectionProps) {
 
             {/* Value */}
             <p className="mt-0.5 text-3xl font-extrabold tracking-tight text-[var(--text)]">
-              {item.value}
+              {item.value.startsWith("₱") ? (
+                <span className="inline-flex items-baseline">
+                  <span className="mr-0.5 text-[0.72em] font-bold leading-none">₱</span>
+                  {item.value.slice(1)}
+                </span>
+              ) : (
+                item.value
+              )}
             </p>
 
             {/* Delta */}
@@ -47,3 +71,4 @@ export function SummaryCardsSection({ items }: SummaryCardsSectionProps) {
     </div>
   );
 }
+
