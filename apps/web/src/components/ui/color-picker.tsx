@@ -17,21 +17,36 @@ type ColorPickerProps = {
 
 export function ColorPicker({ compact = false }: ColorPickerProps) {
   const inputId = useId();
-  const [color, setColor] = useState(() => {
-    if (typeof window === "undefined") {
-      return DEFAULT_PRIMARY_COLOR;
-    }
-
-    const stored = localStorage.getItem(PRIMARY_COLOR_STORAGE_KEY);
-    return stored && isValidHexColor(stored) ? stored : DEFAULT_PRIMARY_COLOR;
-  });
+  const [color, setColor] = useState(DEFAULT_PRIMARY_COLOR);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    try {
+      const stored = localStorage.getItem(PRIMARY_COLOR_STORAGE_KEY);
+      if (stored && isValidHexColor(stored)) {
+        setColor(stored.toUpperCase());
+      }
+    } catch {
+      // Ignore localStorage errors in restricted contexts.
+    } finally {
+      setIsReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     applyPrimaryColor(color);
     applyAccentColor(color);
-    localStorage.setItem(PRIMARY_COLOR_STORAGE_KEY, color);
-    localStorage.setItem(ACCENT_COLOR_STORAGE_KEY, color);
-  }, [color]);
+    try {
+      localStorage.setItem(PRIMARY_COLOR_STORAGE_KEY, color);
+      localStorage.setItem(ACCENT_COLOR_STORAGE_KEY, color);
+    } catch {
+      // Ignore localStorage errors in restricted contexts.
+    }
+  }, [color, isReady]);
 
   function handleColorChange(value: string) {
     const nextColor = value.toUpperCase();
