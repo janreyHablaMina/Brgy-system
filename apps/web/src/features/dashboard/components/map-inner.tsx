@@ -3,7 +3,9 @@
 import { MapContainer, TileLayer, CircleMarker, Popup, ZoomControl, Polygon, Marker, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+import { SALAZA_CENTER, SALAZA_BOUNDARY, MOCK_DISTRICTS, MOCK_RESIDENT_PINS } from "../constants/map-constants";
 
 // Invisible icon for the label
 const invisibleIcon = typeof window !== "undefined" ? L.divIcon({
@@ -16,40 +18,28 @@ type MapInnerProps = {
   cluster: { green: number; amber: number; blue: number; red: number };
 };
 
-// Brgy. Salaza, Palauig, Zambales Coordinates
-const center: [number, number] = [15.4542, 119.9553];
-
-// Approximate boundary for Brgy. Salaza (Refined to stay South of Pangolingan)
-const salazaBoundary: [number, number][] = [
-  [15.466, 119.945], // North West
-  [15.466, 119.980], // North East (Stay below Pangolingan)
-  [15.455, 120.010], // Far East (Towards Mt. Tapulao)
-  [15.435, 120.010], // South East
-  [15.435, 119.970], // South
-  [15.445, 119.945], // South West
-];
-
 export default function MapInner({ cluster }: MapInnerProps) {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    // Set initial dark mode state on client
+    setIsDark(document.documentElement.classList.contains("dark"));
+
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const style = document.createElement('style');
     style.innerHTML = `
-      .leaflet-container { background: #f8fafc !important; font-family: inherit; }
-      .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
-      .custom-brgy-label {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        color: var(--accent, #3C50E0) !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.2em !important;
-        font-size: 10px !important;
-        opacity: 0.6 !important;
-        pointer-events: none !important;
-      }
+      .leaflet-container { background: var(--background) !important; font-family: inherit; }
+      .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; background: var(--card); color: var(--text); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border: 1px solid var(--border); }
       .cluster-badge {
-        background: white !important;
-        border: 2px solid white !important;
+        background: var(--card) !important;
+        border: 2px solid var(--card) !important;
         border-radius: 50% !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
         display: flex !important;
@@ -57,7 +47,7 @@ export default function MapInner({ cluster }: MapInnerProps) {
         justify-content: center !important;
         font-weight: 800 !important;
         font-size: 12px !important;
-        color: #1e293b !important;
+        color: var(--text) !important;
       }
       .cluster-glow {
         border-radius: 50%;
@@ -67,6 +57,11 @@ export default function MapInner({ cluster }: MapInnerProps) {
         width: 100%;
         height: 100%;
       }
+      .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+        background-color: var(--card) !important;
+        color: var(--text) !important;
+        border-color: var(--border) !important;
+      }
     `;
     document.head.appendChild(style);
     return () => { document.head.removeChild(style); };
@@ -74,7 +69,7 @@ export default function MapInner({ cluster }: MapInnerProps) {
 
   return (
     <MapContainer
-      center={center}
+      center={SALAZA_CENTER}
       zoom={13}
       scrollWheelZoom={true}
       style={{ height: "100%", width: "100%", zIndex: 0 }}
@@ -82,13 +77,16 @@ export default function MapInner({ cluster }: MapInnerProps) {
     >
       <TileLayer
         attribution='&copy; CARTO'
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        url={isDark 
+          ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+        }
       />
       <ZoomControl position="bottomright" />
       
       {/* Elegant Barangay Territory */}
       <Polygon 
-        positions={salazaBoundary}
+        positions={SALAZA_BOUNDARY}
         pathOptions={{ 
           color: 'var(--accent)', 
           fillColor: 'var(--accent)', 
@@ -98,40 +96,38 @@ export default function MapInner({ cluster }: MapInnerProps) {
         }}
       />
 
-
       {/* Modern District Clusters */}
-      {[
-        { pos: [15.460, 119.960] as [number, number], val: cluster.green, color: '#10b981' },
-        { pos: [15.445, 119.975] as [number, number], val: cluster.red, color: '#f43f5e' },
-        { pos: [15.450, 119.955] as [number, number], val: cluster.blue, color: '#3b82f6' },
-      ].map((dist, i) => (
-        <Marker 
-          key={i} 
-          position={dist.pos}
-          icon={L.divIcon({
-            className: '',
-            html: `
-              <div style="position: relative; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                <div class="cluster-glow" style="background: ${dist.color};"></div>
-                <div class="cluster-badge" style="width: 28px; height: 28px; border-color: ${dist.color};">${dist.val}</div>
-              </div>
-            `,
-            iconSize: [32, 32],
-            iconAnchor: [16, 16]
-          })}
-        />
-      ))}
+      {MOCK_DISTRICTS.map((dist, i) => {
+        // Map color to value from props
+        let val = 0;
+        if (dist.color === '#10b981') val = cluster.green;
+        if (dist.color === '#f43f5e') val = cluster.red;
+        if (dist.color === '#3b82f6') val = cluster.blue;
+
+        return (
+          <Marker 
+            key={i} 
+            position={dist.pos}
+            icon={L.divIcon({
+              className: '',
+              html: `
+                <div style="position: relative; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                  <div class="cluster-glow" style="background: ${dist.color};"></div>
+                  <div class="cluster-badge" style="width: 28px; height: 28px; border-color: ${dist.color};">${val}</div>
+                </div>
+              `,
+              iconSize: [32, 32],
+              iconAnchor: [16, 16]
+            })}
+          />
+        );
+      })}
 
       {/* Subtle Resident Pins */}
-      {[
-        [15.458, 119.952],
-        [15.452, 119.965],
-        [15.448, 119.958],
-        [15.455, 119.970],
-      ].map((pos, i) => (
+      {MOCK_RESIDENT_PINS.map((pos, i) => (
         <CircleMarker 
           key={i}
-          center={pos as [number, number]} 
+          center={pos} 
           radius={3} 
           pathOptions={{ 
             color: 'white', 

@@ -64,6 +64,7 @@ export function NeedsAttentionSection({ items }: NeedsAttentionSectionProps) {
               </div>
 
               <button
+                suppressHydrationWarning
                 className={cn(
                   "group/cta inline-flex shrink-0 items-center gap-1 text-xs font-semibold transition",
                   cfg.cta

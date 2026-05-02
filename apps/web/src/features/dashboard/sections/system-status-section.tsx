@@ -36,7 +36,7 @@ export function SystemStatusSection({ items }: SystemStatusSectionProps) {
           return (
             <div
               key={item.id}
-              className="group flex flex-col gap-1.5 rounded-xl border border-slate-50 bg-slate-50/30 p-2 transition-all hover:bg-white hover:shadow-sm"
+              className="group flex flex-col gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--card-soft)] p-2 transition-all hover:bg-[var(--card)] hover:shadow-md"
             >
               <div className="flex items-center justify-between">
                 <div className={cn(

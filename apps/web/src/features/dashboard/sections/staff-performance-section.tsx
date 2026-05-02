@@ -11,14 +11,13 @@ export function StaffPerformanceSection({ items }: StaffPerformanceSectionProps)
   return (
     <WidgetCard
       title="Staff Performance (This Month)"
-      className="rounded-xl border-slate-200 bg-white p-0"
-      headerClassName="px-5 pt-5 pb-4"
+      className="h-full"
     >
-      <div className="grid gap-0 px-3 pb-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid h-full gap-0 px-3 pb-4 sm:grid-cols-2 xl:grid-cols-4 content-center">
         {items.map((item) => (
           <article
             key={item.id}
-            className="px-2 py-2 sm:px-3 xl:border-r xl:border-slate-200 xl:last:border-r-0"
+            className="px-2 py-2 sm:px-3 xl:border-r xl:border-[var(--border)] xl:last:border-r-0"
           >
             <div className="mb-3 flex items-center gap-2.5">
               <Image
@@ -26,22 +25,22 @@ export function StaffPerformanceSection({ items }: StaffPerformanceSectionProps)
                 alt={item.name}
                 width={42}
                 height={42}
-                className="h-[42px] w-[42px] rounded-full border border-slate-200 object-cover"
+                className="h-[42px] w-[42px] rounded-full border border-[var(--border)] object-cover"
               />
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold leading-tight text-slate-800">
+                <p className="truncate text-[13px] font-semibold leading-tight text-[var(--text)]">
                   {item.name}
                 </p>
-                <p className="text-[11px] text-slate-500">{item.role}</p>
+                <p className="text-[11px] text-[var(--muted)]">{item.role}</p>
               </div>
             </div>
 
             <div className="mb-2">
-              <p className="text-[32px] font-bold leading-none tracking-tight text-slate-900">
+              <p className="text-[32px] font-bold leading-none tracking-tight text-[var(--text)]">
                 {item.processed}
               </p>
-              <p className="mt-1 text-[11px] text-slate-500">Documents Processed</p>
+              <p className="mt-1 text-[11px] text-[var(--muted)]">Documents Processed</p>
             </div>
 
             <div className="flex items-center gap-2.5">
@@ -50,9 +49,9 @@ export function StaffPerformanceSection({ items }: StaffPerformanceSectionProps)
                 color={item.barColor}
                 size="sm"
                 className="flex-1"
-                trackClassName="bg-slate-200"
+                trackClassName="bg-slate-200 dark:bg-slate-800"
               />
-              <p className="text-[12px] font-semibold text-slate-600">{item.completion}%</p>
+              <p className="text-[12px] font-semibold text-[var(--muted)]">{item.completion}%</p>
             </div>
           </article>
         ))}

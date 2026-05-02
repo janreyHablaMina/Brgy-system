@@ -20,7 +20,10 @@ export function SmsCreditsCard({ remaining, usedThisMonth, total }: SmsCreditsCa
         <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">
           SMS Credits
         </p>
-        <button className="rounded-lg bg-white/15 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-white/25">
+        <button 
+          suppressHydrationWarning
+          className="rounded-lg bg-white/15 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-white/25"
+        >
           Buy Credits
         </button>
       </div>

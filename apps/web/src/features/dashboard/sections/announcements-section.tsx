@@ -13,7 +13,10 @@ export function AnnouncementsSection({ items }: AnnouncementsSectionProps) {
       noPadding
       headerClassName="px-3.5 pt-3 pb-2"
       action={
-        <button className="text-xs font-semibold text-[var(--primary)] hover:underline">
+        <button 
+          suppressHydrationWarning
+          className="text-xs font-semibold text-[var(--primary)] hover:underline"
+        >
           View all
         </button>
       }

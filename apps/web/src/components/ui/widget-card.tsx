@@ -20,8 +20,9 @@ export function WidgetCard({
 }: WidgetCardProps) {
   return (
     <article
+      suppressHydrationWarning
       className={cn(
-        "rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none",
+        "rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-white/5",
         noPadding ? "" : "p-4",
         className
       )}

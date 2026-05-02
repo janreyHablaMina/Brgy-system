@@ -19,6 +19,8 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ROUTES } from "@/config/routes";
 import { useTenant } from "@/core/tenant/tenant-provider";
 
+import { IconButton } from "@/components/ui/icon-button";
+
 const NOTIFICATION_COUNT = 5;
 const MESSAGE_COUNT = 2;
 
@@ -28,32 +30,18 @@ export function HeaderActions() {
   return (
     <div className="flex items-center gap-0.5 md:gap-1">
       {/* Messages */}
-      <button
-        type="button"
-        className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+      <IconButton 
+        icon={<MessageCircle className="h-4.5 w-4.5" />}
+        badge={MESSAGE_COUNT > 0 ? MESSAGE_COUNT : undefined}
         aria-label="Messages"
-      >
-        <MessageCircle className="h-4.5 w-4.5" />
-        {MESSAGE_COUNT > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#0f172a]">
-            {MESSAGE_COUNT}
-          </span>
-        )}
-      </button>
+      />
 
       {/* Notifications */}
-      <button
-        type="button"
-        className="relative flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+      <IconButton 
+        icon={<Bell className="h-4.5 w-4.5" />}
+        badge={NOTIFICATION_COUNT > 0 ? NOTIFICATION_COUNT : undefined}
         aria-label="Notifications"
-      >
-        <Bell className="h-4.5 w-4.5" />
-        {NOTIFICATION_COUNT > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white shadow-sm ring-2 ring-white dark:ring-[#0f172a]">
-            {NOTIFICATION_COUNT}
-          </span>
-        )}
-      </button>
+      />
 
       {/* Accent Color Picker */}
       <ColorPicker compact />
@@ -62,9 +50,9 @@ export function HeaderActions() {
       <ThemeToggle />
 
       {/* Fullscreen */}
-      <button
-        type="button"
-        className="hidden h-9 w-9 items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:flex"
+      <IconButton 
+        icon={<Maximize className="h-4 w-4" />}
+        className="hidden sm:flex"
         aria-label="Toggle Fullscreen"
         onClick={() => {
           if (!document.fullscreenElement) {
@@ -73,9 +61,7 @@ export function HeaderActions() {
             document.exitFullscreen();
           }
         }}
-      >
-        <Maximize className="h-4 w-4" />
-      </button>
+      />
 
       {/* Vertical Separator */}
       <div className="mx-1 h-6 w-px bg-slate-200 dark:bg-slate-800" />
@@ -85,6 +71,7 @@ export function HeaderActions() {
         trigger={
           <button
             type="button"
+            suppressHydrationWarning
             className="group flex items-center gap-1.5 rounded-full p-0.5 transition hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none"
             aria-label="User profile"
           >
