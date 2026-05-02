@@ -38,11 +38,11 @@ export function SummaryCardsSection({ items }: SummaryCardsSectionProps) {
         return (
           <article
             key={item.label}
-            className="relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-none transition"
+            className="relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-none transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 hover:border-[var(--primary)]/30 group"
           >
             <span className={cn("absolute inset-y-0 left-0 w-1.5", cfg.leftAccent)} />
             {/* Icon */}
-            <div className={cn("mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl", cfg.icon)}>
+            <div className={cn("mb-3 inline-flex h-11 w-11 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110", cfg.icon)}>
               <Icon className="h-5 w-5" />
             </div>
 

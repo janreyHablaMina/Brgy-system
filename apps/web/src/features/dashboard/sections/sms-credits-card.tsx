@@ -10,7 +10,7 @@ export function SmsCreditsCard({ remaining, usedThisMonth, total }: SmsCreditsCa
   const usedPercent = Math.round((usedThisMonth / total) * 100);
 
   return (
-    <article className="relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-[#2563EB] via-[#4F46E5] to-[#7C3AED] p-5 text-white shadow-lg shadow-[#4F46E5]/20">
+    <article className="relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-[#2563EB] via-[#4F46E5] to-[#7C3AED] p-5 text-white shadow-lg shadow-[#4F46E5]/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#4F46E5]/30 group">
       {/* Decorative circles */}
       <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/5" />
       <div className="pointer-events-none absolute -bottom-6 right-10 h-24 w-24 rounded-full bg-white/5" />
