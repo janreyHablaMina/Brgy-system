@@ -36,7 +36,7 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
       {/* Row 3: Documents Chart + Residents Map + Recent Activity */}
       <section className="grid gap-4 xl:grid-cols-[2fr_1.5fr_1.5fr]">
         <DocumentsChartSection series={data.documentSeries} />
-        <ResidentsMapSection cluster={data.mapCluster} />
+        <ResidentsMapSection cluster={data.mapCluster} tenantName={data.tenantName} />
         <RecentActivitySection items={data.recentActivity} />
       </section>
 
