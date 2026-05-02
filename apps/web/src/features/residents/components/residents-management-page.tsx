@@ -801,42 +801,99 @@ export function ResidentsManagementPage() {
       />
   
         <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
-          <div className="relative z-20 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4 backdrop-blur-sm">
-          <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
-            <Users className="h-3.5 w-3.5 text-[var(--primary)]" />
-            <span>Total Records</span>
-            <span className="text-[var(--primary)] ml-1 font-extrabold">
-              {processedResidents.length}
-            </span>
+          <div className="relative z-20 flex flex-col gap-4 border-b border-[var(--border)] bg-[var(--card)] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2 text-[12px] font-bold text-[var(--muted)] border-r border-[var(--border)] pr-4">
+                <Users className="h-4 w-4 text-[var(--primary)]" />
+                <span>Total Records</span>
+                <span className="text-[var(--primary)] ml-1 font-extrabold">
+                  {processedResidents.length}
+                </span>
+              </div>
+              
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[12px] font-semibold text-[var(--text)]">Active Filters:</span>
+                {activeFilterItems.length === 0 ? (
+                  <span className="text-[12px] text-[var(--muted)]">None</span>
+                ) : (
+                  <>
+                    {activeFilterItems.map((item) => (
+                      <span
+                        key={item.id}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-[var(--primary)]/20 bg-[var(--primary)]/[0.05] px-2 py-0.5 text-[11px] font-semibold text-[var(--primary)] transition-all hover:bg-[var(--primary)]/[0.1]"
+                      >
+                        {item.label}
+                        <button
+                          type="button"
+                          onClick={() => removeFilter(item.id)}
+                          className="rounded-sm p-0.5 transition-colors hover:bg-[var(--primary)]/20 hover:text-[var(--primary)]"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="ml-2 text-[12px] font-semibold text-[var(--primary)] hover:text-[var(--primary)]/80"
+                    >
+                      Clear all
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Bulk Actions Dropdown */}
+              <DropdownMenu
+                className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[12px] font-semibold text-[var(--text)] transition-all hover:bg-[var(--card-soft)]"
+                trigger={
+                  <>
+                    <MoreHorizontal className="h-4 w-4 opacity-50" />
+                    Bulk Actions
+                    <ChevronDown className="h-3.5 w-3.5 opacity-40 ml-1" />
+                  </>
+                }
+                items={[
+                  { label: "Delete Selected", onClick: () => {}, icon: Trash2, className: "text-rose-500" },
+                ]}
+              />
+
+              {/* Export Registry */}
+              <DropdownMenu
+                className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[12px] font-semibold text-[var(--text)] transition-all hover:bg-[var(--card-soft)]"
+                trigger={
+                  <>
+                    <Download className="h-4 w-4 opacity-50" />
+                    Export Registry
+                  </>
+                }
+                items={[
+                  { 
+                    label: "Download as CSV", 
+                    onClick: () => exportResidents("all", "csv"), 
+                    icon: FileText,
+                  },
+                  { 
+                    label: "Download as Excel", 
+                    onClick: () => exportResidents("filtered", "excel"), 
+                    icon: FileSpreadsheet,
+                  },
+                ]}
+              />
+
+              {/* View Toggles */}
+              <div className="flex items-center gap-1 border-l border-[var(--border)] pl-3">
+                <button type="button" className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--primary)] text-white shadow-sm transition hover:brightness-110">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                </button>
+                <button type="button" className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] transition hover:bg-[var(--card-soft)] hover:text-[var(--text)]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Premium Export Command */}
-            <DropdownMenu
-              className="flex h-9 items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/30 hover:bg-[var(--card-soft)]"
-              trigger={
-                <>
-                  <Download className="h-4 w-4 text-[var(--primary)]" />
-                  Export Registry
-                  <ChevronDown className="h-3.5 w-3.5 opacity-40 ml-1" />
-                </>
-              }
-              items={[
-                { 
-                  label: "Download as CSV", 
-                  onClick: () => exportResidents("all", "csv"), 
-                  icon: FileText,
-                  className: "text-blue-600" 
-                },
-                { 
-                  label: "Download as Excel", 
-                  onClick: () => exportResidents("filtered", "excel"), 
-                  icon: FileSpreadsheet,
-                  className: "text-emerald-600"
-                },
-              ]}
-            />
-          </div>
-        </div>
 
         {activeResidents.length === 0 ? (
           <EmptyState
