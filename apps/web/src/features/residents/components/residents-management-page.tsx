@@ -25,6 +25,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Avatar } from "@/components/ui/avatar";
+import { ResidentsMetrics } from "./residents-metrics";
+import { ResidentsFilters } from "./residents-filters";
 import type {
   CivilStatus,
   Resident,
@@ -781,229 +783,22 @@ export function ResidentsManagementPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <MetricCard
-            label="Total Residents"
-            value={metrics.total}
-            description="All registered residents"
-            icon={Users}
-            color="blue"
-          />
-          <MetricCard
-            label="Seniors"
-            value={metrics.seniors}
-            description="60 years old and above"
-            icon={User}
-            color="emerald"
-          />
-          <MetricCard
-            label="PWD"
-            value={metrics.pwd}
-            description="Persons with Disability"
-            icon={Accessibility}
-            color="violet"
-          />
-          <MetricCard
-            label="Voters"
-            value={metrics.voters}
-            description="Registered voters"
-            icon={Archive}
-            color="amber"
-          />
+        <div className="mt-6">
+          <ResidentsMetrics metrics={metrics} />
         </div>
       </header>
 
-      <section className={cn(
-        "rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 transition-all",
-        !showAdvancedFilters && "pb-4"
-      )}>
-        {/* Row 1: Search & Primary Selects */}
-            <div className="lg:col-span-12 grid gap-5 lg:grid-cols-12 items-start">
-              {/* Search Segment */}
-              <div className="lg:col-span-5 flex flex-col gap-2 group">
-                <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Search Registry</span>
-                <div className="relative">
-                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted)] transition-colors group-focus-within:text-[var(--primary)]" />
-                  <input
-                    value={searchInput}
-                    onChange={(event) => setSearchInput(event.target.value)}
-                    placeholder="Search name, address, or resident ID..."
-                    className="h-10 w-full rounded-xl border border-[var(--border)] bg-transparent pl-10 pr-4 text-sm text-[var(--text)] outline-none transition focus:border-[var(--primary)] placeholder:text-[var(--muted)]/30"
-                  />
-                </div>
-              </div>
-              
-              {/* Primary Filters Segment */}
-              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <SelectFilter
-                  label="Status"
-                  value={filters.status || "All"}
-                  onChange={(value) => setFilters((prev) => ({ ...prev, status: value as ResidentFilters["status"] }))}
-                  options={STATUS_OPTIONS}
-                />
-                <SelectFilter
-                  label="Gender"
-                  value={filters.gender || "All"}
-                  onChange={(value) => setFilters((prev) => ({ ...prev, gender: value as ResidentFilters["gender"] }))}
-                  options={GENDER_OPTIONS}
-                />
-                <SelectFilter
-                  label="Civil Status"
-                  value={filters.civilStatus || "All"}
-                  onChange={(value) => setFilters((prev) => ({ ...prev, civilStatus: value as ResidentFilters["civilStatus"] }))}
-                  options={CIVIL_STATUS_OPTIONS}
-                />
-              </div>
-            </div>
-  
-          {/* Detailed Filters & Actions */}
-          {showAdvancedFilters && (
-            <div className="mt-8 space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
-              {/* Row 2: Secondary Configuration */}
-              <div className="grid gap-6 lg:grid-cols-12 pt-6 border-t border-[var(--border)]/40 items-start">
-                <div className="lg:col-span-2">
-                  <SelectFilter
-                    label="Age Group"
-                    value={filters.ageGroup || "All"}
-                    onChange={(value) => setFilters((prev) => ({ ...prev, ageGroup: value as ResidentFilters["ageGroup"] }))}
-                    options={AGE_GROUP_OPTIONS}
-                  />
-                </div>
-  
-                <div className="lg:col-span-4 grid grid-cols-2 gap-5">
-                  <div className="flex flex-col gap-2">
-                    <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Date From</span>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        value={filters.registeredFrom}
-                        onChange={(e) => setFilters(p => ({ ...p, registeredFrom: e.target.value }))}
-                        className="h-10 w-full rounded-xl border border-[var(--border)] bg-transparent px-3 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)] pr-10 [color-scheme:light] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                      />
-                      <Calendar className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Date To</span>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        value={filters.registeredTo}
-                        onChange={(e) => setFilters(p => ({ ...p, registeredTo: e.target.value }))}
-                        className="h-10 w-full rounded-xl border border-[var(--border)] bg-transparent px-3 text-sm text-[var(--text)] outline-none focus:border-[var(--primary)] pr-10 [color-scheme:light] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                      />
-                      <Calendar className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none" />
-                    </div>
-                  </div>
-                </div>
-  
-                {/* Demographic Segment */}
-                <div className="lg:col-span-3 flex flex-col gap-2.5">
-                  <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Demographics</span>
-                  <div className="flex items-center h-10 gap-5 px-3 bg-[var(--card-soft)]/30 rounded-xl border border-[var(--border)]/40 transition-colors hover:border-[var(--border)]">
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={filters.seniorOnly}
-                        onChange={(e) => setFilters(p => ({ ...p, seniorOnly: e.target.checked }))}
-                        className="h-4 w-4 rounded-md border-[var(--border)] accent-[var(--accent)] transition focus:ring-0 focus:ring-offset-0"
-                      />
-                      <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">Senior</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={filters.pwdOnly}
-                        onChange={(e) => setFilters(p => ({ ...p, pwdOnly: e.target.checked }))}
-                        className="h-4 w-4 rounded-md border-[var(--border)] accent-[var(--accent)] transition focus:ring-0 focus:ring-offset-0"
-                      />
-                      <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">PWD</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={filters.voterOnly}
-                        onChange={(e) => setFilters(p => ({ ...p, voterOnly: e.target.checked }))}
-                        className="h-4 w-4 rounded-md border-[var(--border)] accent-[var(--accent)] transition focus:ring-0 focus:ring-offset-0"
-                      />
-                      <span className="text-[12px] font-semibold text-[var(--text)]/60 group-hover:text-[var(--text)] transition-colors">Voter</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-3 flex flex-col gap-2.5">
-                  <span className="px-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Bulk Status Change</span>
-                  <div className="flex items-center h-10 bg-[var(--card-soft)]/30 rounded-xl border border-[var(--border)]/40 px-1 hover:border-[var(--border)] transition-colors">
-                    <div className="relative flex-1 group/bulk">
-                      <select
-                        value={bulkStatus}
-                        disabled={selectedCount === 0}
-                        onChange={(event) => {
-                          const newStatus = event.target.value as ResidentStatus;
-                          setBulkStatus(newStatus);
-                          // Trigger update logic
-                          softDeleteByIds(Array.from(selectedIds), newStatus);
-                        }}
-                        className="h-8 w-full bg-transparent px-3 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] outline-none appearance-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed group-hover/bulk:text-[var(--primary)] transition-colors"
-                      >
-                        <option value="" disabled>Select Status...</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Deceased">Deceased</option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]/40 pointer-events-none group-hover/bulk:text-[var(--primary)] transition-colors" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-  
-              <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]/10 mt-4">
-                <span className="text-[10px] text-[var(--muted)]/50 italic px-1">Configure your view using the parameters above.</span>
-                <button
-                  type="button"
-                  onClick={() => setShowAdvancedFilters(false)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition-all hover:bg-[var(--card-soft)]"
-                >
-                  Hide Parameters
-                  <ChevronDown className="h-3 w-3 rotate-180 opacity-60" />
-                </button>
-              </div>
-            </div>
-          )}
-  
-          {!showAdvancedFilters && (
-            <div className="flex items-center justify-between mt-6 pt-6 border-t border-[var(--border)]/40">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--card-soft)]/50 border border-[var(--border)]/40">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]/80">Active Configuration:</span>
-                  {activeFilterItems.length > 0 ? (
-                    <div className="flex flex-wrap items-center gap-2">
-                      {activeFilterItems.map(item => (
-                        <FilterChip key={item.id} label={item.label} onRemove={() => removeFilter(item.id)} />
-                      ))}
-                      <button 
-                        onClick={resetFilters}
-                        className="ml-2 text-[10px] font-bold uppercase tracking-widest text-rose-500 hover:text-rose-600 transition-colors"
-                      >
-                        Reset All
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-[10px] font-semibold text-[var(--muted)]/40">Default View</span>
-                  )}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowAdvancedFilters(true)}
-                className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-[var(--primary)]/10 text-[11px] font-bold uppercase tracking-widest text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white transition-all"
-              >
-                Advanced Configuration
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-        </section>
+      <ResidentsFilters
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+        filters={filters}
+        setFilters={setFilters}
+        showAdvancedFilters={showAdvancedFilters}
+        setShowAdvancedFilters={setShowAdvancedFilters}
+        resetFilters={resetFilters}
+        activeFilterItems={activeFilterItems}
+        removeFilter={removeFilter}
+      />
   
         <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)]">
           <div className="relative z-20 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4 backdrop-blur-sm">
