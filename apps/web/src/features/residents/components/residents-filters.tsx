@@ -61,7 +61,7 @@ function CheckboxFilter({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 transition hover:bg-[var(--card-soft)]">
+    <label className="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 transition hover:bg-[var(--card-soft)]">
       <div className="relative flex items-center justify-center">
         <input
           type="checkbox"
@@ -183,7 +183,7 @@ export function ResidentsFilters({
                         type="date"
                         value={filters.registeredFrom}
                         onChange={(e) => setFilters((prev) => ({ ...prev, registeredFrom: e.target.value }))}
-                        className="h-9 w-full appearance-none rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[13px] text-[var(--text)] outline-none transition hover:bg-[var(--card-soft)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] [&::-webkit-calendar-picker-indicator]:opacity-50"
+                        className="h-9 w-full appearance-none rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[13px] text-[var(--text)] outline-none transition hover:bg-[var(--card-soft)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] [&::-webkit-calendar-picker-indicator]:opacity-50 dark:[&::-webkit-calendar-picker-indicator]:invert"
                       />
                     </div>
                   </div>
@@ -194,7 +194,7 @@ export function ResidentsFilters({
                         type="date"
                         value={filters.registeredTo}
                         onChange={(e) => setFilters((prev) => ({ ...prev, registeredTo: e.target.value }))}
-                        className="h-9 w-full appearance-none rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[13px] text-[var(--text)] outline-none transition hover:bg-[var(--card-soft)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] [&::-webkit-calendar-picker-indicator]:opacity-50"
+                        className="h-9 w-full appearance-none rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[13px] text-[var(--text)] outline-none transition hover:bg-[var(--card-soft)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] [&::-webkit-calendar-picker-indicator]:opacity-50 dark:[&::-webkit-calendar-picker-indicator]:invert"
                       />
                     </div>
                   </div>
@@ -202,7 +202,7 @@ export function ResidentsFilters({
 
                 <div className="md:col-span-3 flex flex-col gap-1.5">
                   <span className="px-1 text-[11px] font-bold text-[var(--text)]">Demographics</span>
-                  <div className="flex flex-wrap gap-2 pt-0.5">
+                  <div className="flex flex-wrap gap-2">
                     <CheckboxFilter
                       label="Senior"
                       checked={filters.seniorOnly}
