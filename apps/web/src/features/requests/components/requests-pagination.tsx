@@ -6,29 +6,47 @@ interface RequestsPaginationProps {
   currentPage: number;
   totalPages: number;
   safeCurrentPage: number;
-  totalRecords: number;
-  processedCount: number;
+  rowsPerPage: number;
   onPageChange: (page: number) => void;
+  onRowsPerPageChange: (rows: number) => void;
 }
 
 export function RequestsPagination({
   currentPage,
   totalPages,
   safeCurrentPage,
-  totalRecords,
-  processedCount,
+  rowsPerPage,
   onPageChange,
+  onRowsPerPageChange,
 }: RequestsPaginationProps) {
   return (
-    <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/30 px-6 py-4">
-      <p className="text-xs font-medium text-[var(--muted)]">
-        Showing <span className="text-[var(--text)]">{processedCount}</span> of <span className="text-[var(--text)]">{totalRecords}</span> requests
-      </p>
+    <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
+      <div className="flex items-center gap-4">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+          Page <span className="text-[var(--text)]">{safeCurrentPage}</span> of {totalPages}
+        </span>
+        <div className="h-3 w-px bg-[var(--border)]" />
+        <label className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--muted)]">
+          Rows
+          <select
+            value={rowsPerPage}
+            onChange={(event) => {
+              onRowsPerPageChange(Number(event.target.value));
+            }}
+            className="h-7 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2 text-[var(--text)] outline-none focus:border-[var(--primary)]/40"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
+      </div>
+
       <div className="flex items-center gap-2">
         <button 
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={safeCurrentPage === 1}
-          className="h-8 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--muted)] disabled:opacity-50 transition-all hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
+          className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/40 hover:text-[var(--primary)] disabled:opacity-30"
         >
           Previous
         </button>
@@ -40,7 +58,7 @@ export function RequestsPagination({
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
                 className={cn(
-                  "h-8 w-8 rounded-lg text-xs font-bold transition-all",
+                  "flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold transition-all",
                   safeCurrentPage === pageNum 
                     ? "bg-[var(--primary)] text-white shadow-sm" 
                     : "text-[var(--muted)] hover:bg-[var(--card)] hover:text-[var(--text)]"
@@ -55,7 +73,7 @@ export function RequestsPagination({
         <button 
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={safeCurrentPage === totalPages}
-          className="h-8 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-xs font-semibold text-[var(--muted)] disabled:opacity-50 transition-all hover:border-[var(--primary)]/40 hover:text-[var(--primary)]"
+          className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text)] transition-all hover:border-[var(--primary)]/40 hover:text-[var(--primary)] disabled:opacity-30"
         >
           Next
         </button>

@@ -18,6 +18,29 @@ import type {
   RequestStatus 
 } from "../types";
 
+interface SortThProps {
+  label: string;
+  active: boolean;
+  onSort: () => void;
+}
+
+function SortTh({ label, active, onSort }: SortThProps) {
+  return (
+    <th className="px-4 py-3 text-left">
+      <button 
+        onClick={onSort} 
+        className={cn(
+          "inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors",
+          active ? "text-[var(--primary)]" : "text-[var(--primary)] hover:text-[var(--primary)]"
+        )}
+      >
+        {label}
+        <ArrowUpDown className={cn("h-3 w-3 transition-opacity", active ? "opacity-100" : "opacity-0")} />
+      </button>
+    </th>
+  );
+}
+
 interface RequestsTableViewProps {
   requests: Request[];
   selectedIds: Set<string>;
@@ -48,21 +71,21 @@ export function RequestsTableView({
       <table className="w-full border-collapse text-left text-sm">
         <thead>
           <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
-            <th className="px-4 py-3 text-center">
+            <th className="px-4 py-3 text-center w-12">
               <input 
                 type="checkbox" 
                 checked={allVisibleSelected}
                 onChange={onToggleSelectAll}
-                className="rounded border-[var(--border)] accent-[var(--primary)]"
+                className="rounded border-[var(--border)] accent-[var(--primary)] focus:ring-[var(--primary)]/20"
               />
             </th>
-            <SortTh label="Request ID / Type" sortKey="id" current={sortBy} onSort={() => onSort("id")} active={sortBy === "id"} />
-            <SortTh label="Entity / Source" sortKey="entityName" current={sortBy} onSort={() => onSort("entityName")} active={sortBy === "entityName"} />
-            <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Purpose</th>
-            <SortTh label="Submitted" sortKey="submittedAt" current={sortBy} onSort={() => onSort("submittedAt")} active={sortBy === "submittedAt"} />
-            <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Assigned To</th>
-            <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Status</th>
-            <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
+            <SortTh label="Request ID" onSort={() => onSort("id")} active={sortBy === "id"} />
+            <SortTh label="Document Type" onSort={() => onSort("type")} active={sortBy === "type"} />
+            <SortTh label="Requestor" onSort={() => onSort("entityName")} active={sortBy === "entityName"} />
+            <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Purpose</th>
+            <SortTh label="Submitted" onSort={() => onSort("submittedAt")} active={sortBy === "submittedAt"} />
+            <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Status</th>
+            <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--border)]/40">
@@ -83,45 +106,36 @@ export function RequestsTableView({
                   type="checkbox" 
                   checked={selectedIds.has(req.id)}
                   onChange={() => onToggleSelectRow(req.id)}
-                  className="rounded border-[var(--border)] accent-[var(--primary)]"
+                  className="rounded border-[var(--border)] accent-[var(--primary)] focus:ring-[var(--primary)]/20"
                 />
               </td>
               <td className="px-4 py-3.5">
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-medium text-[var(--muted)] uppercase tracking-wider font-mono">{req.id}</span>
-                  <span className="tracking-tight text-[var(--text)] font-semibold">{req.type}</span>
-                </div>
+                <span className="text-[11px] font-medium text-[var(--muted)] uppercase tracking-wider font-mono">{req.id}</span>
+              </td>
+              <td className="px-4 py-3.5">
+                <span className="tracking-tight text-[var(--text)]">{req.type}</span>
               </td>
               <td className="px-4 py-3.5">
                 <div className="flex items-center gap-3">
                   <Avatar name={req.entityName} hideText className="h-9 w-9" />
                   <div className="flex flex-col">
-                    <span className="tracking-tight text-[var(--text)] font-medium">{req.entityName}</span>
-                    <span className="text-[10px] font-medium text-[var(--muted)] uppercase tracking-widest">{req.entityType === "Residents" ? "Resident" : "Establishment"}</span>
+                    <span className="tracking-tight text-[var(--text)]">
+                      {req.entityName}
+                    </span>
+                    <span className="text-[10px] font-medium text-[var(--muted)]">
+                      {req.entityType === "Residents" ? "resident-profile.v1" : "establishment.v1"}
+                    </span>
                   </div>
                 </div>
               </td>
               <td className="px-4 py-3.5">
-                <p className="max-w-[160px] truncate text-xs font-medium text-[var(--muted)]" title={req.purpose}>{req.purpose}</p>
+                <p className="max-w-[200px] truncate font-medium text-[var(--text)]/80" title={req.purpose}>{req.purpose}</p>
               </td>
               <td className="px-4 py-3.5">
                 <div className="flex flex-col">
                   <span className="text-xs font-medium text-[var(--text)] tracking-tight">{formatDate(req.submittedAt)}</span>
                   <span className="text-[10px] font-medium text-[var(--muted)]">{new Date(req.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
-              </td>
-              <td className="px-4 py-3.5">
-                {req.assignedStaff ? (
-                  <div className="flex items-center gap-2 rounded-lg bg-[var(--card-soft)]/50 px-2 py-1 border border-[var(--border)]/50 w-fit">
-                    <Avatar name={req.assignedStaff} hideText className="scale-75 origin-left" />
-                    <span className="text-[11px] font-medium text-[var(--text)]">{req.assignedStaff.split(' ')[0]}</span>
-                  </div>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] opacity-50">
-                    <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                    Unassigned
-                  </span>
-                )}
               </td>
               <td className="px-4 py-3.5">
                 <StatusChip status={req.status} />
@@ -144,17 +158,6 @@ export function RequestsTableView({
         </tbody>
       </table>
     </div>
-  );
-}
-
-function SortTh({ label, sortKey, current, onSort, active }: { label: string, sortKey: string, current: string, onSort: () => void, active: boolean }) {
-  return (
-    <th className="px-4 py-3">
-      <button onClick={onSort} className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] hover:text-[var(--text)] transition">
-        <span className={active ? "text-[var(--primary)]" : ""}>{label}</span>
-        <ArrowUpDown className={cn("h-3 w-3", active ? "text-[var(--primary)]" : "opacity-0")} />
-      </button>
-    </th>
   );
 }
 

@@ -12,13 +12,11 @@ interface RequestsListHeaderProps {
     approved: number;
     rejected: number;
   };
-  onExport: () => void;
   onNewRequest: () => void;
 }
 
 export function RequestsListHeader({
   metrics,
-  onExport,
   onNewRequest,
 }: RequestsListHeaderProps) {
   return (
@@ -31,14 +29,6 @@ export function RequestsListHeader({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onExport}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--card-soft)] hover:border-[var(--primary)]/40"
-          >
-            <Download className="h-4 w-4 text-[var(--primary)]" />
-            Export Report
-          </button>
           <button
             type="button"
             onClick={onNewRequest}

@@ -3,8 +3,10 @@
 import { useRequestsManagement } from "../hooks/use-requests-management";
 import { RequestsListHeader } from "./requests-list-header";
 import { RequestsTabs } from "./requests-tabs";
+import { RequestsFilters } from "./requests-filters";
 import { RequestsTableToolbar } from "./requests-table-toolbar";
 import { RequestsTableView } from "./requests-table-view";
+import { RequestsGridView } from "./requests-grid-view";
 import { RequestsPagination } from "./requests-pagination";
 import { RequestDetailsModal } from "./request-details-modal";
 import { BulkActionsBar } from "./bulk-actions-bar";
@@ -31,6 +33,11 @@ export function RequestsManagementPage() {
     setCurrentPage,
     totalPages,
     safeCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    activeFilterItems,
+    viewMode,
+    setViewMode,
     
     // Handlers
     handleUpdateStatus,
@@ -38,13 +45,13 @@ export function RequestsManagementPage() {
     resetFilters,
     toggleSelectRow,
     toggleSelectAll,
+    removeFilter,
   } = useRequestsManagement();
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6">
       <RequestsListHeader 
         metrics={metrics} 
-        onExport={() => {}} 
         onNewRequest={() => {}} 
       />
 
@@ -54,50 +61,61 @@ export function RequestsManagementPage() {
         metrics={metrics} 
       />
 
+      <RequestsFilters 
+        filters={filters} 
+        setFilters={setFilters} 
+        activeFilterCount={activeFilterItems.length}
+        onReset={resetFilters} 
+      />
+
       {/* Main Container */}
       <section className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-none transition-all">
         <RequestsTableToolbar 
-          filters={filters} 
-          setFilters={setFilters} 
-          onReset={resetFilters} 
+          totalRecords={processedRequests.length}
+          activeFilterItems={activeFilterItems}
+          onRemoveFilter={removeFilter}
+          onResetFilters={resetFilters}
+          onExport={() => {}}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
         />
 
-        <RequestsTableView 
-          requests={paginatedRequests}
-          selectedIds={selectedIds}
-          allVisibleSelected={selectedIds.size === paginatedRequests.length && paginatedRequests.length > 0}
-          onToggleSelectAll={toggleSelectAll}
-          onToggleSelectRow={toggleSelectRow}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-          onSort={(key) => {
-            if (sortBy === key) {
-              setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
-            } else {
-              setSortBy(key);
-              setSortDirection("asc");
-            }
-          }}
-          onView={setViewRequest}
-          onUpdateStatus={handleUpdateStatus}
-        />
+        {viewMode === "table" ? (
+          <RequestsTableView 
+            requests={paginatedRequests}
+            selectedIds={selectedIds}
+            allVisibleSelected={selectedIds.size === paginatedRequests.length && paginatedRequests.length > 0}
+            onToggleSelectAll={toggleSelectAll}
+            onToggleSelectRow={toggleSelectRow}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            onSort={(key) => {
+              if (sortBy === key) {
+                setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+              } else {
+                setSortBy(key);
+                setSortDirection("asc");
+              }
+            }}
+            onView={setViewRequest}
+            onUpdateStatus={handleUpdateStatus}
+          />
+        ) : (
+          <RequestsGridView 
+            requests={paginatedRequests}
+            onView={setViewRequest}
+          />
+        )}
 
         <RequestsPagination 
           currentPage={currentPage}
           totalPages={totalPages}
           safeCurrentPage={safeCurrentPage}
-          totalRecords={requests.length}
-          processedCount={processedRequests.length}
+          rowsPerPage={rowsPerPage}
           onPageChange={setCurrentPage}
+          onRowsPerPageChange={setRowsPerPage}
         />
       </section>
-
-      {/* Bulk Actions Overlay */}
-      <BulkActionsBar 
-        selectedCount={selectedIds.size}
-        onClear={() => setSelectedIds(new Set())}
-        onUpdateStatus={(status) => handleBulkUpdateStatus(Array.from(selectedIds), status)}
-      />
 
       {/* Details Modal */}
       {viewRequest && (

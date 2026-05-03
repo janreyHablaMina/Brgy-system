@@ -36,14 +36,6 @@ export function RequestsTabs({
             />
           ))}
         </nav>
-        <div className="hidden lg:flex items-center gap-2 p-1 bg-[var(--card-soft)]/50 rounded-lg border border-[var(--border)]/50">
-          <button className="p-1.5 rounded-md bg-[var(--card)] shadow-sm text-[var(--primary)] transition">
-            <List className="h-4 w-4" />
-          </button>
-          <button className="p-1.5 rounded-md text-[var(--muted)] hover:bg-[var(--card)] hover:text-[var(--text)] transition">
-            <LayoutGrid className="h-4 w-4" />
-          </button>
-        </div>
       </div>
     </div>
   );

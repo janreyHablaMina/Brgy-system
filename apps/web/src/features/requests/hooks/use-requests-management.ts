@@ -21,6 +21,7 @@ export function useRequestsManagement() {
   const [viewRequest, setViewRequest] = useState<Request | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   // Processed Requests (Filtered & Sorted)
   const processedRequests = useMemo(() => {
@@ -184,6 +185,8 @@ export function useRequestsManagement() {
     totalPages,
     safeCurrentPage,
     activeFilterItems,
+    viewMode,
+    setViewMode,
 
     // Handlers
     handleUpdateStatus,

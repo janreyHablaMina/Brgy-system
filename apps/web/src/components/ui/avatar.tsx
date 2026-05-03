@@ -22,13 +22,13 @@ export function Avatar({ src, name, role, hideText, className }: AvatarProps) {
       "relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-full border border-slate-200/40 bg-white shadow-sm ring-1 ring-slate-200/20 group",
       hideText && className
     )}>
-      {src ? (
+      {src || name ? (
         <Image
-          src={src}
+          src={src || "/avatar.png"}
           alt={name}
           fill
           sizes="100px"
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 bg-slate-100"
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-gradient-to-tr from-slate-200 to-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-tighter">
