@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Accessibility,
   Archive,
+  Briefcase,
+  MoreVertical,
   ArrowUpDown,
   Calendar,
   ChevronDown,
@@ -11,6 +13,8 @@ import {
   Eye,
   FileSpreadsheet,
   FileText,
+  Layers,
+  MapPin,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -321,6 +325,7 @@ export function ResidentsManagementPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkStatus, setBulkStatus] = useState<ResidentStatus>("Active");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   const [viewResident, setViewResident] = useState<Resident | null>(null);
   const [editingResident, setEditingResident] = useState<Resident | null>(null);
@@ -850,7 +855,7 @@ export function ResidentsManagementPage() {
                 className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[12px] font-semibold text-[var(--text)] transition-all hover:bg-[var(--card-soft)]"
                 trigger={
                   <>
-                    <MoreHorizontal className="h-4 w-4 opacity-50" />
+                    <Layers className="h-4 w-4 opacity-50" />
                     Bulk Actions
                     <ChevronDown className="h-3.5 w-3.5 opacity-40 ml-1" />
                   </>
@@ -885,10 +890,28 @@ export function ResidentsManagementPage() {
 
               {/* View Toggles */}
               <div className="flex items-center gap-1 border-l border-[var(--border)] pl-3">
-                <button type="button" className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--primary)] text-white shadow-sm transition hover:brightness-110">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("table")}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-md transition-all",
+                    viewMode === "table"
+                      ? "bg-[var(--primary)] text-white shadow-sm"
+                      : "border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--card-soft)] hover:text-[var(--text)]"
+                  )}
+                >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
                 </button>
-                <button type="button" className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] transition hover:bg-[var(--card-soft)] hover:text-[var(--text)]">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-md transition-all",
+                    viewMode === "grid"
+                      ? "bg-[var(--primary)] text-white shadow-sm"
+                      : "border border-[var(--border)] bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--card-soft)] hover:text-[var(--text)]"
+                  )}
+                >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                 </button>
               </div>
@@ -904,8 +927,9 @@ export function ResidentsManagementPage() {
           <EmptyState title="No results found" description="Try a different search term or reset filters." />
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse text-sm">
+            {viewMode === "table" ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse text-sm">
                 <thead>
                   <tr className="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--card-soft)]/90 backdrop-blur-md">
                     <th className="px-4 py-3 text-left">
@@ -943,7 +967,7 @@ export function ResidentsManagementPage() {
                         setSortDirection("asc");
                       }}
                     />
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Address</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Address</th>
                     <SortableHeader
                       label="Age"
                       active={sortBy === "age"}
@@ -957,9 +981,9 @@ export function ResidentsManagementPage() {
                         setSortDirection("asc");
                       }}
                     />
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Gender</th>
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Civil Status</th>
-                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--muted)]">Actions</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Gender</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Civil Status</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border)]/40">
@@ -1018,6 +1042,7 @@ export function ResidentsManagementPage() {
                             items={[
                               { label: "View Profile", onClick: () => setViewResident(resident), icon: Eye },
                               { label: "Edit Record", onClick: () => openEditModal(resident), icon: Pencil },
+                              { label: "Location", onClick: () => {}, icon: MapPin },
                               { label: "Divider", component: <div className="my-1 h-px bg-[var(--border)]/50" /> },
                               { 
                                 label: "Delete Resident", 
@@ -1034,6 +1059,20 @@ export function ResidentsManagementPage() {
                 </tbody>
               </table>
             </div>
+            ) : (
+              <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {paginatedResidents.map((resident) => (
+                  <ResidentCard
+                    key={resident.id}
+                    resident={resident}
+                    onView={setViewResident}
+                    onEdit={openEditModal}
+                    onDelete={(id) => softDeleteByIds([id])}
+                    role={role}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--border)] bg-[var(--card-soft)]/50 px-6 py-4">
               <div className="flex items-center gap-4">
@@ -1487,13 +1526,6 @@ function TagToggle({
   );
 }
 
-function TagBadge({ label }: { label: string }) {
-  return (
-    <span className="rounded-lg bg-[var(--card-soft)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-[var(--muted)] border border-[var(--border)] shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
-      {label}
-    </span>
-  );
-}
 
 function SortableHeader({
   label,
@@ -1513,7 +1545,7 @@ function SortableHeader({
         onClick={onClick}
         className={cn(
           "inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors",
-          active ? "text-[var(--primary)]" : "text-[var(--muted)] hover:text-[var(--text)]"
+          active ? "text-[var(--primary)]" : "text-[var(--primary)] hover:text-[var(--primary)]"
         )}
       >
         {label}
@@ -1663,3 +1695,138 @@ function HistoryCard({ title, items }: { title: string; items: string[] }) {
   );
 }
 
+
+function ResidentCard({ 
+  resident, 
+  onView, 
+  onEdit, 
+  onDelete, 
+  role 
+}: { 
+  resident: Resident; 
+  onView: (r: Resident) => void;
+  onEdit: (r: Resident) => void;
+  onDelete: (id: string) => void;
+  role: UserRole;
+}) {
+  const age = computeAge(resident.birthdate);
+  const name = getFullName(resident);
+
+  return (
+    <article className="group relative flex flex-col rounded-2xl border border-slate-200/50 bg-white p-6 transition-all hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)]">
+      {/* Header Info */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-[11px] font-extrabold tracking-[0.1em] text-slate-400 uppercase">
+          {resident.id}
+        </span>
+        <DropdownMenu
+          trigger={
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-50 hover:text-slate-600 transition-all cursor-pointer">
+              <MoreVertical className="h-4.5 w-4.5" />
+            </div>
+          }
+          items={[
+            { label: "View Location", onClick: () => {}, icon: MapPin },
+            { label: "Divider", component: <div className="my-1 h-px bg-slate-100" /> },
+            { 
+              label: "Delete Resident", 
+              onClick: () => onDelete(resident.id), 
+              icon: Trash2,
+              danger: true,
+              disabled: role !== "Admin"
+            },
+          ]}
+        />
+      </div>
+
+      {/* Main Profile Area */}
+      <div className="flex items-center gap-5">
+        <div className="relative shrink-0">
+          <Avatar
+            src="/avatar.png"
+            name={name}
+            className="h-14 w-14 rounded-2xl shadow-sm ring-4 ring-slate-50/50"
+            hideText
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[17px] font-bold text-slate-900 truncate leading-tight mb-1">
+            {name}
+          </h3>
+          <p className="text-[13px] font-medium text-slate-500 line-clamp-1 opacity-80">
+            {resident.address}
+          </p>
+        </div>
+      </div>
+
+      {/* Stats Divider */}
+      <div className="mt-6 pt-6 border-t border-slate-50 grid grid-cols-3 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <User className="h-3 w-3" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Age</span>
+          </div>
+          <span className="text-[14px] font-bold text-slate-700">{age} yrs</span>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <Users className="h-3 w-3" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Gender</span>
+          </div>
+          <span className="text-[14px] font-bold text-slate-700">{resident.gender}</span>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            <Briefcase className="h-3 w-3" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Status</span>
+          </div>
+          <span className="text-[14px] font-bold text-slate-700 truncate">{resident.civilStatus}</span>
+        </div>
+      </div>
+
+      {/* Badges and Actions */}
+      <div className="mt-8 flex items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-1.5">
+          {resident.tags.senior && <TagBadge label="Senior" color="blue" />}
+          {resident.tags.pwd && <TagBadge label="PWD" color="violet" />}
+          {resident.tags.voter && <TagBadge label="Voter" color="emerald" />}
+        </div>
+        
+        <div className="flex items-center gap-1.5">
+          <button 
+            onClick={() => onView(resident)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all border border-slate-100/50"
+            title="View Details"
+          >
+            <Eye className="h-4.5 w-4.5" />
+          </button>
+          <button 
+            onClick={() => onEdit(resident)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-slate-100/50"
+            title="Edit"
+          >
+            <Pencil className="h-4.5 w-4.5" />
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function TagBadge({ label, color = "slate" }: { label: string; color?: "slate" | "blue" | "violet" | "emerald" }) {
+  const styles = {
+    slate: "bg-slate-50 text-slate-500 border-slate-100",
+    blue: "bg-blue-50 text-blue-600 border-blue-100/50",
+    violet: "bg-violet-50 text-violet-600 border-violet-100/50",
+    emerald: "bg-emerald-50 text-emerald-600 border-emerald-100/50",
+  };
+
+  return (
+    <span className={cn(
+      "inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border",
+      styles[color]
+    )}>
+      {label}
+    </span>
+  );
+}
